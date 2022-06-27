@@ -1,39 +1,41 @@
-require('dotenv').config()
 const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
 const mongoose = require("mongoose");
+const cors = require("cors");
+const morgan = require("morgan");
 
-const DB_URL = process.env.DB_URL;
+const teamRoutes = require("./routes/team");
 
-//create server obejct
 const app = express();
-mongoose.connect(DB_URL)
+
+
+mongoose.connect("mongodb://localhost:27017/freelancingPlatform")        
     .then(()=>{
-        console.log("DB Connected.");
-        //listen to port number
-        app.listen(process.env.PORT||8080,()=>{
-            console.log("Listening on localhost:8080");
-        });            
+        console.log("DB Connected");
+        let port = process.env.PORT || 8080;
+        app.listen(port,()=>{
+            console.log(`Listenning to port ${port}...`);
+        })
     })
-    .catch((error)=>console.log("Db Connection Error " + error));
+    .catch(error=>console.log("Db Connection Error "+ error));
 
-/****************** MiddleWare *****************/
-//1- MW url and method
-app.use(morgan('dev')); //method-url-status-ms- :res[content-length]
 
-//2- all users CORS MW
+
+
+app.use(morgan(':method :url'));
 app.use(cors());
+app.use(express.json()); 
 
-//3- Not Found MW
+
+// endpoints
+app.use("/team",teamRoutes);
+
+
+
 app.use((request,response)=>{
-    console.log('Not Found MW');
-    response.status(404).json({message:"Not Found"});
-});
+    response.status(404).json({message:"Not Found"})
+})
 
-//4- Error MW
 app.use((error,request,response,next)=>{
-    console.log('Error MW');
-    let errorStatus = error.status || 500;
-    response.status(errorStatus).json({message:"Internal Error:\n" + error});
+    let status = error.status || 500;
+    response.status(status).json({message:"Error" + error})
 })
