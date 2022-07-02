@@ -1,0 +1,14 @@
+# dependencies
+node_modules/
+diagnostic.data/
+journal/
+*/.vscode/
+
+# misc
+.env
+*.wt
+storage.bson
+package-lock.json
+WiredTiger.turtle
+WiredTiger
+*.lock

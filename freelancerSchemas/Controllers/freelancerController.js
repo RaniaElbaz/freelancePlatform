@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 require("../Models/freelancers");
 
 let Freelancer = mongoose.model("freelancers");
+
 /**
  get all freelancer data
  */
@@ -15,6 +16,21 @@ module.exports.getAllFreelancers = (request,response,next) => {
             next(error);
         })
 }
+
+/**
+ get freelancer data  by id
+ */
+module.exports.getFreelancerById=(request,response,next)=>{
+    Class.findOne({_id:request.params.id})
+    .then(data=>{
+      if(data == null) next(new Error("Freelancer not found"))
+      response.status(200).json(data);
+    })
+    .catch(error=>{
+      next(error);
+    })
+}
+
 /**
  add new freelancer
  */
@@ -43,7 +59,7 @@ module.exports.addFreelancer = (request,response,next) => {
         location: request.body.location,
         analytics: request.body.analytics,
         // paymentMethods: request.body.paymentMethods,
-        skills: request.body.skills
+        badges: request.body.badges,
     });
     freelancerObject.save()
         .then(data=>{
@@ -51,6 +67,20 @@ module.exports.addFreelancer = (request,response,next) => {
         })
         .catch(error=>next(error))      
 }
+
+module.exports.addSkills = (request,response,next) => {
+    Freelancer.updateOne({_id:request.params.id},
+        {
+            $addToSet:{
+                skills : {$each: request.body.skills}
+            }
+        })
+    .then(data=>{
+        response.status(201).json({data});
+    })
+    .catch(error=>next(error))       
+}
+
 /**
  update a freelancer data
  */
@@ -64,6 +94,7 @@ module.exports.updateFreelancer = (request,response,next) => {
         })
         .catch(error=>next(error))    
 }
+
 /**
  delete a freelancer
  */

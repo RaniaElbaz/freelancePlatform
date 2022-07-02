@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const months = ["jan","feb","march"];
+const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 const dateSchema = new mongoose.Schema({
     year: {

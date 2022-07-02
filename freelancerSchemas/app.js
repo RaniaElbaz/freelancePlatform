@@ -23,7 +23,7 @@ mongoose.connect(DB_URL)
     .catch((error)=>console.log("Db Connection Error " + error));
 
 /****************** MiddleWare *****************/
-//1- MW url and method
+//1- MW url and method                                              
 app.use(morgan('dev')); //method-url-status-ms- :res[content-length]
 
 //2- all users CORS MW

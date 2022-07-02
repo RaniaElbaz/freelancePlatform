@@ -31,7 +31,13 @@ const freelancerSchema = new mongoose.Schema({
     email:{
         type: String,
         required: true,
-        unique: true,
+        validate: {
+            validator: function(v) {
+              return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v)
+            },
+            message: props => `${props.value} is not a valid email!`
+        },
+        unique: true
     },
     secondEmail:{
         type: String,
@@ -74,6 +80,8 @@ const freelancerSchema = new mongoose.Schema({
     description:{
         type: String,
         required: true,
+        minLength: 100,
+        maxLength: 500
     },
     isBlocked:{
         type: Boolean,
@@ -81,37 +89,77 @@ const freelancerSchema = new mongoose.Schema({
     },
 
     // 1:Many embedded relationships
-    languages:[{
-        type: String,
+    languages:{
+        type: [String],
         enum: languages,
-    }],
+        validate: {
+            validator: function(v) {
+              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+              return !Boolean(duplicated.length);
+            },
+            message: props => `${props.value} duplicated language value`
+        },
+    },
     education:[educationSchema],
     testimonials:[testimonialSchema],
     certificates:[certificateSchema],
     portfolio:[portfolioSchema],
-    experience:[experinceSchema],
+    experience:{
+        type: [experinceSchema],
+        validate: {
+            validator: function(v) {
+              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+              return !Boolean(duplicated.length);
+            },
+            message: props => `${props.value} duplicated experience value`
+        },
+    },
     
     // 1:Many parent ref relationships
-    projects:[{
-        type: Number,
+    projects:{
+        type: [Number],
         ref: "projects",
-    }],
-    badges:[{
-        type: Number,
-        ref: "tests"
-    }],
+        validate: {
+            validator: function(v) {
+              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+              return !Boolean(duplicated.length);
+            },
+            message: props => `${props.value} duplicated project ID value`
+        },
+    },
+    badges:{
+        type: [Number],
+        ref: "tests",
+        validate: {
+            validator: function(v) {
+              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+              return !Boolean(duplicated.length);
+            },
+            message: props => `${props.value} duplicated language value`
+        },
+    },
 
     //many:many 2-way ref relationships
-    skills:[{
-        type: Number,
+    skills:{
+        type: [Number],
         ref:"skills",
+        validate: {
+            validator: function(v) {
+              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+              return !Boolean(duplicated.length);
+            },
+            message: props => `${props.value} duplicated skill value`
+        },
         required: true
-    }],
+    },
     
     //1:1 embedded relationships
     //paymentMethods: paymentSchema,
     analytics: analyticsSchema,
-    location: locationSchema,
+    location: {
+        type: [locationSchema],
+        required: true
+    }
 }, { _id: false });
 
 //mapping

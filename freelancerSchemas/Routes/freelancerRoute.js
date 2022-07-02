@@ -17,8 +17,18 @@ freelancerRoute.route("/freelancers")
     .put(freelancerController.updateFreelancer);
 
 freelancerRoute.route("/freelancers/:id")
+    .put([
+        param("id").isNumeric().withMessage("Freelancer id wrong")
+    ],
+    validationMW,
+    freelancerController.addSkills)
+    .get([
+        param("id").isNumeric().withMessage("Freelancer id wrong")
+    ],
+    validationMW,
+    freelancerController.getAllFreelancers)
     .delete([
-        param("id").isMongoId().withMessage("Freelancer id wrong")
+        param("id").isNumeric().withMessage("Freelancer id wrong")
     ],
     validationMW,
     freelancerController.deleteFreelancer);
