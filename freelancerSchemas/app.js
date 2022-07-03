@@ -32,7 +32,7 @@ app.use(cors());
 /****************** Routes *****************/
 app.use(express.json());//body parsing
 
-app.use(freelancerRoute);
+app.use('/freelancers',freelancerRoute);
 
 //3- Not Found MW
 app.use((request,response)=>{

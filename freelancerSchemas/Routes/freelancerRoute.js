@@ -2,35 +2,50 @@ const express = require("express");
 const { body, param } = require("express-validator");
 
 const freelancerController = require("../Controllers/freelancerController");
+const freelancerloginController = require("../Controllers/freelancerLoginController");
 
 const validationMW = require("../Middlewares/validationMW");
 const freelancerValidation = require("../Middlewares/freelancerValidation");
+
 const freelancerRoute = express.Router();
 
-freelancerRoute.route("/freelancers")
-    .get(freelancerController.getAllFreelancers)
-    .post(freelancerValidation,
-        [body("education.organization").optional({ checkFalsy: true, nullable: true })
-        .isAlpha().withMessage("freelancer's education is invalid")],
-    validationMW,
-    freelancerController.addFreelancer)
-    .put(freelancerController.updateFreelancer);
+/**Login route
+ */
+freelancerRoute.route("/login").post(freelancerloginController.login);
 
-freelancerRoute.route("/freelancers/:id")
-    .put([
-        param("id").isNumeric().withMessage("Freelancer id wrong")
-    ],
+/**Register route
+ */
+freelancerRoute
+  .route("/register")
+  .post(freelancerValidation, validationMW, freelancerController.signup);
+
+/** freelancers base route
+ * for querying and dev purpose
+ */
+freelancerRoute.route("/").get(freelancerController.getAllFreelancers);
+
+/** by id routes
+ */
+freelancerRoute
+  .route("/:id")
+  //profile creation/update routes
+//   .put(freelancerController.updateFreelancer)
+  .put(
+    [param("id").isNumeric().withMessage("Freelancer id wrong")],
     validationMW,
-    freelancerController.addSkills)
-    .get([
-        param("id").isNumeric().withMessage("Freelancer id wrong")
-    ],
+    freelancerController.addSkills
+  )
+  //get freelancer by id (show profile)
+  .get(
+    [param("id").isNumeric().withMessage("Freelancer id wrong")],
     validationMW,
-    freelancerController.getAllFreelancers)
-    .delete([
-        param("id").isNumeric().withMessage("Freelancer id wrong")
-    ],
+    freelancerController.getFreelancerById
+  )
+  //delete freelancer by id (dev purpose only)
+  .delete(
+    [param("id").isNumeric().withMessage("Freelancer id wrong")],
     validationMW,
-    freelancerController.deleteFreelancer);
+    freelancerController.deleteFreelancer
+  );
 
 module.exports = freelancerRoute;

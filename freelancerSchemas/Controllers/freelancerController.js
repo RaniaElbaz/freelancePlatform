@@ -4,104 +4,120 @@ require("../Models/freelancers");
 
 let Freelancer = mongoose.model("freelancers");
 
-/**
- get all freelancer data
+/**signup as a freelancer
  */
-module.exports.getAllFreelancers = (request,response,next) => {
-    Freelancer.find({})
-        .then(data=>{
-            response.status(200).json(data);
-        })
-        .catch(error=>{
-            next(error);
-        })
-}
+module.exports.signup = (request, response, next) => {
+  let freelancerObject = new Freelancer({
+    _id: request.body.id,
+    firstName: request.body.firstName,
+    lastName: request.body.lastName,
+    password: request.body.password,
+    email: request.body.email,
+  });
+  freelancerObject
+    .save()
+    .then((data) => {
+      response.status(201).json({ data: "signup success" });
+    })
+    .catch((error) => next(error));
+};
 
-/**
- get freelancer data  by id
+/** get all freelancer data
  */
-module.exports.getFreelancerById=(request,response,next)=>{
-    Class.findOne({_id:request.params.id})
-    .then(data=>{
-      if(data == null) next(new Error("Freelancer not found"))
+module.exports.getAllFreelancers = (request, response, next) => {
+  Freelancer.find({})
+    .then((data) => {
       response.status(200).json(data);
     })
-    .catch(error=>{
+    .catch((error) => {
       next(error);
-    })
-}
-
-/**
- add new freelancer
- */
-module.exports.addFreelancer = (request,response,next) => {
-    let freelancerObject = new Freelancer({
-        _id: request.body.id,
-        firstName: request.body.firstName,
-        lastName: request.body.lastName,
-        password: request.body.password,
-        email: request.body.email,
-        secondEmail: request.body.secondEmail,
-        phoneNumber: request.body.phone,
-        profileImage: request.body.profileImage,
-        isVerified: request.body.isVerified,
-        hourlyRate: request.body.hourlyRate,
-        wallet: request.body.wallet,
-        hoursPerWeek: request.body.hoursPerWeek,
-        description: request.body.description,
-        languages: request.body.languages,
-        education: request.body.education,
-        testimonials: request.body.testimonials,
-        certificates: request.body.certificates,
-        portfolio: request.body.portfolio,
-        experience: request.body.experience,
-        projects: request.body.projects,
-        location: request.body.location,
-        analytics: request.body.analytics,
-        // paymentMethods: request.body.paymentMethods,
-        badges: request.body.badges,
     });
-    freelancerObject.save()
-        .then(data=>{
-            response.status(201).json({data:"added"});
-        })
-        .catch(error=>next(error))      
-}
+};
 
-module.exports.addSkills = (request,response,next) => {
-    Freelancer.updateOne({_id:request.params.id},
-        {
-            $addToSet:{
-                skills : {$each: request.body.skills}
-            }
-        })
-    .then(data=>{
-        response.status(201).json({data});
-    })
-    .catch(error=>next(error))       
-}
-
-/**
- update a freelancer data
+/** get freelancer data  by id (get profile)
  */
-module.exports.updateFreelancer = (request,response,next) => {
-    Freelancer.findById(request.body.id)
-        .then(data => {
-            if(data) return data.save()
-        })
-        .then(data=>{
-            response.status(201).json({data:"updated"});
-        })
-        .catch(error=>next(error))    
-}
-
-/**
- delete a freelancer
- */
-module.exports.deleteFreelancer = (request,response,next) => {
-    Freelancer.deleteOne({_id:request.params.id})
-    .then(data=>{
-        response.status(200).json({data:"delete " + request.params.id})
+module.exports.getFreelancerById = (request, response, next) => {
+  Class.findOne({ _id: request.params.id })
+    .then((data) => {
+      if (data == null) next(new Error("Freelancer not found"));
+      response.status(200).json(data);
     })
-    .catch(error=>next(error)); 
-}
+    .catch((error) => {
+      next(error);
+    });
+};
+
+/**add new freelancer
+ */
+module.exports.createFreelancer = (request, response, next) => {
+  let freelancerObject = new Freelancer({
+    _id: request.body.id,
+    firstName: request.body.firstName,
+    lastName: request.body.lastName,
+    password: request.body.password,
+    email: request.body.email,
+    // secondEmail: request.body.secondEmail,
+    // phoneNumber: request.body.phone,
+    // profileImage: request.body.profileImage,
+    // isVerified: request.body.isVerified,
+    // hourlyRate: request.body.hourlyRate,
+    // wallet: request.body.wallet,
+    // hoursPerWeek: request.body.hoursPerWeek,
+    // description: request.body.description,
+    // languages: request.body.languages,
+    // education: request.body.education,
+    // testimonials: request.body.testimonials,
+    // certificates: request.body.certificates,
+    // portfolio: request.body.portfolio,
+    // experience: request.body.experience,
+    // projects: request.body.projects,
+    // location: request.body.location,
+    // analytics: request.body.analytics,
+    // paymentMethods: request.body.paymentMethods,
+    // badges: request.body.badges,
+  });
+  freelancerObject
+    .save()
+    .then((data) => {
+      response.status(201).json({ data: "added" });
+    })
+    .catch((error) => next(error));
+};
+
+module.exports.addFreelancerSkills = (request, response, next) => {
+  Freelancer.updateOne(
+    { _id: request.params.id },
+    {
+      $addToSet: {
+        skills: { $each: request.body.skills },
+      },
+    }
+  )
+    .then((data) => {
+      response.status(201).json({ data: "updated skills" });
+    })
+    .catch((error) => next(error));
+};
+
+/**update a freelancer data
+ */
+module.exports.updateFreelancer = (request, response, next) => {
+  Freelancer.findById(request.body.id)
+    .then((data) => {
+      if (data) return data.save();
+    })
+    .then((data) => {
+      response.status(201).json({ data: "updated" });
+    })
+    .catch((error) => next(error));
+};
+
+/**delete a freelancer
+ */
+module.exports.deleteFreelancer = (request, response, next) => {
+  Freelancer.deleteOne({ _id: request.params.id })
+    .then((data) => {
+      response.status(200).json({ data: "delete " + request.params.id });
+    })
+    .catch((error) => next(error));
+};

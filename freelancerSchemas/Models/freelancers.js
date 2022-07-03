@@ -32,25 +32,25 @@ const freelancerSchema = new mongoose.Schema({
         type: String,
         required: true,
         validate: {
-            validator: function(v) {
-              return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v)
+            validator: function(value) {
+              return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)
             },
             message: props => `${props.value} is not a valid email!`
         },
         unique: true
     },
-    secondEmail:{
-        type: String,
-    },
     password:{
         type: String,
         required: true,
     },
+    secondEmail:{
+        type: String,
+    },
     phoneNumber:{
         type: String,
         validate: {
-            validator: function(v) {
-              return /\d{3}-\d{3}-\d{4}/.test(v);
+            validator: function(value) {
+              return /\d{3}-\d{3}-\d{4}/.test(value);
             },
             message: props => `${props.value} is not a valid phone number!`
         },
@@ -64,7 +64,6 @@ const freelancerSchema = new mongoose.Schema({
     },
     hourlyRate:{
         type: Number,
-        required: true,
     },
     wallet:{
         type: Number,
@@ -77,9 +76,12 @@ const freelancerSchema = new mongoose.Schema({
         max:30,
         min:5
     },
+    title:{
+        type: String,
+        minLength: 5
+    },
     description:{
         type: String,
-        required: true,
         minLength: 100,
         maxLength: 500
     },
@@ -93,8 +95,8 @@ const freelancerSchema = new mongoose.Schema({
         type: [String],
         enum: languages,
         validate: {
-            validator: function(v) {
-              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+            validator: function(value) {
+              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
               return !Boolean(duplicated.length);
             },
             message: props => `${props.value} duplicated language value`
@@ -107,8 +109,8 @@ const freelancerSchema = new mongoose.Schema({
     experience:{
         type: [experinceSchema],
         validate: {
-            validator: function(v) {
-              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+            validator: function(value) {
+              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
               return !Boolean(duplicated.length);
             },
             message: props => `${props.value} duplicated experience value`
@@ -120,8 +122,8 @@ const freelancerSchema = new mongoose.Schema({
         type: [Number],
         ref: "projects",
         validate: {
-            validator: function(v) {
-              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+            validator: function(value) {
+              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
               return !Boolean(duplicated.length);
             },
             message: props => `${props.value} duplicated project ID value`
@@ -131,8 +133,8 @@ const freelancerSchema = new mongoose.Schema({
         type: [Number],
         ref: "tests",
         validate: {
-            validator: function(v) {
-              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+            validator: function(value) {
+              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
               return !Boolean(duplicated.length);
             },
             message: props => `${props.value} duplicated language value`
@@ -144,22 +146,18 @@ const freelancerSchema = new mongoose.Schema({
         type: [Number],
         ref:"skills",
         validate: {
-            validator: function(v) {
-              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+            validator: function(value) {
+              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
               return !Boolean(duplicated.length);
             },
             message: props => `${props.value} duplicated skill value`
-        },
-        required: true
+        }
     },
     
     //1:1 embedded relationships
     //paymentMethods: paymentSchema,
     analytics: analyticsSchema,
-    location: {
-        type: [locationSchema],
-        required: true
-    }
+    address: locationSchema
 }, { _id: false });
 
 //mapping
