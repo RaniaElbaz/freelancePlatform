@@ -1,15 +1,11 @@
 const mongoose = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
-const testimonialSchema = require("./testimonial");
-const analyticSchema = require("./analytic");
+const testimonialSchema = require("./testimonial.model");
+const analyticSchema = require("./analytic.model");
 
-function membersLimit(members) {
-  return members.length < 11 && members.length > 1;
-}
-
-function skillsLimit(skills) {
-  return skills.length < 16 && skills.length > 1;
+function itemsLimit(items) {
+  return items.length < 16 && items.length > 1;
 }
 
 function checkUniqueItems(items) {
@@ -55,8 +51,8 @@ const teamSchema = new mongoose.Schema({
     ref: "freelancers",
     validate: [
       {
-        validator: membersLimit,
-        message: "team members should be between 2,10",
+        validator: itemsLimit,
+        message: "team members should be between 2,15",
       },
       {
         validator: checkUniqueItems,
@@ -69,7 +65,7 @@ const teamSchema = new mongoose.Schema({
     ref: "skills",
     validate: [
       {
-        validator: skillsLimit,
+        validator: itemsLimit,
         message: "team skills should be between 2,15",
       },
       {
@@ -79,7 +75,6 @@ const teamSchema = new mongoose.Schema({
     ],
   },
   projects: {
-    //🔴🔴add in mw and controllers
     type: [Number],
     ref: "projects",
     validate: {
@@ -92,14 +87,14 @@ const teamSchema = new mongoose.Schema({
       message: (props) => `${props.value} duplicated project ID value`,
     },
   },
-  testimonial: {
+  testimonials: {
     type: [testimonialSchema],
     validate: {
       validator: checkUniqueProject,
       message: "project already has testimonial",
     },
   },
-  analytic: analyticSchema, //🟡🟡route for analytics and wallet and isVerified
+  analytics: analyticSchema,
   wallet: {
     type: Number,
     default: 0,

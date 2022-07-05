@@ -1,4 +1,4 @@
-const { param, check, body } = require("express-validator");
+const { check } = require("express-validator");
 
 module.exports.post = [
   check("name")
@@ -28,7 +28,7 @@ module.exports.post = [
   check("members")
     .notEmpty()
     .withMessage("team members is required")
-    .isArray({ min: 2, max: 10 })
+    .isArray({ min: 2, max: 15 })
     .withMessage("team members should be array 2:10"),
 
   check("skills")
@@ -78,18 +78,14 @@ module.exports.put = [
 ];
 
 module.exports.getDelete = [
-  param("id").isNumeric().withMessage("team id shoud be number"),
+  check("id").isNumeric().withMessage("team id shoud be number"),
 ];
 
 module.exports.removeMember = [
-  (request, response, next) => {
-    console.log("removeMember mw"); //it prints🟢
-    next();
-  },
-  param("id").isNumeric().withMessage("team id shoud be number"), //not working🔴//test
-  body("member") //not working🔴
+  check("id").isNumeric().withMessage("team id shoud be number"),
+  check("members")
     .notEmpty()
-    .withMessage("team member is required")
-    .isNumeric()
-    .withMessage("team member should be number"),
+    .withMessage("team members is required")
+    .isArray()
+    .withMessage("team members should be array"),
 ];

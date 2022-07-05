@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-require("./../models/team");
+require("../models/team.model");
 let Team = mongoose.model("teams");
 
 module.exports.createTeam = (request, response, next) => {
@@ -12,10 +12,15 @@ module.exports.createTeam = (request, response, next) => {
     members: request.body.members,
     skills: request.body.skills,
   });
-  object
-    .save()
-    .then((data) => {
-      response.status(201).json({ msg: "team created", data });
+  Team.findOne({ members: request.body.members })
+    .then((team) => {
+      if (!team) {
+        object.save().then((data) => {
+          response.status(201).json({ msg: "team created", data });
+        });
+      } else {
+        throw new Error("team members already exist in another team");
+      }
     })
     .catch((error) => next(error));
 };
@@ -24,6 +29,7 @@ module.exports.getAllTeams = (request, response, next) => {
   Team.find({})
     // .populate({ path: "members", select: "fullName" })
     // .populate({ path: "skills", select: "name" })
+    // .populate({ path: "projects", select: "name" })
     .then((data) => {
       response.status(200).json(data);
     })
@@ -36,6 +42,7 @@ module.exports.getTeamById = (request, response, next) => {
   Team.findOne({ _id: request.params.id })
     // .populate({ path: "members", select: "fullName" })
     // .populate({ path: "skills", select: "name" })
+    // .populate({ path: "projects", select: "name" })
     .then((data) => {
       if (data == null) next(new Error("team not found"));
       else {
@@ -48,7 +55,7 @@ module.exports.getTeamById = (request, response, next) => {
 };
 
 module.exports.updateTeam = (request, response, next) => {
-  Team.findById(request.body.id)
+  Team.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("team not found"));
       for (let prop in request.body) {
@@ -69,19 +76,32 @@ module.exports.updateTeam = (request, response, next) => {
             [...new Set([...data[prop], ...request.body[prop]])].length
           )
             data[prop] = [...new Set([...data[prop], ...request.body[prop]])];
-          else next(new Error(`team ${prop} should be unique`));
+          else throw new Error(`team ${prop} should be unique`);
+          if ([...data[prop], ...request.body[prop]].length > 16) {
+            throw new Error(`team ${prop} should be less than 16`);
+          }
         } else if (
-          prop == "testimonial" ||
-          prop == "analytic" ||
+          prop == "testimonials" ||
+          prop == "analytics" ||
           prop == "wallet" ||
-          prop == "isVerified"
+          prop == "isVerified" ||
+          prop == "projects"
         )
           continue;
         else data[prop] = request.body[prop] || data[prop];
       }
-      data.save().then((data) => {
-        response.status(200).json({ msg: "team updated", data });
+      Team.findOne({ members: data.members }).then((team) => {
+        if (!team) {
+          object.save().then((data) => {
+            response.status(201).json({ msg: "team updated", data });
+          });
+        } else {
+          next(new Error("team members already exist in another team"));
+        }
       });
+      //   data.save().then((data) => {
+      //     response.status(200).json({ msg: "team updated", data });
+      //   });
     })
 
     .catch((error) => {
@@ -100,19 +120,28 @@ module.exports.deleteTeam = (request, response, next) => {
 };
 
 module.exports.removeMember = (request, response, next) => {
-  //🔴remove more than one member
   Team.findById({ _id: request.params.id })
     .then((data) => {
       if (data.members.length < 3) {
         next(new Error("can't remove any team member (team members are 2)"));
-      } else if (data.members.indexOf(request.body.member) != -1) {
-        data.members.splice(data.members.indexOf(request.body.member), 1);
-        data.save();
-        response
-          .status(200)
-          .json({ msg: "team member removed", members: data.members });
       } else {
-        next(new Error("team member not found"));
+        for (let item of request.body.members) {
+          console.log(item);
+          if (data.members.indexOf(item) != -1) {
+            data.members.splice(data.members.indexOf(item), 1);
+            Team.findOne({ members: data.members }).then((team) => {
+              if (!team) {
+                data.save().then((data) => {
+                  response.status(201).json({ msg: "team member/s removed" });
+                });
+              } else {
+                next(new Error("team members already exist in another team"));
+              }
+            });
+          } else {
+            throw Error("team member not found");
+          }
+        }
       }
     })
     .catch((error) => next(error));
@@ -128,14 +157,14 @@ module.exports.createTestimonial = (request, response, next) => {
           object[prop] = request.body[prop];
         } else continue;
       }
-      Team.find({ "testimonial.project": request.body.project }).then(
+      Team.findOne({ "testimonials.project": request.body.project }).then(
         (team) => {
-          if (team === []) {
-            data.testimonial.push(object);
+          if (!team) {
+            data.testimonials.push(object);
             data.save();
             response
               .status(200)
-              .json({ msg: "testimonial created", data: data.testimonial });
+              .json({ msg: "testimonial created", data: data.testimonials });
           } else next(new Error("testimonial already exists for this project"));
         }
       );
@@ -145,40 +174,40 @@ module.exports.createTestimonial = (request, response, next) => {
     });
 };
 
-module.exports.deleteTestimonialByProjectId = (request, response, next) => {
-  Team.findOne({ "testimonial.project": request.params.pId })
-    .then((data) => {
-      if (!data) {
-        next(new Error("testimonial not found"));
-      } else {
-        for (let item of data.testimonial) {
-          if (item.project == request.params.pId) {
-            data.testimonial.splice(data.testimonial.indexOf(item), 1);
-            data.save();
-            response.status(200).json({ msg: "testimonial deleted" });
-          }
-        }
-      }
-    })
-    .catch((error) => next(error));
-};
+// module.exports.deleteTestimonialByProjectId = (request, response, next) => {
+//   Team.findOne({ "testimonials.project": request.params.pId })
+//     .then((data) => {
+//       if (!data) {
+//         next(new Error("testimonial not found"));
+//       } else {
+//         for (let item of data.testimonials) {
+//           if (item.project == request.params.pId) {
+//             data.testimonials.splice(data.testimonials.indexOf(item), 1);
+//             data.save();
+//             response.status(200).json({ msg: "testimonial deleted" });
+//           }
+//         }
+//       }
+//     })
+//     .catch((error) => next(error));
+// };
 
-module.exports.getTestimonialByProjectId = (request, response, next) => {
-  Team.findOne({ "testimonial.project": request.params.pId })
-    // .populate({ path: "project", select: "name" })
-    .then((data) => {
-      if (!data) {
-        console.log(data);
-        next(new Error("testimonial not found"));
-      } else {
-        for (let item of data.testimonial) {
-          if (item.project == request.params.pId) {
-            response.status(200).json({ testimonial: item });
-          }
-        }
-      }
-    })
-    .catch((error) => {
-      next(error);
-    });
-};
+// module.exports.getTestimonialByProjectId = (request, response, next) => {
+//   Team.findOne({ "testimonials.project": request.params.pId })
+//     // .populate({ path: "project", select: "name" })
+//     .then((data) => {
+//       console.log(data);
+//       if (!data) {
+//         next(new Error("testimonial not found"));
+//       } else {
+//         for (let item of data.testimonials) {
+//           if (item.project == request.params.pId) {
+//             response.status(200).json({ testimonials: item });
+//           }
+//         }
+//       }
+//     })
+//     .catch((error) => {
+//       next(error);
+//     });
+// };

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 
-const teamRoutes = require("./routes/team");
+const teamRoutes = require("./routes/team.Route");
 
 const app = express();
 
