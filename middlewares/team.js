@@ -1,33 +1,95 @@
-// import mongoose from 'mongoose';
-// import"../models/team"
-// let Team = mongoose.model("teams")
-const { body ,param, query,check} = require("express-validator");
+const { param, check, body } = require("express-validator");
 
-module.exports.post= [
-    check('name').notEmpty().withMessage('team name is required')
-        .isString().withMessage('team name should be string')
-        .isLength({min:3,max:15}).withMessage('team name length should be between 3,15'),
-        // .custom(value=>{
-        //     return Team.findOne({name:value})
-        //         .then(()=>{
-        //             if (value.length) 
-        //                 return Promise.reject('team name already taken')
-        //         })
-        // })
+module.exports.post = [
+  check("name")
+    .notEmpty()
+    .withMessage("team name is required")
+    .isString()
+    .withMessage("team name should be string")
+    .isLength({ min: 3, max: 15 })
+    .withMessage("team name length should be between 3,15"),
 
-    check('description').notEmpty().withMessage('team description is required')
-        .isString().withMessage('team description should be string')
-        .isLength({min:100,max:1000}).withMessage('team description length should be between 100,1000'),
+  check("description")
+    .notEmpty()
+    .withMessage("team description is required")
+    .isString()
+    .withMessage("team description should be string")
+    .isLength({ min: 100, max: 1000 })
+    .withMessage("team description length should be between 100,1000"),
 
-    check('hourlyRate').notEmpty().withMessage('team hourlyRate is required')
-        .isInt({ min: 10, max: 100 }).withMessage('team hourlyRate should be an interger between 10 and 100'),
+  check("hourlyRate")
+    .notEmpty()
+    .withMessage("team hourlyRate is required")
+    .isInt({ min: 10, max: 100 })
+    .withMessage("team hourlyRate should be an interger between 10 and 100"),
 
-    check('logo').isString().optional().withMessage("team logo should be string"),
-    //🔴 check('members').notEmpty().withMessage('team members is required')
-    //     .isMongoId().withMessage("team members should be array of objectIds")
-        // .isLength({min:2,max:10}).withMessage('team members should be between 2,10')
-        //check minlength
-]
+  check("logo").isString().optional().withMessage("team logo should be string"),
 
+  check("members")
+    .notEmpty()
+    .withMessage("team members is required")
+    .isArray({ min: 2, max: 10 })
+    .withMessage("team members should be array 2:10"),
 
+  check("skills")
+    .notEmpty()
+    .withMessage("team skills is required")
+    .isArray({ min: 2, max: 15 })
+    .withMessage("team skills should be array 2:15"),
+];
 
+module.exports.put = [
+  check("id")
+    .notEmpty()
+    .withMessage("team id is required")
+    .isNumeric()
+    .withMessage("team id shoud be number"),
+
+  check("name")
+    .isString()
+    .optional()
+    .withMessage("team name should be string")
+    .isLength({ min: 3, max: 15 })
+    .withMessage("team name length should be between 3,15"),
+
+  check("description")
+    .isString()
+    .optional()
+    .withMessage("team description should be string")
+    .isLength({ min: 100, max: 1000 })
+    .withMessage("team description length should be between 100,1000"),
+
+  check("hourlyRate")
+    .isInt({ min: 10, max: 100 })
+    .optional()
+    .withMessage("team hourlyRate should be an interger between 10 and 100"),
+
+  check("logo").isString().optional().withMessage("team logo should be string"),
+
+  check("members")
+    .isArray()
+    .optional()
+    .withMessage("team members should be array"),
+
+  check("skills")
+    .isArray()
+    .optional()
+    .withMessage("team skills should be array"),
+];
+
+module.exports.getDelete = [
+  param("id").isNumeric().withMessage("team id shoud be number"),
+];
+
+module.exports.removeMember = [
+  (request, response, next) => {
+    console.log("removeMember mw"); //it prints🟢
+    next();
+  },
+  param("id").isNumeric().withMessage("team id shoud be number"), //not working🔴//test
+  body("member") //not working🔴
+    .notEmpty()
+    .withMessage("team member is required")
+    .isNumeric()
+    .withMessage("team member should be number"),
+];
