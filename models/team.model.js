@@ -3,6 +3,7 @@ const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const testimonialSchema = require("./testimonial.model");
 const analyticSchema = require("./analytic.model");
+const portfolioSchema = require("./portfolio.model");
 
 function itemsLimit(items) {
   return items.length < 16 && items.length > 1;
@@ -93,6 +94,9 @@ const teamSchema = new mongoose.Schema({
       validator: checkUniqueProject,
       message: "project already has testimonial",
     },
+  },
+  portfolios: {
+    type: [portfolioSchema],
   },
   analytics: analyticSchema,
   wallet: {

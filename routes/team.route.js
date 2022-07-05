@@ -12,13 +12,21 @@ router
   .post(mw.post, validationMW, controller.createTeam);
 
 router
-  .route("/:id/removeMember")
-  .put(mw.removeMember, validationMW, controller.removeMember);
+  .route("/:id/removeMembers")
+  .put(mw.removeMembers, validationMW, controller.removeMembers);
+
+router
+  .route("/:id/removeSkills")
+  .put(mw.removeSkills, validationMW, controller.removeSkills);
 
 //🟡will be moved to project routes
 router
   .route("/testimonial")
   .put(tmw.post, validationMW, controller.createTestimonial);
+
+router
+  .route("/portfolio")
+  .put(mw.createPortfolio, validationMW, controller.createPortfolio);
 
 // router
 //   .route("/testimonial/:pId")

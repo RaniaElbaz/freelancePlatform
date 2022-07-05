@@ -90,18 +90,17 @@ module.exports.updateTeam = (request, response, next) => {
           continue;
         else data[prop] = request.body[prop] || data[prop];
       }
-      Team.findOne({ members: data.members }).then((team) => {
-        if (!team) {
-          object.save().then((data) => {
-            response.status(201).json({ msg: "team updated", data });
-          });
-        } else {
-          next(new Error("team members already exist in another team"));
+      Team.findOne({ members: data.members, name: { $ne: data.name } }).then(
+        (team) => {
+          if (!team) {
+            data.save().then((data) => {
+              response.status(201).json({ msg: "team updated", data });
+            });
+          } else {
+            next(new Error("team members already exist in another team"));
+          }
         }
-      });
-      //   data.save().then((data) => {
-      //     response.status(200).json({ msg: "team updated", data });
-      //   });
+      );
     })
 
     .catch((error) => {
@@ -119,7 +118,7 @@ module.exports.deleteTeam = (request, response, next) => {
     .catch((error) => next(error));
 };
 
-module.exports.removeMember = (request, response, next) => {
+module.exports.removeMembers = (request, response, next) => {
   Team.findById({ _id: request.params.id })
     .then((data) => {
       if (data.members.length < 3) {
@@ -131,7 +130,7 @@ module.exports.removeMember = (request, response, next) => {
             data.members.splice(data.members.indexOf(item), 1);
             Team.findOne({ members: data.members }).then((team) => {
               if (!team) {
-                data.save().then((data) => {
+                data.save().then(() => {
                   response.status(201).json({ msg: "team member/s removed" });
                 });
               } else {
@@ -140,6 +139,34 @@ module.exports.removeMember = (request, response, next) => {
             });
           } else {
             throw Error("team member not found");
+          }
+        }
+      }
+    })
+    .catch((error) => next(error));
+};
+
+module.exports.removeSkills = (request, response, next) => {
+  Team.findById({ _id: request.params.id })
+    .then((data) => {
+      if (data.skills.length < 3) {
+        next(new Error("can't remove any team skill (team skills are 2)"));
+      } else {
+        for (let item of request.body.skills) {
+          console.log(item);
+          if (data.skills.indexOf(item) != -1) {
+            data.skills.splice(data.skills.indexOf(item), 1);
+            Team.findOne({ skills: data.skills }).then((team) => {
+              if (!team) {
+                data.save().then(() => {
+                  response.status(201).json({ msg: "team skill/s removed" });
+                });
+              } else {
+                next(new Error("team skills already exist in another team"));
+              }
+            });
+          } else {
+            throw Error("team skill not found");
           }
         }
       }
@@ -161,6 +188,7 @@ module.exports.createTestimonial = (request, response, next) => {
         (team) => {
           if (!team) {
             data.testimonials.push(object);
+            data.projects.push(request.body.project);
             data.save();
             response
               .status(200)
@@ -168,6 +196,27 @@ module.exports.createTestimonial = (request, response, next) => {
           } else next(new Error("testimonial already exists for this project"));
         }
       );
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+module.exports.createPortfolio = (request, response, next) => {
+  Team.findById(request.body.teamId)
+    .then((data) => {
+      if (!data) next(new Error("team not found"));
+      let object = {};
+      for (let prop in request.body) {
+        if (prop != "teamId") {
+          object[prop] = request.body[prop];
+        } else continue;
+      }
+      data.portfolios.push(object);
+      data.save();
+      response
+        .status(200)
+        .json({ msg: "portfolio created", data: data.portfolios });
     })
     .catch((error) => {
       next(error);
