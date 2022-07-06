@@ -80,14 +80,6 @@ module.exports.updateClient = (request, response, next) => {
         else
           data[item] = request.body[item]
       }
-
-      // for (let item in request.body) {
-      //   if (location.street == "city" || item == "street" || item == "building") {
-      //     data["address"][item] = request.body[item]
-      //   } else {
-      //     data[item] = request.body[item]
-      //   }
-      // }
       return data.save();
     })
     .then((newData) => {

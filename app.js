@@ -6,6 +6,7 @@ require("dotenv").config();
 
 
 const clintRoute = require("./MVC/Routes/clientRoute");
+const searchRoute = require("./MVC/Routes/searchRoute");
 
 
 
@@ -51,6 +52,7 @@ server.use(morgan(function (tokens, req, res) {
 // communication channel to grab data
 server.use(express.json()); // parse matched json http request bodies =>> express.json() must be before routes
 server.use(clintRoute);
+server.use(searchRoute);
 
 
 
