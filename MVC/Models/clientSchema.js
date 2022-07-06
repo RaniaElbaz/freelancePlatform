@@ -36,9 +36,15 @@ const locationSchema = new mongoose.Schema({
 
 const schema = new mongoose.Schema({
   _id: { type: Number }, // ! Handling
-  firstName: { type: String, required: true },
+  firstName: {
+    type: String, required: true, minLength: 3,
+    maxLength: 10,
+  },
   lastName: { type: String, required: true },
-  password: { type: String, required: true },
+  password: {
+    type: String,
+    //  required: true
+  },
   email: { type: String, required: true, unique: true },
   // accountType: { type: String, required: true },
   picture: {
@@ -54,7 +60,11 @@ const schema = new mongoose.Schema({
   },
   // ! handling
   wallet: { type: Number, default: 0 },
-  description: { type: String, required: true },
+  description: {
+    type: String, required: true,
+    //  minLength: 50,
+    maxLength: 1000,
+  },
   isVerified: { type: Boolean, default: false }
 }, { _id: false });
 
@@ -63,6 +73,6 @@ schema.plugin(AutoIncrement, { inc_field: '_id' });
 
 // B) Mapping: connecting between the related schema and Collection
 // Setter Schema
-module.exports = mongoose.model("Clint", schema);
+module.exports = mongoose.model("Client", schema);
 
 

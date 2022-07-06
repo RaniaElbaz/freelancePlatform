@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 
-const clintRoute = require("./MVC/Routes/clintRoute");
+const clintRoute = require("./MVC/Routes/clientRoute");
 
 
 

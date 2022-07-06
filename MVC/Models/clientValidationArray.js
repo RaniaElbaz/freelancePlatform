@@ -1,11 +1,10 @@
 const { body, param, query } = require("express-validator");
 
 module.exports = [ // Validations
-  // body("id").isNumeric().withMessage("Child Id must be a Number"), // ! Handling
+  // body("id").isNumeric().withMessage("Child Id must be a Number").optional, // ! Handling
   body("firstName").isAlpha().withMessage("Clint's firstName should be a Characters"),
   body("lastName").isAlpha().withMessage("Clint's lastName should be a Characters"),
   body("email").isEmail().withMessage("You Should Enter a valid Email"),
-  withMessage("Clint's accountType should be a Characters"),
   body("picture").notEmpty().withMessage("Clint should be select a valid Image formate"), // ! Multer Handling
   body("location.street").isString().withMessage("Street must be a string"),
   body("location.buildingNumber").isString().withMessage("BuildingNumber must be a string"),

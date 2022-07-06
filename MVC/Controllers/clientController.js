@@ -1,32 +1,35 @@
-let Clint = require("./../Models/clintSchema");
+let Clint = require("../Models/clientSchema");
 
 
-module.exports.getAllClint = (request, response, next) => {
-  Clint.find({})
+module.exports.getAllClients = (request, response, next) => {
+  Clint.find({}, { password: 0 })
     .then(data => {
       response.status(200).json(data);
     })
-    .catch();
+    .catch(error => { next(error) });
   // response.status(200).json({ data: "Aho Ya Man🥰" });
 };
 
-module.exports.getClintById = (request, response, next) => {
-  Clint.findOne({ _id: request.params.id })
+
+module.exports.getClientById = (request, response, next) => {
+  Clint.findOne({ _id: request.params.id }, { password: 0 })
     .then(data => {
+      if (!data) next(new Error("Client Not Found!"))
       response.status(201).json({ data });
     })
     .catch(error => { next(error) });
   // response.status(200).json({ data: "Aho Ya Man🥰" });
 };
 
-module.exports.createClint = (request, response, next) => {
-  // Created Object from the schema
+module.exports.createClient = (request, response, next) => {
+  // a) Created Object from the schema
   let object = new Clint({
     // _id: request.body.id,
     firstName: request.body.firstName,
     lastName: request.body.lastName,
     email: request.body.email,
-    accountType: request.body.accountType,
+    picture: request.body.picture,
+    // accountType: request.body.accountType,
     location: {
       street: request.body.location.street,
       buildingNumber: request.body.location.buildingNumber,
@@ -40,7 +43,7 @@ module.exports.createClint = (request, response, next) => {
     description: request.body.description,
     isVerified: request.body.isVerified,
   });
-  // insert the Object in the db
+  // b) insert the Object in the db => save data in the db
   object.save()
     .then(data => {
       response.status(201).json({ data: "Added" });
@@ -51,12 +54,33 @@ module.exports.createClint = (request, response, next) => {
   // response.status(200).json({ data: "Created Ya Man🥰" });
 };
 
-module.exports.updateClint = (request, response, next) => {
+module.exports.updateClient = (request, response, next) => {
 
-  Clint.findOne({ _id: request.body.id })
+  Clint.findOne({ _id: request.params.id })
     .then(data => {
       // console.log(data);
-      console.log(request.body);
+      // console.log(request.body);
+      for (let item in request.body) {
+        // console.log(item);
+        if (item == "location") {
+          for (let nestedItem in request.body[item]) {
+            // console.log(nestedItem);
+            if (["street", "buildingNumber", "city", "country", "postalCode"].includes(nestedItem)) {
+              data["location"][nestedItem] = request.body["location"][nestedItem];
+            }
+          }
+        } else if (item == "analytics") {
+          for (let nestedItem in request.body[item]) {
+            // console.log(nestedItem, "from Analytics");
+            if (["followers", "following", "viewers"].includes(nestedItem)) {
+              data["analytics"][nestedItem] = request.body['analytics'][nestedItem];
+            }
+          }
+        }
+        else
+          data[item] = request.body[item]
+      }
+
       // for (let item in request.body) {
       //   if (location.street == "city" || item == "street" || item == "building") {
       //     data["address"][item] = request.body[item]
@@ -73,14 +97,15 @@ module.exports.updateClint = (request, response, next) => {
   // response.status(201).json({ data: "Updated Ya Man🥰" });
 };
 
-module.exports.deleteClint = (request, response, next) => {
+module.exports.deleteClient = (request, response, next) => {
 
   Child.deleteOne({ _id: request.body.id })
     .then(data => {
-      response.status(200).json({ data: "Deleted" })
+      if (data.deletedCount === 0) next(new Error("Client Not Found!"))
+      else
+        response.status(200).json({ data: `Client ${request.params.id} Deleted` })
     })
     .catch(error => next(error));
-  // response.status(200).json({ data: "Deleted" + request.params.id });
-  response.status(201).json({ data: "Deleted Ya Man🥰" });
+  // response.status(201).json({ data: "Deleted Ya Man🥰" });
 };
 

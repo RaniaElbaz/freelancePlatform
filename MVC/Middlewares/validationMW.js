@@ -5,12 +5,11 @@ module.exports = (request, response, next) => {
   // console.log(result);
   if (!result.isEmpty()) { // if not empty ==> there is an Error
     // console.log(result.errors.msg);
-    let errorMessages = result.errors.reduce((current, error) => ` ${current} ${error.msg} & `, '');
+    let errorMessages = result.errors.reduce((current, error) => ` ${current} ${error.msg} \n `, '');
     let error = new Error(errorMessages);
     error.status = 422; // 422 => input validation error
     throw error;
   } else {
     next();
   }
-
 }
