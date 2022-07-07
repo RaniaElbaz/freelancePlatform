@@ -16,12 +16,26 @@ router.route("/client")
 
 
 router.route("/client/:id")
-  .get([
+  .all([
     param("id").isNumeric().withMessage("Id isn't correct")
-  ], controller.getClientById)
+  ])
+  .get(controller.getClientById)
   .put(clintValidationArray, controller.updateClient)
-  .delete([
-    param("id").isNumeric().withMessage("Id isn't correct")
-  ], controller.deleteClient);
+  .delete(controller.deleteClient);
+
+
+// ! testimonials route
+router.route("/client/testimonials")
+  .post();
+
+
+
+//   freelancerRoute
+//   .route("/:id/testimonials")
+//   .put(
+//     putValidator,
+//     validationMW,
+//     freelancerController.updateFreelancerTestimonials
+// );
 
 module.exports = router;

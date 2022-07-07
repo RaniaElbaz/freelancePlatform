@@ -3,6 +3,7 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 let analyticsSchema = require("./analyticsSchema");
 let locationSchema = require("./locationSchema");
+let testimonialSchema = require("./testimonialSchema");
 
 // A ) Create Schema Object 
 
@@ -17,22 +18,6 @@ const imageSchema = new mongoose.Schema({
   }
 });
 */
-
-/*
-const locationSchema = new mongoose.Schema({
-  street: { type: String, required: true },
-  buildingNumber: { type: String, required: true },
-  city: { type: String, required: true },
-  country: { type: String, required: true },
-  postalCode: { type: String, required: true },
-});
-*/
-
-// const analyticsSchema = new mongoose.Schema({
-//   followers: { type: Number, required: true, default: 0 },
-//   following: { type: Number, required: true, default: 0 },
-//   views: { type: Number, required: true, default: 0 },
-// });
 
 const schema = new mongoose.Schema({
   _id: { type: Number }, // ! Handling
@@ -65,7 +50,10 @@ const schema = new mongoose.Schema({
     //  minLength: 50,
     maxLength: 1000,
   },
-  isVerified: { type: Boolean, default: false }
+  isVerified: { type: Boolean, default: false },
+  isBlocked: { type: Boolean, default: false },
+  testimonial: [testimonialSchema], // ! handling
+  // projects: {[Number], ref: "projects"}
 }, { _id: false });
 
 schema.plugin(AutoIncrement, { inc_field: '_id' });

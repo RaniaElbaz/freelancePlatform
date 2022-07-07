@@ -1,9 +1,8 @@
 
-const router = require("../Routes/clientRoute");
-let Client = require("./../Models/clientSchema");
-// let Team = require("./../Models/teamSchema");
-// let Freelancer = require("./../Models/freelancerSchema");
-// let Project = require("./../Models/projectSchema");
+const Client = require("./../Models/clientSchema");
+// const Team = require("./../Models/teamSchema");
+// const Freelancer = require("./../Models/freelancerSchema");
+// const Project = require("./../Models/projectSchema");
 
 
 module.exports.getJob = (req, res, next) => {

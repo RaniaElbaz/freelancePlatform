@@ -27,7 +27,10 @@ module.exports.createClient = (request, response, next) => {
     // _id: request.body.id,
     firstName: request.body.firstName,
     lastName: request.body.lastName,
+    password: request.body.password,
     email: request.body.email,
+
+    // ! Handling: separate in
     picture: request.body.picture,
     // accountType: request.body.accountType,
     location: {
@@ -42,6 +45,7 @@ module.exports.createClient = (request, response, next) => {
     wallet: request.body.wallet,
     description: request.body.description,
     isVerified: request.body.isVerified,
+    isBlocked: request.body.isBlocked,
   });
   // b) insert the Object in the db => save data in the db
   object.save()
@@ -64,14 +68,14 @@ module.exports.updateClient = (request, response, next) => {
         // console.log(item);
         if (item == "location") {
           for (let nestedItem in request.body[item]) {
-            // console.log(nestedItem);
-            if (["street", "buildingNumber", "city", "country", "postalCode"].includes(nestedItem)) {
+            // console.log(nestedItem); // ! Handling
+            if (["postalCode", "state", "city", "address", "postalCode"].includes(nestedItem)) {
               data["location"][nestedItem] = request.body["location"][nestedItem];
             }
           }
         } else if (item == "analytics") {
           for (let nestedItem in request.body[item]) {
-            // console.log(nestedItem, "from Analytics");
+            // console.log(nestedItem, "from Analytics");// !handling
             if (["followers", "following", "viewers"].includes(nestedItem)) {
               data["analytics"][nestedItem] = request.body['analytics'][nestedItem];
             }
@@ -90,7 +94,6 @@ module.exports.updateClient = (request, response, next) => {
 };
 
 module.exports.deleteClient = (request, response, next) => {
-
   Child.deleteOne({ _id: request.body.id })
     .then(data => {
       if (data.deletedCount === 0) next(new Error("Client Not Found!"))

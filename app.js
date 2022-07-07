@@ -5,8 +5,10 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 
+const loginRoute = require("./MVC/Routes/loginRoute");
 const clintRoute = require("./MVC/Routes/clientRoute");
 const searchRoute = require("./MVC/Routes/searchRoute");
+const { urlencoded } = require("express");
 
 
 
@@ -50,7 +52,9 @@ server.use(morgan(function (tokens, req, res) {
 
 // ^  EndPoints == Routes ==>
 // communication channel to grab data
+server.use(express.urlencoded({ extended: false }))
 server.use(express.json()); // parse matched json http request bodies =>> express.json() must be before routes
+server.use(loginRoute);
 server.use(clintRoute);
 server.use(searchRoute);
 
