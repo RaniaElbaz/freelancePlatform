@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 
-const teamRoutes = require("./routes/team.Route");
+const teamRoutes = require("./routes/team.route");
+const skillRoutes = require("./routes/skill.route");
+const categoryRoutes = require("./routes/category.route");
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use(express.json());
 
 // endpoints
 app.use("/team", teamRoutes);
+app.use("/skill", skillRoutes);
+app.use("/category", categoryRoutes);
 
 app.use((request, response) => {
   response.status(404).json({ message: "Not Found" });
