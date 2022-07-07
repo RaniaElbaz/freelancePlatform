@@ -1,30 +1,36 @@
 const mongoose = require('mongoose');
 
-const certificateSchema = new mongoose.Schema({
-    certificateOrganization:{
-        required: true,
-        type: String,
+const certificateSchema = new mongoose.Schema(
+  {
+    organization: {
+      required: true,
+      type: String,
     },
-    certificateTitle:{
-        required: true,
-        type: String,
+    title: {
+      required: true,
+      type: String,
     },
-    certificateIssued:{
-        required: true,
-        type: Date,
+    issued: {
+      required: true,
+      type: Date,
     },
-    certificateDescription:{
-        type: String,
+    description: {
+      type: String,
     },
-    certificateUrl:{
-        type: String,
+    url: {
+      type: String,
     },
-    certificateId:{
-        type: String
+    id: {
+      type: String,
     },
-    certificateExpirationDate:{
-        type: Date
-    }
-},{_id: false });
+    expirationDate: {
+      type: Date,
+    },
+    index: {
+      type: Number,
+    },
+  },
+  { _id: false }
+);
 
 module.exports = certificateSchema;

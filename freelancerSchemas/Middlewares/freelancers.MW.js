@@ -93,6 +93,18 @@ module.exports.putValidator = [
     .isLength({ min: 5, max: 20 })
     .withMessage("freelancer's address is invalid"),
 
+  //hourly rate
+  check("hourlyRate")
+    .optional({ checkFalsy: true, nullable: true })
+    .isNumeric()
+    .withMessage("freelancer's hourly rate is invalid"),
+
+  //hour per week
+  check("hoursPerWeek")
+    .optional({ checkFalsy: true, nullable: true })
+    .isNumeric()
+    .withMessage("freelancer's hoursPerWeek is invalid"),
+
   //title
   check("title")
     .optional({ checkFalsy: true, nullable: true })
@@ -118,22 +130,15 @@ module.exports.putValidator = [
     .withMessage("freelancer's languages is invalid"),
 
   //certificates
-  //organozation
-  check("certificateOrganization")
+  //organization
+  check("organization")
     .optional({ checkFal0sy: true, nullable: true })
     .notEmpty()
     .withMessage("freelancer's certificateOrganization is required")
     .isLength({ min: 2, max: 25 })
     .withMessage("freelancer's certificate organization must be 2~25"),
-  //title
-  check("certificateTitle")
-    .optional({ checkFalsy: true, nullable: true })
-    .notEmpty()
-    .withMessage("freelancer's certificateOrganization is required")
-    .isLength({ min: 5, max: 25 })
-    .withMessage("freelancer's certificate title must be 2~25"),
   //YYYY-MM-DD
-  check("certificateIssued")
+  check("issued")
     .optional({ checkFalsy: true, nullable: true })
     .notEmpty()
     .withMessage("freelancer's certificateOrganization is required")
@@ -141,81 +146,125 @@ module.exports.putValidator = [
     .withMessage(
       "freelancer's certificate issued date date must be in 'YYYY-MM-DD' format"
     ),
-  //description
-  check("description")
-    .optional({ checkFalsy: true, nullable: true })
-    .isLength({ min: 100, max: 500 })
-    .withMessage("freelancer's description is invalid"),
   //url
-  check("certificateUrl")
+  check("url")
     .optional({ checkFalsy: true, nullable: true })
     .isURL()
     .withMessage("freelancer's certificate url is invalid"),
   //id
-  check("certificateId")
+  check("id")
     .optional({ checkFalsy: true, nullable: true })
     .isString()
     .withMessage("freelancer's certificateId is invalid"),
   //expiration date
-  check("certificateExpirationDate")
+  check("expirationDate")
     .optional({ checkFalsy: true, nullable: true })
     .isDate()
     .withMessage("freelancer's expiration date must be in 'YYYY-MM-DD' format"),
+
+  //education
+  check("degree")
+    .optional({ checkFalsy: true, nullable: true })
+    .notEmpty()
+    .withMessage("freelancer's degree is required")
+    .isLength({ min: 3, max: 25 })
+    .withMessage("freelancer's degree must be 3~25"),
+  //area of study
+  check("areaOfStudy")
+    .optional({ checkFalsy: true, nullable: true })
+    .notEmpty()
+    .withMessage("freelancer's degree is required")
+    .isLength({ min: 3, max: 25 })
+    .withMessage("freelancer's degree must be 3~25"),
+  //start date
+  check("startDate")
+    .optional({ checkFalsy: true, nullable: true })
+    .isDate()
+    .withMessage("freelancer's start date must be in 'YYYY-MM-DD' format"),
+  //end date
+  check("endDate")
+    .optional({ checkFalsy: true, nullable: true })
+    .isDate()
+    .withMessage("freelancer's end date must be in 'YYYY-MM-DD' format"),
+
+  //portfolio
+  check("projectTitle")
+    .optional({ checkFalsy: true, nullable: true })
+    .notEmpty()
+    .withMessage("portfolio projectTitle is required")
+    .isString()
+    .withMessage("portfolio projectTitle should be string"),
+
+  check("relatedJob")
+    .optional({ checkFalsy: true, nullable: true })
+    .isNumeric()
+    .withMessage("portfolio relatedJob should be number"),
+
+  check("completionDate")
+    .optional({ checkFalsy: true, nullable: true })
+    .notEmpty()
+    .withMessage("freelancers completionDate is required")
+    .isDate()
+    .withMessage("freelancers completionDate should be date"),
+
+  check("files")
+    .optional({ checkFalsy: true, nullable: true })
+    .isArray()
+    .withMessage("freelancers files should be array"),
+
+  check("skills")
+    .optional({ checkFalsy: true, nullable: true })
+    .isArray()
+    .withMessage("freelancers skills should be array"),
 ];
 
-module.exports.post = [
-  check("testimonialRating")
+module.exports.testimonialValidator = [
+  check("rating")
     .notEmpty()
-    .withMessage("testimonial rating is required")
+    .withMessage("freelancer testimonial rating is required")
     .isNumeric()
     .withMessage("testimonial rating should be number")
     .isLength({ min: 1, max: 5 })
-    .withMessage("testimonial rating length should be between 1,5"),
+    .withMessage("freelancer testimonial rating length should be between 1,5"),
 
-  check("testimonialIssued")
+  check("issued")
     .notEmpty()
-    .withMessage("testimonial issued is required")
+    .withMessage("freelancer testimonial issued is required")
     .isDate()
-    .withMessage("testimonial issued should be date"),
+    .withMessage("freelancer testimonial issued should be date"),
 
-  check("testimonialComment")
+  check("comment")
     .notEmpty()
-    .withMessage("testimonial comment is required")
+    .withMessage("freelancertestimonial comment is required")
     .isString({ min: 50, max: 1000 })
-    .withMessage("testimonial comment should be a string between 50 and 1000"),
+    .withMessage(
+      "freelancer testimonial comment should be a string between 50 and 1000"
+    ),
 
-  check("testimonialProject")
+  check("project")
     .notEmpty()
-    .withMessage("testimonial project is required")
+    .withMessage("freelancer testimonial project is required")
     .isNumeric()
-    .withMessage("testimonial project should be number"),
+    .withMessage("freelancer testimonial project should be number"),
 ];
 
-module.exports.put = [
-  /**********2 step verification**********/
-  //second email
-  // check("secondEmail").optional({ checkFalsy: true, nullable: true })
-  // .isEmail().withMessage("freelancer's second email invalid"),
-
+module.exports.putInfoValidator = [
   check("isVerified")
     .optional({ checkFalsy: true, nullable: true })
     .isBoolean()
     .withMessage("freelancer's verified state is invalid"),
 
-  check("hourlyRate")
+  check("connects")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
-    .withMessage("freelancer's hourly rate is invalid"),
+    .withMessage("freelancer's connects should be a number")
+    .isLength({ min: 0, max: 1000 })
+    .withMessage("freelancer's connects must be between 0~1000"),
 
   check("wallet")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
     .withMessage("freelancer's wallet is invalid"),
-
-  check("hoursPerWeek")
-    .optional({ checkFalsy: true, nullable: true })
-    .isNumeric()
-    .withMessage("freelancer's hoursPerWeek is invalid"),
 
   check("projects")
     .optional({ checkFalsy: true, nullable: true })
@@ -227,18 +276,25 @@ module.exports.put = [
     .isNumeric()
     .withMessage("freelancer's skills is invalid"),
 
-  // check("testimonials").optional({ checkFalsy: true, nullable: true })
-  // .isNumeric().withMessage("freelancer's skills is invalid"),
-
-  // check("certificates").optional({ checkFalsy: true, nullable: true })
-  // .isNumeric().withMessage("freelancer's skills is invalid"),
-
-  // check("portfolio").optional({ checkFalsy: true, nullable: true })
-  // .isNumeric().withMessage("freelancer's skills is invalid"),
-
-  // check("experience").optional({ checkFalsy: true, nullable: true })
-  // .isNumeric().withMessage("freelancer's skills is invalid"),
-
-  // check("analytics").optional({ checkFalsy: true, nullable: true })
-  // .isNumeric().withMessage("freelancer's skills is invalid"),
+  //analytics
+  //earnings
+  check("earnings")
+    .optional({ checkFalsy: true, nullable: true })
+    .isNumeric()
+    .withMessage("freelancer's earnings should be a number"),
+  //jobs
+  check("jobs")
+    .optional({ checkFalsy: true, nullable: true })
+    .isNumeric()
+    .withMessage("freelancer's earnings should be a number"),
+  //hours
+  check("hours")
+    .optional({ checkFalsy: true, nullable: true })
+    .isNumeric()
+    .withMessage("freelancer's hours should be a number"),
+  //views
+  check("views")
+    .optional({ checkFalsy: true, nullable: true })
+    .isNumeric()
+    .withMessage("freelancer's views should be a number"),
 ];

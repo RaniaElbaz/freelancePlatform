@@ -15,163 +15,180 @@ const portfolioSchema = require('./portfolio.model');
 const experinceSchema = require('./experince.model');
 
 //create schema object
-const freelancerSchema = new mongoose.Schema({
-    _id:{
-        type: Number,
+const freelancerSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: Number,
     },
-    firstName:{
-        type: String,
-        required: true,
+    firstName: {
+      type: String,
+      required: true,
     },
-    lastName:{
-        type: String,
-        required: true,
+    lastName: {
+      type: String,
+      required: true,
     },
-    email:{
-        type: String,
-        required: true,
-        validate: {
-            validator: function(value) {
-              return emailRegex.test(value)
-            },
-            message: props => `${props.value} is not a valid email!`
+    email: {
+      type: String,
+      required: true,
+      validate: {
+        validator: function (value) {
+          return emailRegex.test(value);
         },
-        unique: true
+        message: (props) => `${props.value} is not a valid email!`,
+      },
+      unique: true,
     },
-    password:{
-        type: String,
-        validate: {
-            validator: function(value) {
-              return passwordRegex.test(value)
-            },
-            message: props => `${props.value} is too weak!`
+    password: {
+      type: String,
+      validate: {
+        validator: function (value) {
+          return passwordRegex.test(value);
         },
-        required: true,
+        message: (props) => `${props.value} is too weak!`,
+      },
+      required: true,
     },
-    secondEmail:{
-        type: String,
+    secondEmail: {
+      type: String,
     },
-    phoneNumber:{
-        type: String,
-        // validate: {
-        //     validator: function(value) {
-        //       return phoneRegex.test(value);
-        //     },
-        //     message: props => `${props.value} is not a valid phone number!`
-        // },
+    phoneNumber: {
+      type: String,
+      // validate: {
+      //     validator: function(value) {
+      //       return phoneRegex.test(value);
+      //     },
+      //     message: props => `${props.value} is not a valid phone number!`
+      // },
     },
-    profileImage:{
-        type: String,
+    profileImage: {
+      type: String,
     },
-    isVerified:{
-        type: Boolean,
-        default: false,
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
-    hourlyRate:{
-        type: Number,
+    hourlyRate: {
+      type: Number,
     },
-    wallet:{
-        type: Number,
-        default: 0,
-        min: 0,
+    wallet: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
-    hoursPerWeek:{
-        type: Number,
-        default: 30,
-        max:30,
-        min:5
+    connects: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max:500,
     },
-    title:{
-        type: String,
-        minLength: 5,
-        maxLength:15
+    hoursPerWeek: {
+      type: Number,
+      default: 30,
+      max: 30,
+      min: 5,
     },
-    description:{
-        type: String,
-        minLength: 5,
-        maxLength: 500
+    title: {
+      type: String,
+      minLength: 5,
+      maxLength: 15,
     },
-    isBlocked:{
-        type: Boolean,
-        default: false,
+    description: {
+      type: String,
+      minLength: 100,
+      maxLength: 500,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
     },
 
     // 1:Many embedded relationships
-    languages:{
-        type: [String],
-        enum: languages,
-        validate: {
-            validator: function(value) {
-              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
-              return !Boolean(duplicated.length);
-            },
-            message: props => `${props.value} duplicated language value`
+    languages: {
+      type: [String],
+      enum: languages,
+      validate: {
+        validator: function (value) {
+          const duplicated = value.filter(
+            (item, index) => value.indexOf(item) !== index
+          );
+          return !Boolean(duplicated.length);
         },
+        message: (props) => `${props.value} duplicated language value`,
+      },
     },
-    education:{
-        type: [educationSchema]
+    education: {
+      type: [educationSchema],
     },
-    testimonials:{
-        type: [testimonialSchema]
+    testimonials: {
+      type: [testimonialSchema],
     },
-    certificates:{
-        type: [certificateSchema]
+    certificates: {
+      type: [certificateSchema],
     },
-    portfolio:{
-        type: [portfolioSchema]
+    portfolio: {
+      type: [portfolioSchema],
     },
-    experience:{
-        type: [experinceSchema]
+    experience: {
+      type: [experinceSchema],
     },
-    
+
     // 1:Many parent ref relationships
-    projects:{
-        type: [Number],
-        ref: "projects",
-        validate: {
-            validator: function(value) {
-              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
-              return !Boolean(duplicated.length);
-            },
-            message: props => `${props.value} duplicated project ID value`
+    projects: {
+      type: [Number],
+      ref: "projects",
+      validate: {
+        validator: function (value) {
+          const duplicated = value.filter(
+            (item, index) => value.indexOf(item) !== index
+          );
+          return !Boolean(duplicated.length);
         },
+        message: (props) => `${props.value} duplicated project ID value`,
+      },
     },
-    badges:{
-        type: [Number],
-        ref: "tests",
-        validate: {
-            validator: function(value) {
-              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
-              return !Boolean(duplicated.length);
-            },
-            message: props => `${props.value} duplicated language value`
+    badges: {
+      type: [Number],
+      ref: "tests",
+      validate: {
+        validator: function (value) {
+          const duplicated = value.filter(
+            (item, index) => value.indexOf(item) !== index
+          );
+          return !Boolean(duplicated.length);
         },
+        message: (props) => `${props.value} duplicated language value`,
+      },
     },
 
     //many:many 2-way ref relationships
-    skills:{
-        type: [Number],
-        ref:"skills",
-        validate: {
-            validator: function(value) {
-              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
-              return !Boolean(duplicated.length);
-            },
-            message: props => `${props.value} duplicated skill value`
-        }
+    skills: {
+      type: [Number],
+      ref: "skills",
+      validate: {
+        validator: function (value) {
+          const duplicated = value.filter(
+            (item, index) => value.indexOf(item) !== index
+          );
+          return !Boolean(duplicated.length);
+        },
+        message: (props) => `${props.value} duplicated skill value`,
+      },
     },
-    
+
     //1:1 embedded relationships
     //paymentMethods: paymentSchema,
     analytics: {
-        type: analyticsSchema,
-        default: () => ({})
+      type: analyticsSchema,
+      default: () => ({}),
     },
     address: {
-        type: locationSchema,
-        default: () => ({})
-    }
-}, { _id: false });
+      type: locationSchema,
+      default: () => ({}),
+    },
+  },
+  { _id: false }
+);
 
 //mapping
 freelancerSchema.plugin(AutoIncrement, {id: 'freelancerID'});

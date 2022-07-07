@@ -34,8 +34,8 @@ module.exports.signup = (request, response, next) => {
 
 /** update a freelancer data (update profile)
  */
-module.exports.updateFreelancerProfile = (request, response, next) => {
-  const profileInfo = [
+module.exports.updateFreelancerDetails = (request, response, next) => {
+  const profileDetails = [
     "firstName",
     "lastName",
     "address",
@@ -51,8 +51,8 @@ module.exports.updateFreelancerProfile = (request, response, next) => {
     .then((data) => {
       if (!data) throw new Error("freelancer not found");
       //info
-      if (request.params.detail === "info") {
-        for (let key of profileInfo) {
+      if (request.params.detail === "details") {
+        for (let key of profileDetails) {
           if (key == "address") {
             /*****************address */
             for (let addressKey in data[key]) {
@@ -79,6 +79,7 @@ module.exports.updateFreelancerProfile = (request, response, next) => {
         for (let key in request.body) {
           detailObject[key] = request.body[key];
         }
+        detailObject.index = data[request.params.detail].length;
         data[request.params.detail].push(detailObject);
         return data.save();
       } else if (request.params.detail === "skills") {
@@ -100,13 +101,11 @@ module.exports.updateFreelancerTestimonials = (request, response, next) => {
   Freelancer.findById(request.params.id)
     .then((data) => {
       if (!data) throw new Error("freelancer not found");
-      let TestimonialObject = {};
-      console.log(TestimonialObject);
+      testimonialObject = {};
       for (let key in request.body) {
-        TestimonialObject[key] = request.body[key];
-        console.log(TestimonialObject);
+        testimonialObject[key] = request.body[key];
       }
-      data.testimonials.push(TestimonialObject);
+      data.testimonials.push(testimonialObject);
       data.projects = request.body.testimonialProject;
       return data.save();
     })
@@ -119,7 +118,14 @@ module.exports.updateFreelancerTestimonials = (request, response, next) => {
 /** update a freelancer data (update back end data)
  */
 module.exports.updateFreelancerInfo = (request, response, next) => {
-  const backInfo = ["analytics", "badges", "isVerified", "isBlocked", "wallet"];
+  const backInfo = [
+    "analytics",
+    "badges",
+    "connects",
+    "isVerified",
+    "isBlocked",
+    "wallet",
+  ];
   Freelancer.findById(request.params.id)
     .then((data) => {
       if (!data) throw new Error("freelancer not found");
@@ -143,36 +149,40 @@ module.exports.updateFreelancerInfo = (request, response, next) => {
     .catch((error) => next(error));
 };
 
+/** edit an object in an array (update)
+ */
+module.exports.editData = (request, response, next) => {
+  Freelancer.findById(
+    { _id: request.params.id },
+    { education: 1, certificates: 1, eperience: 1, portfolio: 1 }
+  )
+    .then((data) => {
+      if (!data) throw new Error("freelancer not found");
+      data[request.params.detail].forEach((object) => { 
+        if (object.index === request.body[request.params.detail].index) {
+          object = Object.assign({},request.body[request.params.detail]);
+          return data.save();
+        }
+      });
+    })
+    .then(() => {
+      response.status(201).json({ data: "updated" });
+    })
+    .catch((error) => next(error));
+};
+
 /** delete (update) data
  */
 module.exports.removeData = (request, response, next) => {
-  Freelancer.findById({ _id: request.params.id }, { skills: 1, badges: 1, languages: 1, education: 1, certificates: 1 })
+  Freelancer.findById(
+    { _id: request.params.id },
+    { education: 1, certificates: 1, eperience: 1, portfolio: 1 }
+  )
     .then((data) => {
       if (!data) throw new Error("freelancer not found");
-      let index = 0;
-      console.log(data);
-      for (let i = 0; i < request.body[request.params.detail].length; i++) {
-        if (typeof data[request.params.detail][i] !== 'object') {
-          index = data[request.params.detail].indexOf(
-            request.body[request.params.detail][i]
-          );
-        }
-        else {
-          index = data[request.params.detail].indexOf(
-            request.body[request.params.detail][i]
-          );
-        }
-        
-        if (index !== -1) {
-          data[request.params.detail].splice(index, 1);
-        } else {
-          throw Error(
-            `Freelancer's ${request.params.detail} ${
-              request.body[request.params.detail][i]
-            } not found`
-          );
-        }
-      }
+      request.body[request.params.detail].forEach((index) => {
+        data[request.params.detail] = data[request.params.detail].filter(object => object.index !== index);
+      });
       return data.save();
     })
     .then(() => {
@@ -184,7 +194,10 @@ module.exports.removeData = (request, response, next) => {
 /** get freelancer data  by id (get profile)
  */
 module.exports.getFreelancerById = (request, response, next) => {
-  Freelancer.findOne({ _id: request.params.id }, {})
+  Freelancer.findOne(
+    { _id: request.params.id },
+    { password: 0, wallet: 0, isBlocked: 0 }
+  )
     .then((data) => {
       if (data == null) next(new Error("Freelancer not found"));
       response.status(200).json(data);
@@ -197,14 +210,17 @@ module.exports.getFreelancerById = (request, response, next) => {
 /** get all freelancer data
  */
 module.exports.getAllFreelancers = (request, response, next) => {
-  Freelancer.find({}, {
-    skills: 1,
-    description: 1,
-    firstName: 1,
-    lastName: 1,
-    title: 1,
-    analytics: 1
-  })
+  Freelancer.find(
+    {},
+    {
+      skills: 1,
+      description: 1,
+      firstName: 1,
+      lastName: 1,
+      title: 1,
+      analytics: 1,
+    }
+  )
     .then((data) => {
       response.status(200).json(data);
     })

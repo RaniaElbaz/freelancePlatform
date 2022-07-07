@@ -8,6 +8,8 @@ const validationMW = require("../Middlewares/validation.MW");
 const {
   postValidator,
   putValidator,
+  testimonialValidator,
+  putInfoValidator,
 } = require("../Middlewares/freelancers.MW");
 
 const freelancerRoute = express.Router();
@@ -27,34 +29,45 @@ freelancerRoute
   .route("/register")
   .post(postValidator, validationMW, freelancerController.signup);
 
+/** to be moved in anoter controller
+ */
+freelancerRoute
+  .route("/:id/info")
+  .put(
+    putInfoValidator,
+    validationMW,
+    freelancerController.updateFreelancerInfo
+  );
+
 /************ might move to projects routes */
 freelancerRoute
-  .route("/:id/testimonials")
+  .route("/:id/update/testimonials")
+  .put(
+    testimonialValidator,
+    validationMW,
+    freelancerController.updateFreelancerTestimonials
+  );
+
+/** update profile details
+ * :detail options:
+ * 1- details for [phone, address, title, image, ...]
+ * 2- {to be updated value}> certificates, experience, etc.
+ */
+freelancerRoute
+  .route("/:id/update/:detail")
   .put(
     putValidator,
     validationMW,
-    freelancerController.updateFreelancerTestimonials
-);
-  
-freelancerRoute.route("/:id/remove/:detail").put(
-  // put,
-  // validationMW,
-  freelancerController.removeData
+    freelancerController.updateFreelancerDetails
 );
 
-/** byId routes
- */
 freelancerRoute
-  .route("/:id/:updateData")
-  .put(putValidator, validationMW, freelancerController.updateFreelancerInfo);
+  .route("/:id/edit/:detail")
+  .put(putValidator, validationMW, freelancerController.editData);
 
-/** byId routes
- */
-freelancerRoute.route("/:id/:detail").put(
-  // put,
-  // validationMW,
-  freelancerController.updateFreelancerProfile
-);
+freelancerRoute
+  .route("/:id/remove/:detail")
+  .put(putValidator, validationMW, freelancerController.removeData);
 
 freelancerRoute
   .route("/:id")

@@ -1,7 +1,7 @@
 const express = require("express");
 const { body, param } = require("express-validator");
 
-const testController = require("../Controllers/testController");
+const testController = require("../Controllers/test.controller");
 
 const validationMW = require("../Middlewares/validationMW");
 const testValidation = require("../Middlewares/testValidation");
