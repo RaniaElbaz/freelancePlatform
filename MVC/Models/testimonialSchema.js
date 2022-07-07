@@ -9,7 +9,7 @@ const testimonialSchema = new mongoose.Schema({
   },
   issued: {
     type: Date,
-    required: true
+    // required: true
   },
   comment: {
     required: true,

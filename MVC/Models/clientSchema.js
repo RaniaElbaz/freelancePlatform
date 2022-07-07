@@ -26,33 +26,30 @@ const schema = new mongoose.Schema({
     maxLength: 10,
   },
   lastName: { type: String, required: true },
-  password: {
-    type: String,
-    //  required: true
-  },
+  password: { type: String },
   email: { type: String, required: true, unique: true },
   // accountType: { type: String, required: true },
   picture: {
     // type: imageSchema,  required: true // ! Handling
-    type: String, required: true
+    type: String
   },
   location: {
-    type: locationSchema, required: true
+    type: locationSchema
   },
-  phoneNumber: { type: Number, required: true },
+  phoneNumber: { type: Number },
   analytics: {
     type: analyticsSchema
   },
   // ! handling
   wallet: { type: Number, default: 0 },
   description: {
-    type: String, required: true,
+    type: String,
     //  minLength: 50,
     maxLength: 1000,
   },
   isVerified: { type: Boolean, default: false },
   isBlocked: { type: Boolean, default: false },
-  testimonial: [testimonialSchema], // ! handling
+  testimonials: [testimonialSchema], // ! handling
   // projects: {[Number], ref: "projects"}
 }, { _id: false });
 

@@ -1,66 +1,65 @@
-let Clint = require("../Models/clientSchema");
+let Client = require("../Models/clientSchema");
+const bcrypt = require("bcrypt");
 
 
 module.exports.getAllClients = (request, response, next) => {
-  Clint.find({}, { password: 0 })
+  Client.find({}, { password: 0, isBlocked: 0 })
     .then(data => {
       response.status(200).json(data);
     })
     .catch(error => { next(error) });
-  // response.status(200).json({ data: "Aho Ya Man🥰" });
 };
 
 
 module.exports.getClientById = (request, response, next) => {
-  Clint.findOne({ _id: request.params.id }, { password: 0 })
+  Client.findOne({ _id: request.params.id }, { password: 0, isBlocked: 0 })
     .then(data => {
       if (!data) next(new Error("Client Not Found!"))
       response.status(201).json({ data });
     })
     .catch(error => { next(error) });
-  // response.status(200).json({ data: "Aho Ya Man🥰" });
 };
 
-module.exports.createClient = (request, response, next) => {
-  // a) Created Object from the schema
-  let object = new Clint({
-    // _id: request.body.id,
-    firstName: request.body.firstName,
-    lastName: request.body.lastName,
-    password: request.body.password,
-    email: request.body.email,
-
-    // ! Handling: separate in
-    picture: request.body.picture,
-    // accountType: request.body.accountType,
-    location: {
-      street: request.body.location.street,
-      buildingNumber: request.body.location.buildingNumber,
-      city: request.body.location.city,
-      country: request.body.location.country,
-      postalCode: request.body.location.postalCode
-    },
-    phoneNumber: request.body.phoneNumber,
-    analytics: request.body.analytics,
-    wallet: request.body.wallet,
-    description: request.body.description,
-    isVerified: request.body.isVerified,
-    isBlocked: request.body.isBlocked,
-  });
-  // b) insert the Object in the db => save data in the db
-  object.save()
+module.exports.signUp = (req, res, next) => {
+  // Ensure the user not registered before & not Blocked
+  Client.find(
+    { email: req.body.email },
+    { _id: 0, email: 1, isBlocked: 1 }
+  )
     .then(data => {
-      response.status(201).json({ data: "Added" });
+      // console.log(data[0].email, "=> Data")
+      // console.log(data[0].isBlocked, "=> Data")
+      if (data[0]) {
+        if (data[0].email) throw new Error("This user is already registered!");
+        if (data[0].isBlocked == true) throw new Error("Access Denied");
+      }
+    }).then(newData => {
+      bcrypt.hash(req.body.password, 10, (error, hash) => {
+        // a) Created Object from the schema
+        let object = new Clint({
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          password: hash,
+          email: req.body.email
+        });
+        // b) insert the Object in the db => save data in the db
+        object.save()
+          .then(data => {
+            res.status(201).json({ data: "SignedUP" });
+          })
+          .catch(error => {
+            next(error);
+          });
+      })
     })
-    .catch(error => {
-      next(error);
-    });
-  // response.status(200).json({ data: "Created Ya Man🥰" });
+    .catch(error => next(error));
+
+  // res.json({ mes: "test" })
 };
 
 module.exports.updateClient = (request, response, next) => {
 
-  Clint.findOne({ _id: request.params.id })
+  Client.findOne({ _id: request.params.id })
     .then(data => {
       // console.log(data);
       // console.log(request.body);
@@ -76,7 +75,7 @@ module.exports.updateClient = (request, response, next) => {
         } else if (item == "analytics") {
           for (let nestedItem in request.body[item]) {
             // console.log(nestedItem, "from Analytics");// !handling
-            if (["followers", "following", "viewers"].includes(nestedItem)) {
+            if (["earnings", "jobs", "hours", "views"].includes(nestedItem)) {
               data["analytics"][nestedItem] = request.body['analytics'][nestedItem];
             }
           }
@@ -90,17 +89,36 @@ module.exports.updateClient = (request, response, next) => {
       response.status(201).json({ newData });
     })
     .catch(error => { next(error) });
-  // response.status(201).json({ data: "Updated Ya Man🥰" });
 };
 
 module.exports.deleteClient = (request, response, next) => {
-  Child.deleteOne({ _id: request.body.id })
+  Client.deleteOne({ _id: request.body.id })
     .then(data => {
       if (data.deletedCount === 0) next(new Error("Client Not Found!"))
       else
         response.status(200).json({ data: `Client ${request.params.id} Deleted` })
     })
     .catch(error => next(error));
-  // response.status(201).json({ data: "Deleted Ya Man🥰" });
+};
+
+module.exports.updateTestimonials = (request, response, next) => {
+  Client.findById(request.params.id)
+    .then((data) => {
+      if (!data) throw new Error("Client not found!");
+
+      let TestimonialObject = {};
+      console.log(TestimonialObject);
+      for (let key in request.body) {
+        TestimonialObject[key] = request.body[key];
+        console.log(TestimonialObject);
+      }
+      data.testimonials.push(TestimonialObject);
+      data.projects = request.body.testimonialProject;
+      return data.save();
+    })
+    .then((data) => {
+      response.status(201).json({ data: "updated" });
+    })
+    .catch((error) => next(error));
 };
 

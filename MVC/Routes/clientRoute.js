@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.route("/client")
   .get(controller.getAllClients)
-  .post(clintValidationArray, controller.createClient)
+  .post(clintValidationArray.signUp, controller.signUp)
 
 
 router.route("/client/:id")
@@ -20,22 +20,12 @@ router.route("/client/:id")
     param("id").isNumeric().withMessage("Id isn't correct")
   ])
   .get(controller.getClientById)
-  .put(clintValidationArray, controller.updateClient)
+  .put(clintValidationArray.update, controller.updateClient)
   .delete(controller.deleteClient);
 
 
-// ! testimonials route
-router.route("/client/testimonials")
-  .post();
+router.route("/client/:id/testimonials")
+  .post(controller.updateTestimonials);
 
-
-
-//   freelancerRoute
-//   .route("/:id/testimonials")
-//   .put(
-//     putValidator,
-//     validationMW,
-//     freelancerController.updateFreelancerTestimonials
-// );
 
 module.exports = router;

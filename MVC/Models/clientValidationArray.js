@@ -1,50 +1,83 @@
 const { body, param, query } = require("express-validator");
 
-module.exports = [
-  // body("id")
-  // .isNumeric()
-  // .withMessage("Child Id must be a Number")
-  // .optional({ checkFalsy: true, nullable: true }), // ! Handling
+module.exports.update = [
+  body("id")
+    .optional()
+    .isNumeric()
+    .withMessage("Child Id must be a Number"),
+
   body("firstName")
     .isAlpha()
-    .withMessage("Clint's firstName should be a Characters"),
+    .withMessage("Clint's firstName should be a Characters")
+    .isLength({ min: 3, max: 10 })
+    .withMessage("Clint's firstName length should be > 3 and < 10"),
 
   body("lastName")
     .isAlpha()
-    .withMessage("Clint's lastName should be a Characters"),
+    .withMessage("Clint's lastName should be a Characters")
+    .isLength({ min: 3, max: 10 })
+    .withMessage("Clint's lastName length should be > 3 and < 10"),
 
-  // body("password"),
+  body("email")
+    .isEmail()
+    .withMessage("You Should Enter a valid Email"),
 
-  body("email").isEmail().withMessage("You Should Enter a valid Email"),
+  body("password")
+    // .matches()
+    .isLength({ min: 8, max: 15 })
+    .withMessage("Password length must between 8 to 15"),
 
   body("picture")
-    .notEmpty()
-    .withMessage("Clint should be select a valid Image formate"), // ! Multer Handling
-
-  body("location.street").isString().withMessage("Street must be a string"),
-
-  body("location.buildingNumber")
+    .optional()
     .isString()
-    .withMessage("BuildingNumber must be a string"),
+    .withMessage("You should be select a valid Image formate"), // ! Multer Handling
 
-  body("location.city").isString().withMessage("City must be a string"),
-  body("location.country").isString().withMessage("Country must be a string"),
-  // body("location.postalCode").isString().withMessage("postalCode must be a string"), // ! Handling
+  /** Location
+   */
+  body("location.postalCode")
+    .optional()
+    .isNumeric()
+    .isLength({ min: 5, max: 5 })
+    .withMessage("You entered invalid postalCode"),
+
+  body("location.city")
+    .optional()
+    .isString()
+    .withMessage("City name must be String"),
+
+  body("location.address")
+    .optional()
+    .isString()
+    .withMessage("Address must be String"),
+
+  body("location.state")
+    .optional()
+    .isString()
+    .withMessage("Address must be String"),
+
+  // ! Handling
   body("phoneNumber")
     .isNumeric()
     .withMessage("phoneNumber must be a Number"),
 
-  body("analytics.followers")
+  /** Analytics
+   */
+  body("analytics.earnings")
     .isNumeric()
-    .withMessage("followers must be a string"),
+    .withMessage("earnings must be a string"),
 
-  body("analytics.following")
+  body("analytics.jobs")
     .isNumeric()
-    .withMessage("following must be a string"),
+    .withMessage("jobs must be a string"),
 
-  body("analytics.viewers")
+  body("analytics.hours")
     .isNumeric()
-    .withMessage("viewers must be a string"),
+    .withMessage("hours must be a string"),
+
+  body("analytics.views")
+    .isNumeric()
+    .withMessage("views must be a string"),
+
 
   body("wallet")
     .isNumeric()
@@ -52,6 +85,7 @@ module.exports = [
 
   body("description")
     .isAlpha()
+    .isLength({ min: 100, max: 500 })
     .withMessage("wallet must be a String"),
 
   body("isVerified")
@@ -61,4 +95,28 @@ module.exports = [
   body("isBlocked")
     .isBoolean()
     .withMessage("isBlocked wallet must be a True or False"),
+];
+
+
+module.exports.signUp = [
+  body("firstName")
+    .isAlpha()
+    .withMessage("Clint's firstName should be a Characters")
+    .isLength({ min: 3, max: 10 })
+    .withMessage("Clint's firstName length should be > 3 and < 10"),
+
+  body("lastName")
+    .isAlpha()
+    .withMessage("Clint's lastName should be a Characters")
+    .isLength({ min: 3, max: 10 })
+    .withMessage("Clint's lastName length should be > 3 and < 10"),
+
+  body("email")
+    .isEmail()
+    .withMessage("You Should Enter a valid Email"),
+
+  body("password")
+    // .matches()
+    .isLength({ min: 8, max: 15 })
+    .withMessage("Password length must between 8 to 15")
 ];
