@@ -1,28 +1,28 @@
 const mongoose = require('mongoose');
 
 const certificateSchema = new mongoose.Schema({
-    organization:{
+    certificateOrganization:{
         required: true,
         type: String,
     },
-    title:{
+    certificateTitle:{
         required: true,
         type: String,
     },
-    issued:{
+    certificateIssued:{
         required: true,
         type: Date,
     },
-    description:{
+    certificateDescription:{
         type: String,
     },
-    url:{
+    certificateUrl:{
         type: String,
     },
     certificateId:{
         type: String
     },
-    expirationDate:{
+    certificateExpirationDate:{
         type: Date
     }
 },{_id: false });

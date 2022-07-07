@@ -1,19 +1,18 @@
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-const locationSchema = require('./locations');
-const paymentSchema = require('./payment');
-const educationSchema = require('./education');
-const analyticsSchema = require('./analytics');
-const certificateSchema = require('./certificates');
-const testimonialSchema = require('./testimonial');
-const portfolioSchema = require('./portfolio');
-const experinceSchema = require('./experince');
+const { languages } = require('../data/enums');
 
-const languages = {
-    Ar: 'Arabic',
-    En: 'English',
-}
+const { emailRegex, passwordRegex, phoneRegex } = require ('../data/regex');
+
+const locationSchema = require('./locations.model');
+const paymentSchema = require('./payment.model');
+const educationSchema = require('./education.model');
+const analyticsSchema = require('./analytics.model');
+const certificateSchema = require('./certificates.model');
+const testimonialSchema = require('./testimonial.model');
+const portfolioSchema = require('./portfolio.model');
+const experinceSchema = require('./experince.model');
 
 //create schema object
 const freelancerSchema = new mongoose.Schema({
@@ -33,7 +32,7 @@ const freelancerSchema = new mongoose.Schema({
         required: true,
         validate: {
             validator: function(value) {
-              return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)
+              return emailRegex.test(value)
             },
             message: props => `${props.value} is not a valid email!`
         },
@@ -41,6 +40,12 @@ const freelancerSchema = new mongoose.Schema({
     },
     password:{
         type: String,
+        validate: {
+            validator: function(value) {
+              return passwordRegex.test(value)
+            },
+            message: props => `${props.value} is too weak!`
+        },
         required: true,
     },
     secondEmail:{
@@ -48,12 +53,12 @@ const freelancerSchema = new mongoose.Schema({
     },
     phoneNumber:{
         type: String,
-        validate: {
-            validator: function(value) {
-              return /\d{3}-\d{3}-\d{4}/.test(value);
-            },
-            message: props => `${props.value} is not a valid phone number!`
-        },
+        // validate: {
+        //     validator: function(value) {
+        //       return phoneRegex.test(value);
+        //     },
+        //     message: props => `${props.value} is not a valid phone number!`
+        // },
     },
     profileImage:{
         type: String,
@@ -78,11 +83,12 @@ const freelancerSchema = new mongoose.Schema({
     },
     title:{
         type: String,
-        minLength: 5
+        minLength: 5,
+        maxLength:15
     },
     description:{
         type: String,
-        minLength: 100,
+        minLength: 5,
         maxLength: 500
     },
     isBlocked:{
@@ -102,19 +108,20 @@ const freelancerSchema = new mongoose.Schema({
             message: props => `${props.value} duplicated language value`
         },
     },
-    education:[educationSchema],
-    testimonials:[testimonialSchema],
-    certificates:[certificateSchema],
-    portfolio:[portfolioSchema],
+    education:{
+        type: [educationSchema]
+    },
+    testimonials:{
+        type: [testimonialSchema]
+    },
+    certificates:{
+        type: [certificateSchema]
+    },
+    portfolio:{
+        type: [portfolioSchema]
+    },
     experience:{
-        type: [experinceSchema],
-        validate: {
-            validator: function(value) {
-              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
-              return !Boolean(duplicated.length);
-            },
-            message: props => `${props.value} duplicated experience value`
-        },
+        type: [experinceSchema]
     },
     
     // 1:Many parent ref relationships
@@ -156,8 +163,14 @@ const freelancerSchema = new mongoose.Schema({
     
     //1:1 embedded relationships
     //paymentMethods: paymentSchema,
-    analytics: analyticsSchema,
-    address: locationSchema
+    analytics: {
+        type: analyticsSchema,
+        default: () => ({})
+    },
+    address: {
+        type: locationSchema,
+        default: () => ({})
+    }
 }, { _id: false });
 
 //mapping

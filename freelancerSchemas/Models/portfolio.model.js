@@ -1,44 +1,37 @@
 const mongoose = require('mongoose');
 
 const portfolioSchema = new mongoose.Schema({
-    projectTitle:{
+    portfolioTitle:{
         required: true,
         type: String,
     },
-    relatedJob:{
+    portfolioRelatedJob:{
         type: Number,
-        ref: "projects",
-        validate: {
-            validator: function(v) {
-              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
-              return !Boolean(duplicated.length);
-            },
-            message: props => `${props.value} duplicated project value`
-        },
+        ref: "projects"
     },
-    completionDate:{
+    portfolioCompletionDate:{
         required: true,
         type: Date,
     },
-    files:{
+    portfolioFiles:{
         required: true,
         type: [String]
     },
-    skills:{
+    portfolioSkills:{
         type: [Number],
         ref:"skills",
         validate: {
-            validator: function(v) {
-              const duplicated = v.filter((item, index) => v.indexOf(item) !== index)
+            validator: function(value) {
+              const duplicated = value.filter((item, index) => value.indexOf(item) !== index)
               return !Boolean(duplicated.length);
             },
             message: props => `${props.value} duplicated skill value`
         },
     },
-    URL:{
+    portfolioUrl:{
         type: String
     },
-    description:{
+    portfolioDescription:{
         type: String,
         required: true,
         minLength: 100,

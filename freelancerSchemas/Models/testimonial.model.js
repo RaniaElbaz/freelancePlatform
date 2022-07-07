@@ -1,21 +1,21 @@
 const mongoose = require('mongoose');
 
 const testimonialSchema = new mongoose.Schema({
-    rating:{
+    testimonialRating:{
         type: Number,
         required: true,
         min: 0,
         max: 5
     },
-    issued:{
+    testimonialIssued:{
         type: Date,
         required: true
     },
-    comment:{
+    testimonialComment:{
         required: true,
         type: String,
     },
-    project:{
+    testimonialProject:{
         type: Number,
         ref: "projects",
         required: true

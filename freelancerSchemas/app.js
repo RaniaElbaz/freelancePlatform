@@ -5,7 +5,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 /************ routes */
-const freelancerRoute = require("./Routes/freelancerRoute");
+const freelancerRoute = require("./Routes/freelancer.route");
 
 /************ */
 const DB_URL = process.env.DB_URL;

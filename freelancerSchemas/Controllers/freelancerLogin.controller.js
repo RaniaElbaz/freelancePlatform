@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 // const jwt = require("jsonwebtoken");
 // const bcrypt = require("bcrypt");
 
-require("./../Models/freelancers");
+require("./../Models/freelancers.model");
 
 let Freelancer = mongoose.model("freelancers");
 /**

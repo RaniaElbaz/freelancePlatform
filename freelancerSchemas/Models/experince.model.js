@@ -1,21 +1,21 @@
 const mongoose = require('mongoose');
 
-const dateSchema = require('./dateSchema');
-const locationSchema = require('./locations');
+const dateSchema = require('./date.model');
+const locationSchema = require('./locations.model');
 
 const experinceSchema = new mongoose.Schema({
-    company:{
+    experinceCompany:{
         required: true,
         type: String,
     },
-    title:{
+    experinceTitle:{
         required: true,
         type: String,
     },
-    location:locationSchema,
-    startDate: dateSchema,
-    endDate: dateSchema,
-    description:{
+    experinceLocation:locationSchema,
+    startDate: Date,
+    endDate: Date,
+    experinceDescription:{
         type: String,
         minLength: 100,
         maxLength: 1000,

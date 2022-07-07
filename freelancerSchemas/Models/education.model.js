@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 
-const dateSchema = require('./dateSchema');
+// const dateSchema = require('./date.model');
 
 const educationSchema = new mongoose.Schema({
-    organization: {
+    educationOrganization: {
         required: true,
         minLength: 3,
         type: String,
     },
-    degree:{
+    educationDegree:{
         required: true,
         minLength: 3,
         type: String,
@@ -17,9 +17,14 @@ const educationSchema = new mongoose.Schema({
         type: String,
         minLength: 5,
     },
-    startDate:dateSchema,
-    endDate:dateSchema,
-    description:{
+    educationStartDate:{
+        type: Date,
+        required: true,
+    },
+    educationEndDate:{
+        type: Date
+    },
+    educationDescription:{
         type: String,
         minLength: 100,
         maxLength: 500
