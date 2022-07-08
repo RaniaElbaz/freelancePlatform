@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 
 /************ routes */
 const freelancerRoute = require("./Routes/freelancer.route");
+const loginRoute = require("./Routes/login.route");
+const changePasswordRoute = require("./Routes/changePassword.route");
 
 /************ */
 const DB_URL = process.env.DB_URL;
@@ -32,6 +34,8 @@ app.use(cors());
 /****************** Routes *****************/
 app.use(express.json());//body parsing
 
+app.use('/login', loginRoute);
+app.use(changePasswordRoute);
 app.use('/freelancers',freelancerRoute);
 
 //3- Not Found MW

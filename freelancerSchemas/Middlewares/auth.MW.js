@@ -1,16 +1,23 @@
 const jwt = require("jsonwebtoken");
 
-module.exports = (request, response, next) => {
-  let decodedToekn = null;
+module.exports = (request, res, next) => {
+  // let decodedToken = null;
   try {
-    let token = request.get("Authorization").split(" ")[1];
-    decodedToekn = jwt.verify(token, process.env.SECRET_KEY);
-    request.role = decodedToekn.role;
-    request.id = decodedToekn.id;
-    next();
+    let token = request.get("Authorization");
+
+    if (token) {
+      // token !== undefined
+      token.split(" ")[1]; // encoded (encrypted) token fetch
+      let decodedToken = jwt.verify(token, process.env.SECRET_KEY); // decoded token
+
+      request.role = decodedToken.role;
+      request.id = decodedToekn.id;
+    } else {
+      next();
+    }
   } catch (error) {
-    error.message = "Not Authorized";
-    error.status = 403;
+    error.msg = "Not Authorized";
+    error.status = 403; // authentication error
     next(error);
   }
 };

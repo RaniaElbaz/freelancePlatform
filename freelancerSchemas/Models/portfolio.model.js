@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { checkDuplicated } = require("../data/functions");
+
 const portfolioSchema = new mongoose.Schema(
   {
     projectTitle: {
@@ -22,12 +24,7 @@ const portfolioSchema = new mongoose.Schema(
       type: [Number],
       ref: "skills",
       validate: {
-        validator: function (value) {
-          const duplicated = value.filter(
-            (item, index) => value.indexOf(item) !== index
-          );
-          return !Boolean(duplicated.length);
-        },
+        validator: checkDuplicated,
         message: (props) => `${props.value} duplicated skill value`,
       },
     },
@@ -39,9 +36,6 @@ const portfolioSchema = new mongoose.Schema(
       required: true,
       minLength: 100,
       maxLength: 1000,
-    },
-    index: {
-      type: Number,
     },
   },
   { _id: false }

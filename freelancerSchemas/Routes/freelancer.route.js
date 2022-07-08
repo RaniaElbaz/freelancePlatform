@@ -1,12 +1,12 @@
 const express = require("express");
-const { body, param } = require("express-validator");
+const { param } = require("express-validator");
 
 const freelancerController = require("../Controllers/freelancer.controller");
-const freelancerloginController = require("../Controllers/freelancerLogin.controller");
 
 const validationMW = require("../Middlewares/validation.MW");
+const { hashPassword } = require("../Middlewares/hashPassword.MW");
 const {
-  postValidator,
+  signupValidator,
   putValidator,
   testimonialValidator,
   putInfoValidator,
@@ -17,17 +17,22 @@ const freelancerRoute = express.Router();
 /** freelancers base route
  * for querying and dev purpose
  */
-freelancerRoute.route("/").get(freelancerController.getAllFreelancers);
-
-/**Login route
- */
-freelancerRoute.route("/login").post(freelancerloginController.login);
+freelancerRoute
+  .route("/")
+  .get(
+    freelancerController.getAllFreelancers
+  );
 
 /**Register route
  */
 freelancerRoute
   .route("/register")
-  .post(postValidator, validationMW, freelancerController.signup);
+  .post(
+    signupValidator,
+    validationMW,
+    hashPassword,
+    freelancerController.signup
+  );
 
 /** to be moved in anoter controller
  */

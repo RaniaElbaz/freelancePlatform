@@ -1,15 +1,4 @@
-const bcrypt = require('bcrypt');
-
-module.exports.unHashPassword = async (password, original) => {
-    bcrypt.compare(password, original)
-};
-
-module.exports.checkDuplicated = (value) => {
-  const duplicated = value.filter(
-    (item, index) => value.indexOf(item) !== index
-  );
-  return !Boolean(duplicated.length);
-};
+const bcrypt = require("bcrypt");
 
 module.exports.hashPassword = (request, response, next) => {
   const saltRounds = 10;

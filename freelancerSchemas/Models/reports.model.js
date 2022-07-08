@@ -41,5 +41,5 @@ const reportSchema = new mongoose.Schema({
 }, { _id: false });
 
 //mapping
-reportSchema.plugin(AutoIncrement, {id: 'reportsID'});
+reportSchema.plugin(AutoIncrement, {id: 'reportsId'});
 mongoose.model("reports",reportSchema);

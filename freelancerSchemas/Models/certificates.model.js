@@ -25,10 +25,7 @@ const certificateSchema = new mongoose.Schema(
     },
     expirationDate: {
       type: Date,
-    },
-    index: {
-      type: Number,
-    },
+    }
   },
   { _id: false }
 );

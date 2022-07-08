@@ -13,7 +13,7 @@ module.exports.signup = (request, response, next) => {
   )
     .then((data) => {
       if (data.length) {
-        if (data[0].isBlocked) throw new Error("access denied");
+        if (data[0].isBlocked) throw new Error("freelancer can't log in");
         else throw new Error("email already signed up");
       } else {
         let freelancerObject = new Freelancer({
@@ -106,7 +106,7 @@ module.exports.updateFreelancerTestimonials = (request, response, next) => {
         testimonialObject[key] = request.body[key];
       }
       data.testimonials.push(testimonialObject);
-      data.projects = request.body.testimonialProject;
+      // data.projects.push(request.body.project);
       return data.save();
     })
     .then((data) => {
@@ -158,12 +158,20 @@ module.exports.editData = (request, response, next) => {
   )
     .then((data) => {
       if (!data) throw new Error("freelancer not found");
-      data[request.params.detail].forEach((object) => { 
-        if (object.index === request.body[request.params.detail].index) {
-          object = Object.assign({},request.body[request.params.detail]);
-          return data.save();
-        }
-      });
+      if (request.body.index < data[request.params.detail].length)
+        data[request.params.detail][request.body.index] = Object.assign(
+          {},
+          request.body[request.params.detail]
+        );
+      else
+        throw new Error(`freelancer's ${request.params.detail} not found`);
+      return data.save();
+      // data[request.params.detail].forEach((object) => { 
+      //   if (object.index === request.body[request.params.detail].index) {
+      //     object = Object.assign({},request.body[request.params.detail]);
+      //     return data.save();
+      //   }
+      // });
     })
     .then(() => {
       response.status(201).json({ data: "updated" });
@@ -180,9 +188,10 @@ module.exports.removeData = (request, response, next) => {
   )
     .then((data) => {
       if (!data) throw new Error("freelancer not found");
-      request.body[request.params.detail].forEach((index) => {
-        data[request.params.detail] = data[request.params.detail].filter(object => object.index !== index);
-      });
+      if (request.body.index < data[request.params.detail].length)
+        data[request.params.detail].splice(request.body.index, 1);
+      else
+        throw new Error(`freelancer's ${request.params.detail} not found`)
       return data.save();
     })
     .then(() => {
@@ -196,7 +205,7 @@ module.exports.removeData = (request, response, next) => {
 module.exports.getFreelancerById = (request, response, next) => {
   Freelancer.findOne(
     { _id: request.params.id },
-    { password: 0, wallet: 0, isBlocked: 0 }
+    { wallet: 0, isBlocked: 0 } //password: 0, isBlocked: 0
   )
     .then((data) => {
       if (data == null) next(new Error("Freelancer not found"));
@@ -235,6 +244,27 @@ module.exports.deleteFreelancer = (request, response, next) => {
   Freelancer.deleteOne({ _id: request.params.id })
     .then((data) => {
       response.status(200).json({ data: "delete " + request.params.id });
+    })
+    .catch((error) => next(error));
+};
+
+/** delete a testimonial
+ * authorized by admin only
+ */
+module.exports.deleteTestimonialByProjectId = (request, response, next) => {
+  Freelancer.findOne({ "testimonials.project": request.body.project })
+    .then((data) => {
+      if (!data) {
+        next(new Error("testimonial not found"));
+      } else {
+        for (let item of data.testimonials) {
+          if (item.project == request.body.project) {
+            data.testimonials.splice(data.testimonials.indexOf(item), 1);
+            data.save();
+            response.status(200).json({ msg: "testimonial deleted" });
+          }
+        }
+      }
     })
     .catch((error) => next(error));
 };

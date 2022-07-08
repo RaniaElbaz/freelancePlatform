@@ -26,5 +26,5 @@ const videoSchema = new mongoose.Schema({
 }, { _id: false });
 
 //mapping
-videoSchema.plugin(AutoIncrement, {id: 'videoID'});
+videoSchema.plugin(AutoIncrement, {id: 'videoId'});
 mongoose.model("videos",videoSchema);

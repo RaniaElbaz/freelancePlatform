@@ -2,19 +2,21 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-require("./../models/freelancers.model");
-
 let Freelancer = mongoose.model("freelancers");
 
 module.exports.login = (request, response, next) => {
   Freelancer.findOne({
     email: request.body.email,
+    // password: request.body.password
   })
     .then((data) => {
       if (!data) {
         let error = new Error("username or password incorrect");
         error.status = 401;
         throw error;
+      }
+      if (data.isBlocked) {
+        throw new Error("freelancer can't log in");
       }
       /***************** */
       bcrypt
@@ -31,9 +33,10 @@ module.exports.login = (request, response, next) => {
             );
             response.status(200).json({ token, message: "login" });
           } else {
-            throw Error("password unmatched");
+            throw new Error("password unmatched");
           }
-        });
+        })
+        .catch((error) => next(error));
     })
     .catch((error) => next(error));
 };

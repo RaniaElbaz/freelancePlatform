@@ -28,9 +28,6 @@ const educationSchema = new mongoose.Schema({
         type: String,
         minLength: 100,
         maxLength: 500
-    },
-    index: {
-        type: Number
     }
 },{_id: false});
 

@@ -30,5 +30,5 @@ const updateSchema = new mongoose.Schema({
 }, { _id: false });
 
 //mapping
-updateSchema.plugin(AutoIncrement, {id: 'updatesID'});
+updateSchema.plugin(AutoIncrement, {id: 'updatesId'});
 mongoose.model("updates",updateSchema);

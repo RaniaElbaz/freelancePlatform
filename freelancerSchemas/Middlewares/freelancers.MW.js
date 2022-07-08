@@ -1,7 +1,7 @@
 const { check, param } = require("express-validator");
 const { languages } = require("../data/enums");
 
-module.exports.postValidator = [
+module.exports.signupValidator = [
   // numeric auto incremented id
   check("id")
     .optional({ checkFalsy: true, nullable: true })
@@ -24,6 +24,22 @@ module.exports.postValidator = [
     .withMessage("freelancer's lastname should be characters")
     .isLength({ min: 3, max: 14 })
     .withMessage("freelancer lastname lenghth should be > 3"),
+  //email
+  check("email")
+    .notEmpty()
+    .withMessage("freelancer's email reqiured")
+    .isEmail()
+    .withMessage("freelancer's email invalid"),
+  //password
+  check("password")
+    .notEmpty()
+    .withMessage("freelancer's password reqiured")
+    .isLength({ min: 6, max: 15 })
+    .withMessage("freelancer's password should be 6~15"),
+];
+
+module.exports.loginValidator = [
+  /**********login**********/
   //email
   check("email")
     .notEmpty()

@@ -3,7 +3,8 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const { languages } = require('../data/enums');
 
-const { emailRegex, passwordRegex, phoneRegex } = require ('../data/regex');
+const { emailRegex, passwordRegex, phoneRegex } = require('../data/regex');
+const { checkDuplicated } = require("../data/functions");
 
 const locationSchema = require('./locations.model');
 const paymentSchema = require('./payment.model');
@@ -80,7 +81,7 @@ const freelancerSchema = new mongoose.Schema(
       type: Number,
       default: 0,
       min: 0,
-      max:500,
+      max: 500,
     },
     hoursPerWeek: {
       type: Number,
@@ -108,12 +109,7 @@ const freelancerSchema = new mongoose.Schema(
       type: [String],
       enum: languages,
       validate: {
-        validator: function (value) {
-          const duplicated = value.filter(
-            (item, index) => value.indexOf(item) !== index
-          );
-          return !Boolean(duplicated.length);
-        },
+        validator: checkDuplicated,
         message: (props) => `${props.value} duplicated language value`,
       },
     },
@@ -138,12 +134,7 @@ const freelancerSchema = new mongoose.Schema(
       type: [Number],
       ref: "projects",
       validate: {
-        validator: function (value) {
-          const duplicated = value.filter(
-            (item, index) => value.indexOf(item) !== index
-          );
-          return !Boolean(duplicated.length);
-        },
+        validator: checkDuplicated,
         message: (props) => `${props.value} duplicated project ID value`,
       },
     },
@@ -151,12 +142,7 @@ const freelancerSchema = new mongoose.Schema(
       type: [Number],
       ref: "tests",
       validate: {
-        validator: function (value) {
-          const duplicated = value.filter(
-            (item, index) => value.indexOf(item) !== index
-          );
-          return !Boolean(duplicated.length);
-        },
+        validator: checkDuplicated,
         message: (props) => `${props.value} duplicated language value`,
       },
     },
@@ -166,12 +152,7 @@ const freelancerSchema = new mongoose.Schema(
       type: [Number],
       ref: "skills",
       validate: {
-        validator: function (value) {
-          const duplicated = value.filter(
-            (item, index) => value.indexOf(item) !== index
-          );
-          return !Boolean(duplicated.length);
-        },
+        validator: checkDuplicated,
         message: (props) => `${props.value} duplicated skill value`,
       },
     },
@@ -191,5 +172,5 @@ const freelancerSchema = new mongoose.Schema(
 );
 
 //mapping
-freelancerSchema.plugin(AutoIncrement, {id: 'freelancerID'});
+freelancerSchema.plugin(AutoIncrement, {id: 'freelancerId'});
 mongoose.model("freelancers",freelancerSchema);

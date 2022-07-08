@@ -27,5 +27,5 @@ const testSchema = new mongoose.Schema({
 }, { _id: false });
 
 //mapping
-testSchema.plugin(AutoIncrement, {id: 'testsID'});
+testSchema.plugin(AutoIncrement, {id: 'testsId'});
 mongoose.model("tests",testSchema);

@@ -25,5 +25,5 @@ const questionSchema = new mongoose.Schema({
 }, { _id: false });
 
 //mapping
-questionSchema.plugin(AutoIncrement, {id: 'questionID'});
+questionSchema.plugin(AutoIncrement, {id: 'questionId'});
 mongoose.model("questions",questionSchema);
