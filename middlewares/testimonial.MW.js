@@ -52,6 +52,6 @@ module.exports.post = [
 //     .withMessage("testimonial project should be number"),
 // ];
 
-// module.exports.getDelete = [
-//   check("pId").isNumeric().withMessage("testimonial project shoud be number"),
-// ];
+module.exports.getDelete = [
+  check("pId").isNumeric().withMessage("testimonial project shoud be number"),
+];

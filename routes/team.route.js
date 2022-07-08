@@ -33,15 +33,14 @@ router
 
   .put(mw.updatePortfolio, validationMW, controller.updatePortfolio);
 
-router.route("/:id/delete/portfolio").put(
-  // mw.deletePortfolio, validationMW,
-  controller.deletePortfolio
-);
+router
+  .route("/:id/delete/portfolio")
+  .put(mw.deletePortfolio, validationMW, controller.deletePortfolio);
 
-// router
-//   .route("/testimonial/:pId")
-//   .all(tmw.getDelete, validationMW)
-//   .put(controller.deleteTestimonialByProjectId)
+router
+  .route("/testimonial/:pId")
+  .all(tmw.getDelete, validationMW)
+  .put(controller.deleteTestimonialByProjectId);
 //   .get(controller.getTestimonialByProjectId);
 
 router

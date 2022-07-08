@@ -175,3 +175,16 @@ module.exports.updatePortfolio = [
     .optional()
     .withMessage("portfolio description should be string"),
 ];
+
+module.exports.deletePortfolio = [
+  check("id")
+    .notEmpty()
+    .withMessage("team id is required")
+    .isNumeric()
+    .withMessage("team id should be number"),
+  check("index")
+    .notEmpty()
+    .withMessage("portfolio index is required")
+    .isNumeric()
+    .withMessage("portfolio index should be number"),
+];

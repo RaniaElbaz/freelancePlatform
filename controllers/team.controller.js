@@ -265,23 +265,23 @@ module.exports.deletePortfolio = (request, response, next) => {
     });
 };
 
-// module.exports.deleteTestimonialByProjectId = (request, response, next) => {
-//   Team.findOne({ "testimonials.project": request.params.pId })
-//     .then((data) => {
-//       if (!data) {
-//         next(new Error("testimonial not found"));
-//       } else {
-//         for (let item of data.testimonials) {
-//           if (item.project == request.params.pId) {
-//             data.testimonials.splice(data.testimonials.indexOf(item), 1);
-//             data.save();
-//             response.status(200).json({ msg: "testimonial deleted" });
-//           }
-//         }
-//       }
-//     })
-//     .catch((error) => next(error));
-// };
+module.exports.deleteTestimonialByProjectId = (request, response, next) => {
+  Team.findOne({ "testimonials.project": request.params.pId })
+    .then((data) => {
+      if (!data) {
+        next(new Error("testimonial not found"));
+      } else {
+        for (let item of data.testimonials) {
+          if (item.project == request.params.pId) {
+            data.testimonials.splice(data.testimonials.indexOf(item), 1);
+            data.save();
+            response.status(200).json({ msg: "testimonial deleted" });
+          }
+        }
+      }
+    })
+    .catch((error) => next(error));
+};
 
 // module.exports.getTestimonialByProjectId = (request, response, next) => {
 //   Team.findOne({ "testimonials.project": request.params.pId })
