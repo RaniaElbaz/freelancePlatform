@@ -233,11 +233,7 @@ module.exports.updatePortfolio = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("team not found"));
-      for (prop in request.body) {
-        if (prop != "index") {
-          data.portfolios[request.body.index][prop] = request.body[prop];
-        }
-      }
+      data.portfolios[request.body.index] = request.body.portfolio;
       return data.save().then((data) => {
         response
           .status(200)
@@ -253,10 +249,16 @@ module.exports.deletePortfolio = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("team not found"));
-      data.portfolios.splice(request.body.index, 1);
-      return data.save().then((data) => {
-        response.status(200).json({ msg: "portfolio deleted" });
-      });
+      console.log(request.body.index);
+      console.log(data.portfolios.length);
+      if (request.body.index < data.portfolios.length) {
+        data.portfolios.splice(request.body.index, 1);
+        return data.save().then(() => {
+          response.status(200).json({ msg: "portfolio deleted" });
+        });
+      } else {
+        throw Error("team portfolio not found");
+      }
     })
     .catch((error) => {
       next(error);
