@@ -11,22 +11,32 @@ router
   .get(controller.getAllTeams)
   .post(mw.post, validationMW, controller.createTeam);
 
-router
-  .route("/:id/removeMembers")
-  .put(mw.removeMembers, validationMW, controller.removeMembers);
+// router
+//   .route("/:id/removeMembers")
+//   .put(mw.removeMembers, validationMW, controller.removeMembers);
 
-router
-  .route("/:id/removeSkills")
-  .put(mw.removeSkills, validationMW, controller.removeSkills);
+// router
+//   .route("/:id/removeSkills")
+//   .put(mw.removeSkills, validationMW, controller.removeSkills);
 
 //🟡will be moved to project routes
 router
-  .route("/testimonial")
+  .route("/:id/testimonial")
   .put(tmw.post, validationMW, controller.createTestimonial);
 
 router
-  .route("/portfolio")
+  .route("/:id/create/portfolio")
   .put(mw.createPortfolio, validationMW, controller.createPortfolio);
+
+router
+  .route("/:id/update/portfolio")
+
+  .put(mw.updatePortfolio, validationMW, controller.updatePortfolio);
+
+router.route("/:id/delete/portfolio").put(
+  // mw.deletePortfolio, validationMW,
+  controller.deletePortfolio
+);
 
 // router
 //   .route("/testimonial/:pId")

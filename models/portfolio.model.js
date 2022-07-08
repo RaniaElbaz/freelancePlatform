@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const portfolioSchema = new mongoose.Schema(
   {
     projectTitle: {
@@ -9,15 +8,15 @@ const portfolioSchema = new mongoose.Schema(
     relatedJob: {
       type: Number,
       ref: "projects",
-      validate: {
-        validator: function (v) {
-          const duplicated = v.filter(
-            (item, index) => v.indexOf(item) !== index
-          );
-          return !Boolean(duplicated.length);
-        },
-        message: (props) => `${props.value} duplicated project value`,
-      },
+      // validate: {
+      //   validator: function (v) {
+      //     const duplicated = v.filter(
+      //       (item, index) => v.indexOf(item) !== index
+      //     );
+      //     return !Boolean(duplicated.length);
+      //   },
+      //   message: (props) => `${props.value} duplicated project value`,
+      // },
     },
     completionDate: {
       required: true,
@@ -52,5 +51,4 @@ const portfolioSchema = new mongoose.Schema(
   },
   { _id: false }
 );
-
 module.exports = portfolioSchema;

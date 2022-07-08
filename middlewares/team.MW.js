@@ -81,23 +81,23 @@ module.exports.getDelete = [
   check("id").isNumeric().withMessage("team id shoud be number"),
 ];
 
-module.exports.removeMembers = [
-  check("id").isNumeric().withMessage("team id shoud be number"),
-  check("members")
-    .notEmpty()
-    .withMessage("team members is required")
-    .isArray()
-    .withMessage("team members should be array"),
-];
+// module.exports.removeMembers = [
+//   check("id").isNumeric().withMessage("team id shoud be number"),
+//   check("members")
+//     .notEmpty()
+//     .withMessage("team members is required")
+//     .isArray()
+//     .withMessage("team members should be array"),
+// ];
 
-module.exports.removeSkills = [
-  check("id").isNumeric().withMessage("team id shoud be number"),
-  check("skills")
-    .notEmpty()
-    .withMessage("team skills is required")
-    .isArray()
-    .withMessage("team skills should be array"),
-];
+// module.exports.removeSkills = [
+//   check("id").isNumeric().withMessage("team id shoud be number"),
+//   check("skills")
+//     .notEmpty()
+//     .withMessage("team skills is required")
+//     .isArray()
+//     .withMessage("team skills should be array"),
+// ];
 
 module.exports.createPortfolio = [
   check("projectTitle")
@@ -136,5 +136,42 @@ module.exports.createPortfolio = [
     .notEmpty()
     .withMessage("portfolio description is required")
     .isString()
+    .withMessage("portfolio description should be string"),
+];
+
+module.exports.updatePortfolio = [
+  check("projectTitle")
+    .isString()
+    .optional()
+    .withMessage("portfolio projectTitle should be string"),
+
+  check("relatedJob")
+    .isNumeric()
+    .optional()
+    .withMessage("portfolio relatedJob should be number"),
+
+  check("completionDate")
+    .isDate()
+    .optional()
+    .withMessage("portfolio completionDate should be date"),
+
+  check("files")
+    .isArray()
+    .optional()
+    .withMessage("portfolio files should be array"),
+
+  check("skills")
+    .isArray()
+    .optional()
+    .withMessage("portfolio skills should be array"),
+
+  check("URL")
+    .isString()
+    .optional()
+    .withMessage("portfolio URL should be string"),
+
+  check("description")
+    .isString()
+    .optional()
     .withMessage("portfolio description should be string"),
 ];

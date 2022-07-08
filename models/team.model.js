@@ -5,21 +5,7 @@ const testimonialSchema = require("./testimonial.model");
 const analyticSchema = require("./analytic.model");
 const portfolioSchema = require("./portfolio.model");
 
-function itemsLimit(items) {
-  return items.length < 16 && items.length > 1;
-}
-
-function checkUniqueItems(items) {
-  return new Set(items).size === items.length;
-}
-
-function checkUniqueProject(items) {
-  let projArr = [];
-  for (let item of items) {
-    projArr.push(item.project);
-  }
-  return new Set(projArr).size === projArr.length;
-}
+const validators = require("./validators.function");
 
 const teamSchema = new mongoose.Schema({
   _id: {
@@ -52,11 +38,11 @@ const teamSchema = new mongoose.Schema({
     ref: "freelancers",
     validate: [
       {
-        validator: itemsLimit,
+        validator: validators.itemsLimit,
         message: "team members should be between 2,15",
       },
       {
-        validator: checkUniqueItems,
+        validator: validators.checkUniqueItems,
         message: "team members items should be unique",
       },
     ],
@@ -66,11 +52,11 @@ const teamSchema = new mongoose.Schema({
     ref: "skills",
     validate: [
       {
-        validator: itemsLimit,
+        validator: validators.itemsLimit,
         message: "team skills should be between 2,15",
       },
       {
-        validator: checkUniqueItems,
+        validator: validators.checkUniqueItems,
         message: "team skills items should be unique",
       },
     ],
@@ -79,19 +65,14 @@ const teamSchema = new mongoose.Schema({
     type: [Number],
     ref: "projects",
     validate: {
-      validator: function (projects) {
-        const duplicated = projects.filter(
-          (item, index) => projects.indexOf(item) !== index
-        );
-        return !Boolean(duplicated.length);
-      },
-      message: (props) => `${props.value} duplicated project ID value`,
+      validator: validators.checkUniqueItems,
+      message: "team projects items should be unique",
     },
   },
   testimonials: {
     type: [testimonialSchema],
     validate: {
-      validator: checkUniqueProject,
+      validator: validators.checkUniqueProject,
       message: "project already has testimonial",
     },
   },
