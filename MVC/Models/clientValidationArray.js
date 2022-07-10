@@ -1,6 +1,6 @@
 const { body, param, query } = require("express-validator");
 
-module.exports.update = [
+const updateValidation = [
   body("id")
     .optional()
     .isNumeric()
@@ -98,7 +98,7 @@ module.exports.update = [
 ];
 
 
-module.exports.signUp = [
+const signUpValidation = [
   body("firstName")
     .isAlpha()
     .withMessage("Clint's firstName should be a Characters")
@@ -120,3 +120,5 @@ module.exports.signUp = [
     .isLength({ min: 8, max: 15 })
     .withMessage("Password length must between 8 to 15")
 ];
+
+module.exports = { updateValidation, signUpValidation }

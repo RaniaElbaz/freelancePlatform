@@ -1,6 +1,7 @@
 let mongoose = require("mongoose");
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
+
 let analyticsSchema = require("./analyticsSchema");
 let locationSchema = require("./locationSchema");
 let testimonialSchema = require("./testimonialSchema");
@@ -20,7 +21,7 @@ const imageSchema = new mongoose.Schema({
 */
 
 const schema = new mongoose.Schema({
-  _id: { type: Number }, // ! Handling
+  _id: { type: Number },
   firstName: {
     type: String, required: true, minLength: 3,
     maxLength: 10,
@@ -40,7 +41,6 @@ const schema = new mongoose.Schema({
   analytics: {
     type: analyticsSchema
   },
-  // ! handling
   wallet: { type: Number, default: 0 },
   description: {
     type: String,
@@ -49,15 +49,15 @@ const schema = new mongoose.Schema({
   },
   isVerified: { type: Boolean, default: false },
   isBlocked: { type: Boolean, default: false },
-  testimonials: [testimonialSchema], // ! handling
-  // projects: {[Number], ref: "projects"}
-}, { _id: false });
+  testimonial: [testimonialSchema], // ! handling
+  projects: { type: [Number], ref: "projects" }
+}, { timestamps: true });
 
 schema.plugin(AutoIncrement, { inc_field: '_id' });
 
 
 // B) Mapping: connecting between the related schema and Collection
 // Setter Schema
-module.exports = mongoose.model("Client", schema);
+module.exports = mongoose.model("Clients", schema);
 
 

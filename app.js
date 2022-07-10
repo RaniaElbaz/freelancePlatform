@@ -5,10 +5,10 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 
-const loginRoute = require("./MVC/Routes/loginRoute");
+const authRoute = require("./MVC/Routes/authRoute");
 const clintRoute = require("./MVC/Routes/clientRoute");
 const searchRoute = require("./MVC/Routes/searchRoute");
-const { urlencoded } = require("express");
+
 
 
 
@@ -52,9 +52,9 @@ server.use(morgan(function (tokens, req, res) {
 
 // ^  EndPoints == Routes ==>
 // communication channel to grab data
-server.use(express.urlencoded({ extended: false }))
 server.use(express.json()); // parse matched json http request bodies =>> express.json() must be before routes
-server.use(loginRoute);
+server.use(express.urlencoded({ extended: false }));
+server.use(authRoute);
 server.use(clintRoute);
 server.use(searchRoute);
 
@@ -69,7 +69,7 @@ server.use('/', (request, response, next) => {
 
 // 3 d) Error Handling MW
 server.use((error, request, response, next) => {
-  response.status(500).json({ message: "Internal Error" + error });
+  response.status(500).json({ message: `Internal Error:  ${error}` });
 });
 
 
