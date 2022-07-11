@@ -5,9 +5,9 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 /************ routes */
-const freelancerRoute = require("./Routes/freelancer.route");
-const loginRoute = require("./Routes/login.route");
-const changePasswordRoute = require("./Routes/changePassword.route");
+const freelancerRoute = require("./routes/freelancer.route");
+const loginRoute = require("./routes/login.route");
+const changePasswordRoute = require("./routes/changePassword.route");
 
 /************ */
 const DB_URL = process.env.DB_URL;
@@ -24,14 +24,14 @@ mongoose.connect(DB_URL)
     })
     .catch((error)=>console.log("Db Connection Error " + error));
 
-/****************** MiddleWare *****************/
+/****************** middleware *****************/
 //1- MW url and method                                              
 app.use(morgan('dev')); //method-url-status-ms- :res[content-length]
 
 //2- all users CORS MW
 app.use(cors());
 
-/****************** Routes *****************/
+/****************** routes *****************/
 app.use(express.json());//body parsing
 
 app.use('/login', loginRoute);

@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-const { languages } = require('../data/enums');
+const { languages } = require('../utilities/enums');
 
-const { emailRegex, passwordRegex, phoneRegex } = require('../data/regex');
-const { checkDuplicated } = require("../data/functions");
+const { emailRegex, passwordRegex, phoneRegex } = require("../utilities/regex");
+const { checkDuplicated } = require("../utilities/functions");
 
 const locationSchema = require('./locations.model');
 const paymentSchema = require('./payment.model');

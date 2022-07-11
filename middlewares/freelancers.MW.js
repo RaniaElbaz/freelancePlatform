@@ -1,5 +1,5 @@
 const { check, param } = require("express-validator");
-const { languages } = require("../data/enums");
+const { languages } = require("../utilities/enums");
 
 module.exports.signupValidator = [
   // numeric auto incremented id

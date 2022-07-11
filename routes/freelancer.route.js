@@ -1,16 +1,16 @@
 const express = require("express");
 const { param } = require("express-validator");
 
-const freelancerController = require("../Controllers/freelancer.controller");
+const freelancerController = require("../controllers/freelancer.controller");
 
-const validationMW = require("../Middlewares/validation.MW");
-const { hashPassword } = require("../Middlewares/hashPassword.MW");
+const validationMW = require("../middlewares/validation.MW");
+const { hashPassword } = require("../middlewares/hashPassword.MW");
 const {
   signupValidator,
   putValidator,
   testimonialValidator,
   putInfoValidator,
-} = require("../Middlewares/freelancers.MW");
+} = require("../middlewares/freelancers.MW");
 
 const freelancerRoute = express.Router();
 
@@ -34,7 +34,7 @@ freelancerRoute
     freelancerController.signup
   );
 
-/** to be moved in anoter controller
+/** to be moved in another controller
  */
 freelancerRoute
   .route("/:id/info")

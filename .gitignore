@@ -2,7 +2,7 @@
 node_modules/
 diagnostic.data/
 journal/
-*/.vscode/
+.vscode/
 
 # misc
 .env
@@ -11,4 +11,4 @@ storage.bson
 package-lock.json
 WiredTiger.turtle
 WiredTiger
-*.lock
+*-lock.json

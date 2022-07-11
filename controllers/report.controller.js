@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-require("../Models/Updates");
+require("../models/reports");
 
-let Update = mongoose.model("updates");
+let Report = mongoose.model("reports");
 /**
- get all Update data
+ get all Report data
  */
-module.exports.getAllUpdates = (request,response,next) => {
-    Update.find({})
+module.exports.getAllReports = (request,response,next) => {
+    Report.find({})
         .then(data=>{
             response.status(200).json(data);
         })
@@ -16,28 +16,29 @@ module.exports.getAllUpdates = (request,response,next) => {
         })
 }
 /**
- add new Update
+ add new Report
  */
-module.exports.addUpdate = (request,response,next) => {
-    let updateObject = new Update({
+module.exports.addReport = (request,response,next) => {
+    let ReportObject = new Report({
         _id: request.body.id,
-        admin: request.body.admin,
-        title: request.body.title,
-        description: request.body.description,
         date: request.body.date,
-        image: request.body.image
+        title: request.body.title,
+        body: request.body.body,
+        category: request.body.category,
+        reporter: request.body.reporter,
+        reported: request.body.reported,
     });
-    updateObject.save()
+    ReportObject.save()
         .then(data=>{
             response.status(201).json({data:"added"});
         })
         .catch(error=>next(error))      
 }
 /**
- update a Update data
+ update a Report data
  */
-module.exports.updateUpdate = (request,response,next) => {
-    Update.findById(request.body.id)
+module.exports.updateReport = (request,response,next) => {
+    Report.findById(request.body.id)
         .then(data => {
             if(data) return data.save()
         })
@@ -47,10 +48,10 @@ module.exports.updateUpdate = (request,response,next) => {
         .catch(error=>next(error))    
 }
 /**
- delete a Update
+ delete a Report
  */
-module.exports.deleteUpdate = (request,response,next) => {
-    Update.deleteOne({_id:request.params.id})
+module.exports.deleteReport = (request,response,next) => {
+    Report.deleteOne({_id:request.params.id})
     .then(data=>{
         response.status(200).json({data:"delete " + request.params.id})
     })

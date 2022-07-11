@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-require("../Models/reports");
+require("../models/questions");
 
-let Report = mongoose.model("reports");
+let Question = mongoose.model("questions");
 /**
- get all Report data
+ get all Question data
  */
-module.exports.getAllReports = (request,response,next) => {
-    Report.find({})
+module.exports.getAllQuestions = (request,response,next) => {
+    Question.find({})
         .then(data=>{
             response.status(200).json(data);
         })
@@ -16,29 +16,27 @@ module.exports.getAllReports = (request,response,next) => {
         })
 }
 /**
- add new Report
+ add new Question
  */
-module.exports.addReport = (request,response,next) => {
-    let ReportObject = new Report({
+module.exports.addQuestion = (request,response,next) => {
+    let QuestionObject = new Question({
         _id: request.body.id,
         date: request.body.date,
-        title: request.body.title,
-        body: request.body.body,
-        category: request.body.category,
-        reporter: request.body.reporter,
-        reported: request.body.reported,
+        question: request.body.question,
+        answer: request.body.answer,
+        tag: request.body.tag,
     });
-    ReportObject.save()
+    QuestionObject.save()
         .then(data=>{
             response.status(201).json({data:"added"});
         })
         .catch(error=>next(error))      
 }
 /**
- update a Report data
+ update a Question data
  */
-module.exports.updateReport = (request,response,next) => {
-    Report.findById(request.body.id)
+module.exports.updateQuestion = (request,response,next) => {
+    Question.findById(request.body.id)
         .then(data => {
             if(data) return data.save()
         })
@@ -48,10 +46,10 @@ module.exports.updateReport = (request,response,next) => {
         .catch(error=>next(error))    
 }
 /**
- delete a Report
+ delete a Question
  */
-module.exports.deleteReport = (request,response,next) => {
-    Report.deleteOne({_id:request.params.id})
+module.exports.deleteQuestion = (request,response,next) => {
+    Question.deleteOne({_id:request.params.id})
     .then(data=>{
         response.status(200).json({data:"delete " + request.params.id})
     })

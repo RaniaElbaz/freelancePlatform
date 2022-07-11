@@ -1,9 +1,9 @@
 const express = require("express");
 
-const { login } = require("../Controllers/login.controller");
+const { login } = require("../controllers/login.controller");
 
-const validationMW = require("../Middlewares/validation.MW");
-const { loginValidator } = require("../Middlewares/freelancers.MW");
+const validationMW = require("../middlewares/validation.MW");
+const { loginValidator } = require("../middlewares/freelancers.MW");
 
 const loginRoute = express.Router();
 

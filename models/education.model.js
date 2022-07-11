@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-// const dateSchema = require('./date.model');
-
 const educationSchema = new mongoose.Schema({
     organization: {
         required: true,

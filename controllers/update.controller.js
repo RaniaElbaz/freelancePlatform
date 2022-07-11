@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-require("../Models/questions");
+require("../models/Updates");
 
-let Question = mongoose.model("questions");
+let Update = mongoose.model("updates");
 /**
- get all Question data
+ get all Update data
  */
-module.exports.getAllQuestions = (request,response,next) => {
-    Question.find({})
+module.exports.getAllUpdates = (request,response,next) => {
+    Update.find({})
         .then(data=>{
             response.status(200).json(data);
         })
@@ -16,27 +16,28 @@ module.exports.getAllQuestions = (request,response,next) => {
         })
 }
 /**
- add new Question
+ add new Update
  */
-module.exports.addQuestion = (request,response,next) => {
-    let QuestionObject = new Question({
+module.exports.addUpdate = (request,response,next) => {
+    let updateObject = new Update({
         _id: request.body.id,
+        admin: request.body.admin,
+        title: request.body.title,
+        description: request.body.description,
         date: request.body.date,
-        question: request.body.question,
-        answer: request.body.answer,
-        tag: request.body.tag,
+        image: request.body.image
     });
-    QuestionObject.save()
+    updateObject.save()
         .then(data=>{
             response.status(201).json({data:"added"});
         })
         .catch(error=>next(error))      
 }
 /**
- update a Question data
+ update a Update data
  */
-module.exports.updateQuestion = (request,response,next) => {
-    Question.findById(request.body.id)
+module.exports.updateUpdate = (request,response,next) => {
+    Update.findById(request.body.id)
         .then(data => {
             if(data) return data.save()
         })
@@ -46,10 +47,10 @@ module.exports.updateQuestion = (request,response,next) => {
         .catch(error=>next(error))    
 }
 /**
- delete a Question
+ delete a Update
  */
-module.exports.deleteQuestion = (request,response,next) => {
-    Question.deleteOne({_id:request.params.id})
+module.exports.deleteUpdate = (request,response,next) => {
+    Update.deleteOne({_id:request.params.id})
     .then(data=>{
         response.status(200).json({data:"delete " + request.params.id})
     })

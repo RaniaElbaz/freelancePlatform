@@ -1,10 +1,10 @@
 const express = require("express");
 const { body, param } = require("express-validator");
 
-const videoController = require("../Controllers/videoController");
+const videoController = require("../controllers/video.controller");
 
-const validationMW = require("../Middlewares/validationMW");
-const videoValidation = require("../Middlewares/videoValidation");
+const validationMW = require("../middlewares/validation.MW");
+const videoValidation = require("../middlewares/videoValidation");
 const videoRoute = express.Router();
 
 videoRoute.route("/videos")

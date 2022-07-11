@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-require("../Models/freelancers.model");
+require("../models/freelancers.model");
 
 let Freelancer = mongoose.model("freelancers");
 

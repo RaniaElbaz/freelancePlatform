@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-require("../Models/videos");
+require("../models/Tests");
 
-let Video = mongoose.model("videos");
+let Test = mongoose.model("tests");
 /**
- get all video data
+ get all Test data
  */
-module.exports.getAllVideos = (request,response,next) => {
-    Video.find({})
+module.exports.getAllTests = (request,response,next) => {
+    Test.find({})
         .then(data=>{
             response.status(200).json(data);
         })
@@ -16,27 +16,27 @@ module.exports.getAllVideos = (request,response,next) => {
         })
 }
 /**
- add new video
+ add new Test
  */
-module.exports.addVideo = (request,response,next) => {
-    let videoObject = new Video({
+module.exports.addTest = (request,response,next) => {
+    let TestObject = new Test({
         _id: request.body.id,
         duration: request.body.duration,
-        video: request.body.video,
-        title: request.body.title,
-        description: request.body.description,
+        skills: request.body.skills,
+        body: request.body.body,
+        badges: request.body.badges
     });
-    videoObject.save()
+    TestObject.save()
         .then(data=>{
             response.status(201).json({data:"added"});
         })
         .catch(error=>next(error))      
 }
 /**
- update a Video data
+ update a Test data
  */
-module.exports.updateVideo = (request,response,next) => {
-    Video.findById(request.body.id)
+module.exports.updateTest = (request,response,next) => {
+    Test.findById(request.body.id)
         .then(data => {
             if(data) return data.save()
         })
@@ -46,10 +46,10 @@ module.exports.updateVideo = (request,response,next) => {
         .catch(error=>next(error))    
 }
 /**
- delete a Video
+ delete a Test
  */
-module.exports.deleteVideo = (request,response,next) => {
-    Video.deleteOne({_id:request.params.id})
+module.exports.deleteTest = (request,response,next) => {
+    Test.deleteOne({_id:request.params.id})
     .then(data=>{
         response.status(200).json({data:"delete " + request.params.id})
     })

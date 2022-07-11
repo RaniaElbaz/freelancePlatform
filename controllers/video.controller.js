@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-require("../Models/Tests");
+require("../models/videos");
 
-let Test = mongoose.model("tests");
+let Video = mongoose.model("videos");
 /**
- get all Test data
+ get all video data
  */
-module.exports.getAllTests = (request,response,next) => {
-    Test.find({})
+module.exports.getAllVideos = (request,response,next) => {
+    Video.find({})
         .then(data=>{
             response.status(200).json(data);
         })
@@ -16,27 +16,27 @@ module.exports.getAllTests = (request,response,next) => {
         })
 }
 /**
- add new Test
+ add new video
  */
-module.exports.addTest = (request,response,next) => {
-    let TestObject = new Test({
+module.exports.addVideo = (request,response,next) => {
+    let videoObject = new Video({
         _id: request.body.id,
         duration: request.body.duration,
-        skills: request.body.skills,
-        body: request.body.body,
-        badges: request.body.badges
+        video: request.body.video,
+        title: request.body.title,
+        description: request.body.description,
     });
-    TestObject.save()
+    videoObject.save()
         .then(data=>{
             response.status(201).json({data:"added"});
         })
         .catch(error=>next(error))      
 }
 /**
- update a Test data
+ update a Video data
  */
-module.exports.updateTest = (request,response,next) => {
-    Test.findById(request.body.id)
+module.exports.updateVideo = (request,response,next) => {
+    Video.findById(request.body.id)
         .then(data => {
             if(data) return data.save()
         })
@@ -46,10 +46,10 @@ module.exports.updateTest = (request,response,next) => {
         .catch(error=>next(error))    
 }
 /**
- delete a Test
+ delete a Video
  */
-module.exports.deleteTest = (request,response,next) => {
-    Test.deleteOne({_id:request.params.id})
+module.exports.deleteVideo = (request,response,next) => {
+    Video.deleteOne({_id:request.params.id})
     .then(data=>{
         response.status(200).json({data:"delete " + request.params.id})
     })

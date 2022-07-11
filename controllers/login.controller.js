@@ -5,24 +5,28 @@ const bcrypt = require("bcrypt");
 let Freelancer = mongoose.model("freelancers");
 
 module.exports.login = (request, response, next) => {
-  Freelancer.findOne({
-    email: request.body.email,
-    // password: request.body.password
-  })
+  Freelancer.findOne(
+    {
+      email: request.body.email,
+    },
+    { email: 1, password: 1, isBlocked: 1 }
+  )
     .then((data) => {
       if (!data) {
+        //email not found
         let error = new Error("username or password incorrect");
         error.status = 401;
-        throw error;
+        next(error);
       }
       if (data.isBlocked) {
-        throw new Error("freelancer can't log in");
+        //user is blocked
+        next(new Error("freelancer can't log in"));
       }
-      /***************** */
       bcrypt
         .compare(request.body.password, data.password)
         .then((result) => {
-          if (result == true) {
+          if (result) {
+            //password is correct
             let token = jwt.sign(
               {
                 id: data._id,
@@ -33,7 +37,7 @@ module.exports.login = (request, response, next) => {
             );
             response.status(200).json({ token, message: "login" });
           } else {
-            throw new Error("password unmatched");
+            next(new Error("password unmatched"));
           }
         })
         .catch((error) => next(error));
