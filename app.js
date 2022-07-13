@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 
 /************ routes */
 const freelancerRoute = require("./routes/freelancer.route");
+const reportRoute = require("./routes/report.route");
 const loginRoute = require("./routes/login.route");
 const changePasswordRoute = require("./routes/changePassword.route");
 
@@ -36,7 +37,8 @@ app.use(express.json());//body parsing
 
 app.use('/login', loginRoute);
 app.use(changePasswordRoute);
-app.use('/freelancers',freelancerRoute);
+app.use('/freelancers', freelancerRoute);
+app.use(reportRoute);
 
 //3- Not Found MW
 app.use((request,response)=>{

@@ -1,44 +1,45 @@
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-const reportTypes = [
-    'inappropraite',
-    'spam',
-
-]
+const { reportTypes, users } = require("../utilities/enums");
 
 //create schema object
-const reportSchema = new mongoose.Schema({
-    _id:{
-        type: Number,
+const reportSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: Number,
     },
-    date:{
-        type: Date,
-        required: true
+    category: {
+      type: String,
+      enum: reportTypes,
+      required: true,
     },
-    title:{
-        type: String,
-        enum: reportTypes,
-        required: true
+    body: {
+      type: String,
     },
-    body:{
-        type: string
+    reporter: {
+      type: Number,
+      required: true,
+      refPath: "reporterModel",
     },
-    category:{//?
-        type: String,
+    reporterModel: {
+      type: String,
+      required: true,
+      enum: users,
     },
-    reporter:{
-        type: Number,
-        required: true,
-        // ref: ""
+    reported: {
+      type: Number,
+      required: true,
+      refPath: "reportedModel",
     },
-    reported:{
-        type: Number,
-        required: true,
-        // ref: ""
+    reportedModel: {
+      type: String,
+      required: true,
+      enum: ["clients", "freelancers", "companies", "teams", "products"],
     },
-
-}, { _id: false });
+  },
+  { _id: false , timestamps: true }
+);
 
 //mapping
 reportSchema.plugin(AutoIncrement, {id: 'reportsId'});

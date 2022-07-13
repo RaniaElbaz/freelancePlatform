@@ -2,8 +2,14 @@ const express = require("express");
 const { param } = require("express-validator");
 
 const freelancerController = require("../controllers/freelancer.controller");
-
+const authMW = require("../middleWares/auth.MW");
 const validationMW = require("../middlewares/validation.MW");
+const {
+  allAuth,
+  AdminAndFreelancerAuth,
+  adminAuth,
+  clientAndCompanyAuth,
+} = require("../middlewares/authAccess.MW");
 const { hashPassword } = require("../middlewares/hashPassword.MW");
 const {
   signupValidator,
@@ -19,9 +25,7 @@ const freelancerRoute = express.Router();
  */
 freelancerRoute
   .route("/")
-  .get(
-    freelancerController.getAllFreelancers
-  );
+  .get(authMW, allAuth, freelancerController.getAllFreelancers);
 
 /**Register route
  */
@@ -35,10 +39,14 @@ freelancerRoute
   );
 
 /** to be moved in another controller
+ * update private access info
+ * (isBlocked, isVerified, analytics, badges, connects, wallet)
  */
 freelancerRoute
   .route("/:id/info")
   .put(
+    authMW,
+    adminAuth,
     putInfoValidator,
     validationMW,
     freelancerController.updateFreelancerInfo
@@ -48,6 +56,8 @@ freelancerRoute
 freelancerRoute
   .route("/:id/update/testimonials")
   .put(
+    authMW,
+    clientAndCompanyAuth,
     testimonialValidator,
     validationMW,
     freelancerController.updateFreelancerTestimonials
@@ -57,36 +67,47 @@ freelancerRoute
  * :detail options:
  * 1- details for [phone, address, title, image, ...]
  * 2- {to be updated value}> certificates, experience, etc.
+ * 3- skills
  */
 freelancerRoute
   .route("/:id/update/:detail")
   .put(
+    authMW,
+    AdminAndFreelancerAuth,
     putValidator,
     validationMW,
     freelancerController.updateFreelancerDetails
-);
+  );
 
 freelancerRoute
   .route("/:id/edit/:detail")
-  .put(putValidator, validationMW, freelancerController.editData);
+  .put(
+    authMW,
+    AdminAndFreelancerAuth,
+    putValidator,
+    validationMW,
+    freelancerController.editData
+  );
 
 freelancerRoute
   .route("/:id/remove/:detail")
-  .put(putValidator, validationMW, freelancerController.removeData);
+  .put(
+    authMW,
+    AdminAndFreelancerAuth,
+    putValidator,
+    validationMW,
+    freelancerController.removeData
+  );
 
 freelancerRoute
   .route("/:id")
-  //get freelancer by id (show profile)
-  .get(
+  .all(
     [param("id").isNumeric().withMessage("Freelancer id wrong")],
-    validationMW,
-    freelancerController.getFreelancerById
+    validationMW
   )
+  //get freelancer by id (show profile)
+  .get(authMW, allAuth, freelancerController.getFreelancerById)
   //delete freelancer by id (dev purpose only)
-  .delete(
-    [param("id").isNumeric().withMessage("Freelancer id wrong")],
-    validationMW,
-    freelancerController.deleteFreelancer
-  );
+  .delete(authMW, adminAuth, freelancerController.deleteFreelancer);
 
 module.exports = freelancerRoute;

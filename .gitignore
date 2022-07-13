@@ -12,3 +12,4 @@ package-lock.json
 WiredTiger.turtle
 WiredTiger
 *-lock.json
+mongod.lock

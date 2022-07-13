@@ -7,7 +7,6 @@ const { emailRegex, passwordRegex, phoneRegex } = require("../utilities/regex");
 const { checkDuplicated } = require("../utilities/functions");
 
 const locationSchema = require('./locations.model');
-const paymentSchema = require('./payment.model');
 const educationSchema = require('./education.model');
 const analyticsSchema = require('./analytics.model');
 const certificateSchema = require('./certificates.model');

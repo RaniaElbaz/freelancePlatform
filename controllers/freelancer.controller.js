@@ -53,6 +53,7 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
       //info
       if (request.params.detail === "details") {
         for (let key of profileDetails) {
+          console.log(key);
           if (key == "address") {
             /*****************address */
             for (let addressKey in data[key]) {
@@ -82,11 +83,13 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
         detailObject.index = data[request.params.detail].length;
         data[request.params.detail].push(detailObject);
         return data.save();
-      } else if (request.params.detail === "skills") {
+      }
+      //array of numbers
+      else if (request.params.detail === "skills") {
         data.skills = [...new Set([...data.skills, ...request.body.skills])];
         return data.save();
       } else {
-        throw new Error("Invalid request");
+        next(new Error("Invalid request"));
       }
     })
     .then((data) => {
@@ -157,21 +160,16 @@ module.exports.editData = (request, response, next) => {
     { education: 1, certificates: 1, eperience: 1, portfolio: 1 }
   )
     .then((data) => {
-      if (!data) throw new Error("freelancer not found");
-      if (request.body.index < data[request.params.detail].length)
+      if (!data) next(new Error("freelancer not found"));
+      if (request.body.index < data[request.params.detail].length) //index is valid
+        //assign updated object to the old object
         data[request.params.detail][request.body.index] = Object.assign(
           {},
           request.body[request.params.detail]
         );
       else
-        throw new Error(`freelancer's ${request.params.detail} not found`);
+        next(new Error(`freelancer's ${request.params.detail} not found`));
       return data.save();
-      // data[request.params.detail].forEach((object) => { 
-      //   if (object.index === request.body[request.params.detail].index) {
-      //     object = Object.assign({},request.body[request.params.detail]);
-      //     return data.save();
-      //   }
-      // });
     })
     .then(() => {
       response.status(201).json({ data: "updated" });
@@ -187,11 +185,11 @@ module.exports.removeData = (request, response, next) => {
     { education: 1, certificates: 1, eperience: 1, portfolio: 1 }
   )
     .then((data) => {
-      if (!data) throw new Error("freelancer not found");
+      if (!data) next(new Error("freelancer not found"));
       if (request.body.index < data[request.params.detail].length)
         data[request.params.detail].splice(request.body.index, 1);
       else
-        throw new Error(`freelancer's ${request.params.detail} not found`)
+        next(new Error(`freelancer's ${request.params.detail} not found`));
       return data.save();
     })
     .then(() => {
@@ -205,7 +203,7 @@ module.exports.removeData = (request, response, next) => {
 module.exports.getFreelancerById = (request, response, next) => {
   Freelancer.findOne(
     { _id: request.params.id },
-    { wallet: 0, isBlocked: 0 } //password: 0, isBlocked: 0
+    { wallet: 0, isBlocked: 0, password: 0 } //
   )
     .then((data) => {
       if (data == null) next(new Error("Freelancer not found"));
@@ -217,6 +215,7 @@ module.exports.getFreelancerById = (request, response, next) => {
 };
 
 /** get all freelancer data
+ * auth by users
  */
 module.exports.getAllFreelancers = (request, response, next) => {
   Freelancer.find(
@@ -239,6 +238,8 @@ module.exports.getAllFreelancers = (request, response, next) => {
 };
 
 /**delete a freelancer
+ * admin only 
+ * for dev use only
  */
 module.exports.deleteFreelancer = (request, response, next) => {
   Freelancer.deleteOne({ _id: request.params.id })
