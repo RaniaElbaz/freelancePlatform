@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const teamRoutes = require("./routes/team.route");
 const skillRoutes = require("./routes/skill.route");
 const categoryRoutes = require("./routes/category.route");
+const projectRoutes = require("./routes/project.route");
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(express.json());
 app.use("/team", teamRoutes);
 app.use("/skill", skillRoutes);
 app.use("/category", categoryRoutes);
+app.use("/project", projectRoutes);
 
 app.use((request, response) => {
   response.status(404).json({ message: "Not Found" });

@@ -6,8 +6,10 @@ const talentSchema = require("./talent.model");
 const proposalSchema = require("./proposal.model");
 const budgetSchema = require("./budget.model");
 
-const minConnects = 3,
-  maxConnects = 20,
+const validators = require("./validators.function");
+
+const minSkills = 3,
+  maxSkills = 20,
   minProposals = 0,
   maxProposals = 50;
 
@@ -23,41 +25,43 @@ const projectSchema = new mongoose.Schema({
     minLength: 100,
     maxLength: 1000,
   },
-  budget: {
-    type: budgetSchema, //in route if project is in progress can't update budget
-  },
   isInternship: {
-    type: Boolean, //default false instead of required//updatable only by company
+    type: Boolean, //updatable only by company
     default: false,
   },
-  recruiter: recruiterSchema,
-  categroy: {
+  budget: {
+    type: budgetSchema,
+  },
+  recruiter: { type: recruiterSchema, required: true },
+  category: {
     type: Number,
     required: true,
     ref: "categories",
   },
   skills: {
     type: [Number],
-    required: true,
     ref: "skills",
+    validate: {
+      validator: (items) => validators.itemsLimit(items, minSkills, maxSkills),
+      message: `project skills should be between ${minSkills},${maxSkills}`,
+    },
   },
   duration: {
-    type: String, //regex
+    type: String,
+    required: true,
   },
   connects: {
     type: Number,
-    validate: {
-      validator: (items) =>
-        validators.itemsLimit(items, minConnects, maxConnects),
-      message: () =>
-        `project connects should be between ${minConnects},${maxConnects}`,
-    },
+    required: true,
+    min: 3,
+    max: 20,
   },
 
   /*properties below will be added in backend not by user*/
   createdAt: {
     type: Date,
     required: true,
+    default: new Date(),
   },
   startTime: {
     type: Date,
@@ -71,7 +75,8 @@ const projectSchema = new mongoose.Schema({
   proposals: {
     type: [proposalSchema],
     validate: {
-      validator: validators.itemsLimit(items, minProposals, maxProposals),
+      validator: (items) =>
+        validators.itemsLimit(items, minProposals, maxProposals),
       message: `project proposals should be between ${minProposals},${minProposals}`,
     },
   },
