@@ -69,7 +69,7 @@ server.use('/', (request, response, next) => {
 
 // 3 d) Error Handling MW
 server.use((error, request, response, next) => {
-  response.status(500).json({ message: `Internal Error:  ${error}` });
+  response.status(500).json({ message: `Internal ${error}` });
 });
 
 

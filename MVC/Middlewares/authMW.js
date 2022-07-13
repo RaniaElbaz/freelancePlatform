@@ -5,8 +5,8 @@ module.exports = (req, res, next) => {
     let token = req.get("Authorization"); // encoded (encrypted) token fetch
 
     if (token) {// token !== undefined
-      token.split(" ")[1];
-      let decodedToken = jwt.verify(token, process.env.secret) // decoded token 
+      let sToken = token.split(" ")[1];
+      let decodedToken = jwt.verify(sToken, process.env.secret) // decoded token 
 
       req.role = decodedToken.role;
       if (req.id) {

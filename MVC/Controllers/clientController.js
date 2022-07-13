@@ -65,10 +65,16 @@ const updateClient = (request, response, next) => {
       // console.log(request.body);
       for (let item in request.body) {
         // console.log(item);
-        if (item == "location") {
+        if (["password", "isBlocked"].includes(item)) {
+          // throw new Error("Change data not Authorize")
+          continue;
+        } else if (item == "location") {
           for (let nestedItem in request.body[item]) {
             // console.log(nestedItem); // ! Handling
-            if (["postalCode", "state", "city", "address"].includes(nestedItem)) {
+            if (["postalCode", "city", "address", "state"].includes(nestedItem)) {
+              console.log(nestedItem, "<====");
+              console.log(request.body.location[nestedItem], "<====>");
+              // data["location"][nestedItem] = request.body["location"][nestedItem];
               data["location"][nestedItem] = request.body["location"][nestedItem];
             }
           }
@@ -101,6 +107,46 @@ const deleteClient = (request, response, next) => {
     .catch(error => next(error));
 };
 
+// ! in UI handle => before user update password it must be re-login to take the loginToken and compare it with the saved one in the database
+const updatePassword = (request, response, next) => {
+  const { loginToken, email, oldPassword, newPassword } = request.body;
+
+  Client.findOne({ loginToken, email }, { password: 1 })
+    .then(user => {
+      if (!user) throw new Error("User with this token doesn't exist!");
+
+
+      bcrypt.compare(user.password, oldPassword, (error, data) => {
+        if (error) throw new Error("Incorrect Old Password");
+
+        bcrypt.hash(newPassword, 10, (error, hash) => {
+          user.updateOne({ password: hash })
+            .then(data => {
+              response.status(200).json({ data: "Password Updating done successfully" })
+            })
+            .catch(error => next(error));
+        })
+      })
+    })
+    .catch(error => next(error));
+}
+
+const blockClient = (request, response, next) => {
+  Client.findOne({
+    email: request.body.email, _id: request.params.id
+  })
+    .then(user => {
+      if (!user) throw new Error("User Email not Found!");
+
+      user.updateOne({ isBlocked: request.body.isBlocked })
+        .then(data => {
+          response.status(200).json({ data: data, message: "Password Resiting done successfully" })
+        })
+        .catch(error => next(error));
+    })
+    .catch(error => { next(error) });
+}
+
 const updateTestimonials = (request, response, next) => {
   Client.findById(request.params.id)
     .then((data) => {
@@ -130,5 +176,7 @@ module.exports = {
   // signUp,
   updateClient,
   deleteClient,
-  updateTestimonials
+  updateTestimonials,
+  updatePassword,
+  blockClient
 };

@@ -7,11 +7,15 @@ const {
   // signUp,
   updateClient,
   deleteClient,
-  updateTestimonials
+  updateTestimonials,
+  updatePassword,
+  blockClient
 } = require("../Controllers/clientController");
 const {
   updateValidation,
-  signUpValidation
+  // signUpValidation,
+  updatePasswordValidation,
+  blockClientVA
 } = require("../Models/clientValidationArray");
 const {
   adminAuth,
@@ -39,6 +43,11 @@ router.route("/client/:id")
   .get(authMW, allAuth, getClientById) // admin & client & freelancer & company
   .put(authMW, AdminAndClientAuth, updateValidation, validationMW, updateClient) // Admin & client
   .delete(authMW, adminAuth, deleteClient); // admin
+
+
+router.put("/client/:id/updatePassword", updatePasswordValidation, updatePassword) // ^ authorization handled by using token
+
+router.put("/client/:id/blockClient", authMW, adminAuth, blockClientVA, blockClient)
 
 
 router.route("/client/:id/testimonials") // freelancer

@@ -35,22 +35,25 @@ const schema = new mongoose.Schema({
     type: String
   },
   location: {
-    type: locationSchema
+    type: locationSchema, default: {}
   },
-  phoneNumber: { type: Number },
+  phoneNumber: { type: Number, default: 0 },
   analytics: {
-    type: analyticsSchema
+    type: analyticsSchema, default: {}
   },
   wallet: { type: Number, default: 0 },
   description: {
     type: String,
     //  minLength: 50,
     maxLength: 1000,
+    default: ""
   },
   isVerified: { type: Boolean, default: false },
   isBlocked: { type: Boolean, default: false },
   testimonial: [testimonialSchema], // ! handling
-  projects: { type: [Number], ref: "projects" }
+  projects: { type: [Number], ref: "projects" },
+  resetLink: { type: String, default: '' },
+  loginToken: { type: String, default: '' }
 }, { timestamps: true });
 
 schema.plugin(AutoIncrement, { inc_field: '_id' });

@@ -20,7 +20,7 @@ let signUp = (req, res, next) => {
 
   Client.findOne({ email })
     .then(user => {
-      if (user) throw new Error("User is already registered!");
+      if (user) next(new Error("User is already registered!"));
 
       // Email Verification
       let token = jwt.sign({ email, firstName, lastName, password }, process.env.secret, { expiresIn: "10m" })
@@ -49,7 +49,7 @@ let signUp = (req, res, next) => {
       mg.messages().send(data, function (error, body) {
         if (error) next(error);
 
-        console.log(body);
+        // console.log(body);
         res.status(201).json({ data: "Email verification link has been sent, kindly activate your account" })
       });
 
@@ -64,7 +64,7 @@ let signUp = (req, res, next) => {
 let activateAccount = (req, res, next) => {
   const { token } = req.body;
   try {
-    if (!token) throw new Error("Something went Wrong!!");
+    if (!token) new Error("Something went Wrong!!");
     let decodedToken = jwt.verify(token, process.env.secret);
 
     const { firstName, lastName, email, password } = decodedToken;
@@ -121,6 +121,13 @@ const userLogin = (req, res, next) => {
           id: user._id,
           role: req.params.userType
         }, process.env.secret, { expiresIn: "1h" });
+
+        user.updateOne({ loginToken: token })
+          .then(data => {
+            res.status(200).json({ data: "loginToken Saved successfully" })
+          })
+          .catch(error => next(error));
+
         res.status(200).json({ token, message: `${req.params.userType}Login` })
       })
     })
@@ -169,7 +176,7 @@ let forgotPassword = (req, res, next) => {
             if (error) next(error);
 
             res.status(200).json({ data: "Reset Password link has been sent to your Email, kindly check your mail and follow the instructions" })
-            console.log(body);
+            // console.log(body);
           });
         })
         .catch(error => next(error));
@@ -182,24 +189,34 @@ let forgotPassword = (req, res, next) => {
  * **************** */
 let resetPassword = (req, res, next) => {
   const { resetLink, newPassword } = req.body;
-  if (!resetLink) throw new Error("Authentication Error!!");
+  if (!resetLink) next(new Error("Authentication Error!!"));
   let token = resetLink;
 
   try {
-    let decodedToken = jwt.verify(token, process.env.secret);
+    // let decodedToken = jwt.verify(token, process.env.secret);
+    // const { _id, email } = decodedToken;
 
-    const { _id, email } = decodedToken;
-
-    Client.findOne({ email, resetLink })
+    Client.findOne({ resetLink }, { password: 1 })
       .then(user => {
-        if (!user) throw new Error("User with this token doesn't exist!");
-        bcrypt.hash(newPassword, 10, (error, hash) => {
-          user.updateOne({ password: hash, resetLink: "" })
-            .then(data => {
-              res.status(200).json({ data: "Password Resiting done successfully" })
-            })
-            .catch(error => next(error));
-        })
+        if (!user) next(new Error("User with this token doesn't exist!"));
+
+        // bcrypt.compareSync(plainText, hashedText) ==> return true or false;
+        let isMatch = bcrypt.compareSync(newPassword, user.password);
+        console.log(isMatch);
+
+        if (isMatch) {
+          // isMatch ==> the two password is the same..
+          next(Error("This is the Old Password, Enter new One"));
+        } else {
+          bcrypt.hash(newPassword, 10, (error, hash) => {
+            user.updateOne({ password: hash, resetLink: "" })
+              .then(data => {
+                res.status(200).json({ data: "Password Resiting done successfully" })
+              })
+              .catch(error => next(error));
+          })
+        }
+
       })
       .catch(error => next(error));
   } catch (error) {

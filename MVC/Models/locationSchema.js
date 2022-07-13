@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 
 const locationSchema = new mongoose.Schema({
   postalCode: {
-    type: Number
+    type: Number, default: 0
   },
   city: {
-    type: String
+    type: String, default: ""
   },
   address: {
-    type: String
+    type: String, default: ""
   },
   state: {
-    type: String
+    type: String, default: ""
   }
 }, { _id: false });
 

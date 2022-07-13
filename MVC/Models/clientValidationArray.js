@@ -22,11 +22,6 @@ const updateValidation = [
     .isEmail()
     .withMessage("You Should Enter a valid Email"),
 
-  body("password")
-    // .matches()
-    .isLength({ min: 8, max: 15 })
-    .withMessage("Password length must between 8 to 15"),
-
   body("picture")
     .optional()
     .isString()
@@ -84,17 +79,13 @@ const updateValidation = [
     .withMessage("wallet must be a Number"),
 
   body("description")
-    .isAlpha()
-    .isLength({ min: 100, max: 500 })
-    .withMessage("wallet must be a String"),
+    .isString()
+    // .isLength({ min: 100, max: 500 })
+    .withMessage("description must be a String"),
 
   body("isVerified")
     .isBoolean()
     .withMessage("isVerified must be a True or False"),
-
-  body("isBlocked")
-    .isBoolean()
-    .withMessage("isBlocked wallet must be a True or False"),
 ];
 
 
@@ -121,4 +112,22 @@ const signUpValidation = [
     .withMessage("Password length must between 8 to 15")
 ];
 
-module.exports = { updateValidation, signUpValidation }
+const updatePasswordValidation = [
+  body("password")
+    // .matches()
+    .isLength({ min: 8, max: 15 })
+    .withMessage("Password length must between 8 to 15"),
+]
+
+const blockClientVA = [
+  body("isBlocked")
+    .isBoolean()
+    .withMessage("isBlocked must be a True or False"),
+]
+
+module.exports = {
+  updateValidation,
+  signUpValidation,
+  updatePasswordValidation,
+  blockClientVA
+}
