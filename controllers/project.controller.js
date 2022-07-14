@@ -89,7 +89,7 @@ module.exports.updateProject = (request, response, next) => {
         } else data[prop] = request.body[prop] || data[prop];
       }
       console.log(data.isInternship);
-      if (data.isInternship == true) delete data.budget;
+      if (data.isInternship == true) delete data.budget; //🔴not working
 
       return data.save().then((data) => {
         response.status(201).json({ msg: "Project updated", data });
