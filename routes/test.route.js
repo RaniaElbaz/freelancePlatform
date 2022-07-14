@@ -1,27 +1,38 @@
 const express = require("express");
-const { body, param } = require("express-validator");
+const { param } = require("express-validator");
 
-const testController = require("../Controllers/test.controller");
+const testController = require("../controllers/test.controller");
+const authMW = require("../middlewares/auth.MW");
+const validationMW = require("../middlewares/validation.MW");
+const testValidation = require("../middlewares/tests.MW");
+const { allAuth, adminAuth } = require("../middlewares/authAccess.MW")
 
-const validationMW = require("../Middlewares/validationMW");
-const testValidation = require("../Middlewares/testValidation");
 const testRoute = express.Router();
 
-testRoute.route("/tests")
-    .get(testController.getAllTests)
-    .post(
-    //     testValidation,
-    //     [body("education.organization").optional({ checkFalsy: true, nullable: true })
-    //     .isAlpha().withMessage("test's education is invalid")],
-    // validationMW,
-    testController.addTest)
-    .put(testController.updateTest);
-
-testRoute.route("/tests/:id")
-    .delete([
-        param("id").isNumeric().withMessage("test id wrong")
-    ],
+testRoute
+  .route("/tests")
+    .get(
+        // authMW,
+        // allAuth,
+        testController.getAllTests)
+  .post(
+    // authMW,
+    // adminAuth,
+    testValidation.postTestValidator,
     validationMW,
-    testController.deleteTest);
+    testController.createTest
+  )
+  .put(testController.updateTest);
+
+testRoute
+  .route("/tests/:id")
+  .all(
+    // authMW,
+    // adminAuth,
+    [param("id").isNumeric().withMessage("test id wrong")],
+    validationMW
+  )
+  .get(testController.getTestById)
+  .delete(testController.deleteTest);
 
 module.exports = testRoute;

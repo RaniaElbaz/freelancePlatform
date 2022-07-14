@@ -1,4 +1,4 @@
-const { check, param } = require("express-validator");
+const { check } = require("express-validator");
 const { reportTypes } = require("../utilities/enums");
 
 module.exports.postReportValidator = [
