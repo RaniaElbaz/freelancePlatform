@@ -54,6 +54,7 @@ server.use(morgan(function (tokens, req, res) {
 // communication channel to grab data
 server.use(express.json()); // parse matched json http request bodies =>> express.json() must be before routes
 server.use(express.urlencoded({ extended: false }));
+server.use("/uploads", express.static("uploads"))
 server.use(authRoute);
 server.use(clintRoute);
 server.use(searchRoute);
@@ -71,5 +72,4 @@ server.use('/', (request, response, next) => {
 server.use((error, request, response, next) => {
   response.status(500).json({ message: `Internal ${error}` });
 });
-
 

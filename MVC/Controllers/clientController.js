@@ -58,7 +58,6 @@ const getClientById = (request, response, next) => {
 // };
 
 const updateClient = (request, response, next) => {
-
   Client.findOne({ _id: request.params.id })
     .then(data => {
       // console.log(data);
@@ -72,8 +71,6 @@ const updateClient = (request, response, next) => {
           for (let nestedItem in request.body[item]) {
             // console.log(nestedItem); // ! Handling
             if (["postalCode", "city", "address", "state"].includes(nestedItem)) {
-              console.log(nestedItem, "<====");
-              console.log(request.body.location[nestedItem], "<====>");
               // data["location"][nestedItem] = request.body["location"][nestedItem];
               data["location"][nestedItem] = request.body["location"][nestedItem];
             }
@@ -96,6 +93,13 @@ const updateClient = (request, response, next) => {
     })
     .catch(error => { next(error) });
 };
+
+
+const uploadImage = (request, response, nex) => {
+
+  console.log(request.file, "<==File");
+  response.status(201).json({ data: "imageUploaded" });
+}
 
 const deleteClient = (request, response, next) => {
   Client.deleteOne({ _id: request.body.id })
@@ -178,5 +182,6 @@ module.exports = {
   deleteClient,
   updateTestimonials,
   updatePassword,
-  blockClient
+  blockClient,
+  uploadImage
 };

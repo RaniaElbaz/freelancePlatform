@@ -114,9 +114,11 @@ const userLogin = (req, res, next) => {
         throw error;
       }
 
-      bcrypt.compare(req.body.password, user.password, (error, data) => {
-        if (error) throw new Error("Incorrect Password");
+      let isMatch = bcrypt.compareSync(req.body.password, user.password);
 
+      if (!isMatch) {
+        if (error) throw new Error("Incorrect Password");
+      } else {
         let token = jwt.sign({
           id: user._id,
           role: req.params.userType
@@ -129,7 +131,8 @@ const userLogin = (req, res, next) => {
           .catch(error => next(error));
 
         res.status(200).json({ token, message: `${req.params.userType}Login` })
-      })
+      }
+
     })
     .catch(error => next(error))
 };
@@ -202,7 +205,7 @@ let resetPassword = (req, res, next) => {
 
         // bcrypt.compareSync(plainText, hashedText) ==> return true or false;
         let isMatch = bcrypt.compareSync(newPassword, user.password);
-        console.log(isMatch);
+
 
         if (isMatch) {
           // isMatch ==> the two password is the same..
