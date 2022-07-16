@@ -5,12 +5,11 @@ const talentSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ["categories", "teams"], //replace categories with freelancers
+    enum: ["freelancers", "teams"],
   },
   id: {
     type: Number,
     required: true,
-    // ref: "teams",
     refPath: "type",
   },
 });

@@ -1,11 +1,14 @@
 const express = require("express");
 
-const authorization = require("../middlewares/athorization.MW");
+const authorization = require("../middlewares/authorization.MW");
 const validationMW = require("../middlewares/validation.MW");
 const controller = require("../controllers/team.Controller");
 const mw = require("../middlewares/team.MW");
 const tmw = require("../middlewares/testimonial.MW");
+const auth = require("../middlewares/auth.MW");
 const router = express.Router();
+
+router.use(auth);
 
 router
   .route("/")

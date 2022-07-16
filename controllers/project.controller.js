@@ -4,6 +4,9 @@ require("../models/project.model");
 let Project = mongoose.model("projects");
 
 module.exports.createProject = (request, response, next) => {
+  if (request.body.isInternship) {
+    delete request.body.budget;
+  }
   let object = new Project({
     title: request.body.title,
     description: request.body.description,
@@ -15,7 +18,6 @@ module.exports.createProject = (request, response, next) => {
     duration: request.body.duration,
     connects: request.body.connects,
   });
-  if (object.isInternship) delete object.budget; //🔴not working
   object
     .save()
     .then((data) => {
@@ -28,7 +30,8 @@ module.exports.getAllProjects = (request, response, next) => {
   Project.find({})
     .populate({ path: "skills", select: "name" })
     .populate({ path: "category", select: "name" })
-    .populate({ path: "talent" })
+    // .populate({ path: "talent" })
+    .populate({ path: "proposals.talent" })
     .then((data) => {
       response.status(200).json(data);
     })
@@ -38,10 +41,11 @@ module.exports.getAllProjects = (request, response, next) => {
 };
 
 module.exports.getProjectById = (request, response, next) => {
-  Project.findById({ _id: request.params.id })
+  Project.findById(request.params.id)
     .populate({ path: "skills", select: "name" })
     .populate({ path: "category", select: "name" })
-    .populate({ path: "talent" })
+    // .populate({ path: "talent" })
+    .populate({ path: "proposals.talent" })
     .then((data) => {
       if (data == null) next(new Error("project not found"));
       else {
@@ -83,14 +87,12 @@ module.exports.updateProject = (request, response, next) => {
           prop == "startTime" ||
           prop == "status" ||
           prop == "talent" ||
-          prop == "proposals"
+          prop == "proposals" ||
+          prop == "isInternship"
         ) {
           continue;
         } else data[prop] = request.body[prop] || data[prop];
       }
-      console.log(data.isInternship);
-      if (data.isInternship == true) delete data.budget; //🔴not working
-
       return data.save().then((data) => {
         response.status(201).json({ msg: "Project updated", data });
       });
@@ -108,7 +110,7 @@ module.exports.createProposal = (request, response, next) => {
       for (let prop in request.body) {
         object[prop] = request.body[prop];
       }
-      object.project = request.params.id;
+      // object.project = request.params.id;
       //🟡 object.talent.id = request.id || 🔴teamId
       //🟡 object.talent.type = request.role+"s"
       Project.findOne({ "proposals.talent": request.body.talent }).then(
