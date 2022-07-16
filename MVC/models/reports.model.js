@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-const { reportTypes, users } = require("../utilities/enums");
+const { reportTypes, users } = require("../helpers/enums");
 
 //create schema object
 const reportSchema = new mongoose.Schema(

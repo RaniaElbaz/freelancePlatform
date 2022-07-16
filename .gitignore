@@ -1,15 +1,8 @@
 # dependencies
-node_modules/
-diagnostic.data/
-journal/
-.vscode/
+/node_modules
+/data
+/spec
 
 # misc
 .env
-*.wt
-storage.bson
 package-lock.json
-WiredTiger.turtle
-WiredTiger
-*-lock.json
-mongod.lock

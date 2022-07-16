@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-const { languages } = require('../utilities/enums');
+const { languages } = require('../helpers/enums');
 
-const { emailRegex, passwordRegex, phoneRegex } = require("../utilities/regex");
-const { checkDuplicated } = require("../utilities/functions");
+const { emailRegex, passwordRegex, phoneRegex } = require("../helpers/regex");
+const { checkDuplicated } = require("../helpers/functions");
 
 const locationSchema = require('./locations.model');
 const educationSchema = require('./education.model');
@@ -49,9 +49,9 @@ const freelancerSchema = new mongoose.Schema(
       },
       required: true,
     },
-    secondEmail: {
-      type: String,
-    },
+    // secondEmail: {
+    //   type: String,
+    // },
     phoneNumber: {
       type: String,
       // validate: {
@@ -102,7 +102,12 @@ const freelancerSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-
+    proposals: {
+      type: Number,
+      default: 0,
+      max: 1e6
+    },
+    
     // 1:Many embedded relationships
     languages: {
       type: [String],

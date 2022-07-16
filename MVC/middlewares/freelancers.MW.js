@@ -1,5 +1,5 @@
 const { check, param } = require("express-validator");
-const { languages } = require("../utilities/enums");
+const { languages } = require("../helpers/enums");
 
 module.exports.signupValidator = [
   // numeric auto incremented id
@@ -24,22 +24,6 @@ module.exports.signupValidator = [
     .withMessage("freelancer's lastname should be characters")
     .isLength({ min: 3, max: 14 })
     .withMessage("freelancer lastname lenghth should be > 3"),
-  //email
-  check("email")
-    .notEmpty()
-    .withMessage("freelancer's email reqiured")
-    .isEmail()
-    .withMessage("freelancer's email invalid"),
-  //password
-  check("password")
-    .notEmpty()
-    .withMessage("freelancer's password reqiured")
-    .isLength({ min: 6, max: 15 })
-    .withMessage("freelancer's password should be 6~15"),
-];
-
-module.exports.loginValidator = [
-  /**********login**********/
   //email
   check("email")
     .notEmpty()
@@ -80,7 +64,7 @@ module.exports.putValidator = [
   //phone
   check("phoneNumber")
     .optional({ checkFalsy: true, nullable: true })
-    .isLength({ min: 11 })
+    .isLength({ min: 11, max:11 })
     .withMessage("freelancer's phoneNumber is invalid"),
 
   //address
@@ -168,7 +152,7 @@ module.exports.putValidator = [
     .isURL()
     .withMessage("freelancer's certificate url is invalid"),
   //id
-  check("id")
+  check("certificateId")
     .optional({ checkFalsy: true, nullable: true })
     .isString()
     .withMessage("freelancer's certificateId is invalid"),
@@ -210,24 +194,20 @@ module.exports.putValidator = [
     .withMessage("portfolio projectTitle is required")
     .isString()
     .withMessage("portfolio projectTitle should be string"),
-
   check("relatedJob")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
     .withMessage("portfolio relatedJob should be number"),
-
   check("completionDate")
     .optional({ checkFalsy: true, nullable: true })
     .notEmpty()
     .withMessage("freelancers completionDate is required")
     .isDate()
     .withMessage("freelancers completionDate should be date"),
-
   check("files")
     .optional({ checkFalsy: true, nullable: true })
     .isArray()
     .withMessage("freelancers files should be array"),
-
   check("skills")
     .optional({ checkFalsy: true, nullable: true })
     .isArray()

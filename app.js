@@ -5,11 +5,12 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 /************ routes */
-const freelancerRoute = require("./routes/freelancer.route");
-const reportRoute = require("./routes/report.route");
-const testRoute = require("./routes/test.route");
-const loginRoute = require("./routes/login.route");
-const changePasswordRoute = require("./routes/changePassword.route");
+const adminRoute = require("./MVC/routes/admin.route");
+const freelancerRoute = require("./MVC/routes/freelancer.route");
+const reportRoute = require("./MVC/routes/report.route");
+const testRoute = require("./MVC/routes/test.route");
+const loginRoute = require("./MVC/routes/login.route");
+const changePasswordRoute = require("./MVC/routes/changePassword.route");
 
 /************ */
 const DB_URL = process.env.DB_URL;
@@ -36,9 +37,10 @@ app.use(cors());
 /****************** routes *****************/
 app.use(express.json());//body parsing
 
-app.use('/login', loginRoute);
+app.use(loginRoute);
 app.use(changePasswordRoute);
-app.use('/freelancers', freelancerRoute);
+app.use(freelancerRoute);
+app.use(adminRoute);
 app.use(reportRoute);
 app.use(testRoute);
 

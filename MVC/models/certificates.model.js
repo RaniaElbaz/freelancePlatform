@@ -20,7 +20,7 @@ const certificateSchema = new mongoose.Schema(
     url: {
       type: String,
     },
-    id: {
+    certificateId: {
       type: String,
     },
     expirationDate: {

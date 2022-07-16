@@ -4,34 +4,6 @@ require("../models/freelancers.model");
 
 let Freelancer = mongoose.model("freelancers");
 
-/** signup as a freelancer
- */
-module.exports.signup = (request, response, next) => {
-  Freelancer.find(
-    { email: request.body.email },
-    { _id: 0, email: 1, isBlocked: 1 }
-  )
-    .then((data) => {
-      if (data.length) {
-        if (data[0].isBlocked) throw new Error("freelancer can't log in");
-        else throw new Error("email already signed up");
-      } else {
-        let freelancerObject = new Freelancer({
-          _id: request.body.id,
-          firstName: request.body.firstName,
-          lastName: request.body.lastName,
-          password: request.body.password,
-          email: request.body.email,
-        });
-        freelancerObject.save();
-      }
-    })
-    .then((data) => {
-      response.status(201).json({ data: "signup success" });
-    })
-    .catch((error) => next(error));
-};
-
 /** update a freelancer data (update profile)
  */
 module.exports.updateFreelancerDetails = (request, response, next) => {
@@ -53,7 +25,6 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
       //info
       if (request.params.detail === "details") {
         for (let key of profileDetails) {
-          console.log(key);
           if (key == "address") {
             /*****************address */
             for (let addressKey in data[key]) {
@@ -63,9 +34,7 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
             }
           } else if (key === "languages" && request.body[key]) {
             /*****************languages */
-            data.languages = [
-              ...new Set([...data.languages, ...request.body.languages]),
-            ];
+            data.languages = [...new Set([...request.body.languages])];
           } else data[key] = request.body[key] || data[key];
         }
         return data.save();
@@ -86,7 +55,7 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
       }
       //array of numbers
       else if (request.params.detail === "skills") {
-        data.skills = [...new Set([...data.skills, ...request.body.skills])];
+        data.skills = [...new Set([...request.body.skills])];
         return data.save();
       } else {
         next(new Error("Invalid request"));
@@ -109,7 +78,6 @@ module.exports.updateFreelancerTestimonials = (request, response, next) => {
         testimonialObject[key] = request.body[key];
       }
       data.testimonials.push(testimonialObject);
-      // data.projects.push(request.body.project);
       return data.save();
     })
     .then((data) => {
@@ -128,6 +96,7 @@ module.exports.updateFreelancerInfo = (request, response, next) => {
     "isVerified",
     "isBlocked",
     "wallet",
+    "projects",
   ];
   Freelancer.findById(request.params.id)
     .then((data) => {
@@ -161,14 +130,14 @@ module.exports.editData = (request, response, next) => {
   )
     .then((data) => {
       if (!data) next(new Error("freelancer not found"));
-      if (request.body.index < data[request.params.detail].length) //index is valid
+      if (request.body.index < data[request.params.detail].length)
+        //index is valid
         //assign updated object to the old object
         data[request.params.detail][request.body.index] = Object.assign(
           {},
           request.body[request.params.detail]
         );
-      else
-        next(new Error(`freelancer's ${request.params.detail} not found`));
+      else next(new Error(`freelancer's ${request.params.detail} not found`));
       return data.save();
     })
     .then(() => {
@@ -177,7 +146,7 @@ module.exports.editData = (request, response, next) => {
     .catch((error) => next(error));
 };
 
-/** delete (update) data
+/** delete an object in an array (update) data
  */
 module.exports.removeData = (request, response, next) => {
   Freelancer.findById(
@@ -188,8 +157,7 @@ module.exports.removeData = (request, response, next) => {
       if (!data) next(new Error("freelancer not found"));
       if (request.body.index < data[request.params.detail].length)
         data[request.params.detail].splice(request.body.index, 1);
-      else
-        next(new Error(`freelancer's ${request.params.detail} not found`));
+      else next(new Error(`freelancer's ${request.params.detail} not found`));
       return data.save();
     })
     .then(() => {
@@ -198,12 +166,19 @@ module.exports.removeData = (request, response, next) => {
     .catch((error) => next(error));
 };
 
-/** get freelancer data  by id (get profile)
+/** get freelancer data  by id (get profile / public view)
  */
 module.exports.getFreelancerById = (request, response, next) => {
   Freelancer.findOne(
     { _id: request.params.id },
-    { wallet: 0, isBlocked: 0, password: 0 } //
+    {
+      wallet: 0,
+      isBlocked: 0,
+      password: 0,
+      email: 0,
+      connects: 0,
+      proposals: 0,
+    }
   )
     .then((data) => {
       if (data == null) next(new Error("Freelancer not found"));
@@ -214,6 +189,23 @@ module.exports.getFreelancerById = (request, response, next) => {
     });
 };
 
+/** get freelancer data  by id (get profile/ private view)
+ */
+// module.exports.getFreelancerById = (request, response, next) => {
+//   if (request.id !== request.params.id) next(new Error("not authorized"))
+//     Freelancer.findOne(
+//       { _id: request.params.id },
+//       { isBlocked: 0, password: 0 }
+//     )
+//       .then((data) => {
+//         if (data == null) next(new Error("Freelancer not found"));
+//         response.status(200).json(data);
+//       })
+//       .catch((error) => {
+//         next(error);
+//       });
+// };
+
 /** get all freelancer data
  * auth by users
  */
@@ -221,6 +213,7 @@ module.exports.getAllFreelancers = (request, response, next) => {
   Freelancer.find(
     {},
     {
+      email: 1,
       skills: 1,
       description: 1,
       firstName: 1,
@@ -238,7 +231,7 @@ module.exports.getAllFreelancers = (request, response, next) => {
 };
 
 /**delete a freelancer
- * admin only 
+ * admin only
  * for dev use only
  */
 module.exports.deleteFreelancer = (request, response, next) => {

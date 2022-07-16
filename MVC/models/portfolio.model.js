@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const { checkDuplicated } = require("../utilities/functions");
+const { checkDuplicated } = require("../helpers/functions");
 
 const portfolioSchema = new mongoose.Schema(
   {
