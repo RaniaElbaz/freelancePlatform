@@ -1,6 +1,6 @@
 const express = require("express");
 
-const authorization = require("../middlewares/athorization.MW");
+// const authorization = require("../middlewares/authorization.MW");
 const validationMW = require("../middlewares/validation.MW");
 const controller = require("../controllers/project.controller");
 const mw = require("../middlewares/project.MW");
