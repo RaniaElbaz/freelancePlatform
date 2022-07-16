@@ -95,10 +95,24 @@ const updateClient = (request, response, next) => {
 };
 
 
-const uploadImage = (request, response, nex) => {
+const uploadImage = (request, response, next) => {
+  const file = request.file;
+  const host = request.host;
+  const imgPath = `${request.protocol}://${host}:${process.env.PORT}${file.destination.slice(1)}${file.filename}`;
 
-  console.log(request.file, "<==File");
-  response.status(201).json({ data: "imageUploaded" });
+  console.log(file, "<==File");
+
+  Client.findOne({ _id: request.params.id })
+    .then(client => {
+      if (!client) throw new Error("Client not Found!");
+
+      client.updateOne({ picture: { imgPath, name: file.originalname } })
+        .then(data => {
+          response.status(201).json({ msg: "imageUploaded", file: file, data: request.body, imgPath });
+        })
+        .catch(error => next(error));
+    })
+    .catch(error => next(error));
 }
 
 const deleteClient = (request, response, next) => {

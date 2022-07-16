@@ -6,19 +6,15 @@ let analyticsSchema = require("./analyticsSchema");
 let locationSchema = require("./locationSchema");
 let testimonialSchema = require("./testimonialSchema");
 
+
 // A ) Create Schema Object 
 
-/*
+
 const imageSchema = new mongoose.Schema({
   name: String,
-  desc: String,
-  img:
-  {
-    data: Buffer,
-    contentType: String
-  }
+  imgPath: String
 });
-*/
+
 
 const schema = new mongoose.Schema({
   _id: { type: Number },
@@ -31,8 +27,7 @@ const schema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   // accountType: { type: String, required: true },
   picture: {
-    // type: imageSchema,  required: true // ! Handling
-    type: String
+    type: imageSchema
   },
   location: {
     type: locationSchema, default: {}

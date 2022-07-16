@@ -78,7 +78,7 @@ let activateAccount = (req, res, next) => {
 
           newClient.save()
             .then(data => {
-              res.status(200).json({ data: "User SignedUP" });
+              res.status(200).json({ message: "User SignedUP", data });
             })
             .catch(error => next(`SignUp Activation Error: ${error}`));
         });

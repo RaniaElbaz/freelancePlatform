@@ -54,7 +54,7 @@ server.use(morgan(function (tokens, req, res) {
 // communication channel to grab data
 server.use(express.json()); // parse matched json http request bodies =>> express.json() must be before routes
 server.use(express.urlencoded({ extended: false }));
-server.use("/uploads", express.static("uploads"))
+server.use("/public", express.static("public")) // visualPath, static folder ==> http:localhost:port/visualPath/staticFolderDirectorOnTheServer
 server.use(authRoute);
 server.use(clintRoute);
 server.use(searchRoute);
@@ -73,3 +73,9 @@ server.use((error, request, response, next) => {
   response.status(500).json({ message: `Internal ${error}` });
 });
 
+/**
+ * Test Area:
+ * http://localhost:8080/public/uploads/2022-07-15T20-29-13.477Zimage_print.jpg
+ * 
+ * 
+ */

@@ -1,13 +1,16 @@
 const express = require("express");
+const path = require('node:path');
 const { body, param, query } = require("express-validator");
 
 const multer = require("multer");
+// Set Storage Engine
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./uploads/");
+    cb(null, "./public/uploads/");
   },
   filename: function (req, file, cb) {
-    cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname);
+    // cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname);
+    cb(null, `${req.params.id}_${path.extname(file.originalname)}`);
   }
 });
 
@@ -25,7 +28,8 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage, limits: {
-    fileSize: 1024 * 1024 * 5
+    // fileSize: 1000000 Bytes = 1 MB
+    fileSize: 1024 * 1024 * 5 // 5 MB
   },
   fileFilter
 });
@@ -59,6 +63,7 @@ const {
 } = require("../Middlewares/usersAuthMW");
 const validationMW = require("../Middlewares/validationMW");
 const authMW = require("../Middlewares/authMW");
+
 
 const router = express.Router();
 
