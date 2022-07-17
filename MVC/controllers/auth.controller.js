@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-const Client = require("../Models/clientSchema");
-// const Freelancer = require("./../Models/freelancerSchema");
-// const Project = require("./../Models/projectSchema");
-// const Admin = require("./../Models/adminSchema");
+const Client = require("../Models/client.model");
+// const Freelancer = require("./../Models/freelancer.model");
+// const Project = require("./../Models/project.model");
+// const Admin = require("./../Models/admin.model");
 
 const mailgun = require("mailgun-js");
 const DOMAIN = process.env.MailgunDOMAIN;
@@ -97,7 +97,7 @@ let activateAccount = (req, res, next) => {
 const userLogin = (req, res, next) => {
   let Schema;
 
-  // ! Ensure form the names the Collections 
+  // ! Ensure from the Collection Names
   req.params.userType == "freelancer" ? Schema = Freelancer :
     req.params.userType == "team" ? Schema = Team :
       req.params.userType == "client" ? Schema = Client :

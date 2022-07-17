@@ -5,9 +5,9 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 
-const authRoute = require("./MVC/Routes/authRoute");
-const clintRoute = require("./MVC/Routes/clientRoute");
-const searchRoute = require("./MVC/Routes/searchRoute");
+const authRoute = require("./MVC/Routes/auth.route");
+const clintRoute = require("./MVC/Routes/client.route");
+const searchRoute = require("./MVC/Routes/search.route");
 
 
 
@@ -72,10 +72,3 @@ server.use('/', (request, response, next) => {
 server.use((error, request, response, next) => {
   response.status(500).json({ message: `Internal ${error}` });
 });
-
-/**
- * Test Area:
- * http://localhost:8080/public/uploads/2022-07-15T20-29-13.477Zimage_print.jpg
- * 
- * 
- */

@@ -1,4 +1,4 @@
-let Client = require("../Models/clientSchema");
+let Client = require("../Models/client.model");
 const bcrypt = require("bcrypt");
 
 

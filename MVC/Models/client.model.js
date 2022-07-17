@@ -2,9 +2,9 @@ let mongoose = require("mongoose");
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 
-let analyticsSchema = require("./analyticsSchema");
-let locationSchema = require("./locationSchema");
-let testimonialSchema = require("./testimonialSchema");
+let analyticsSchema = require("./analytics.model");
+let locationSchema = require("./location.model");
+let testimonialSchema = require("./testimonial.model");
 
 
 // A ) Create Schema Object 

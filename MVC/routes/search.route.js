@@ -2,9 +2,9 @@ const express = require("express");
 const { body, param, query } = require("express-validator");
 
 
-const validationMW = require("./../Middlewares/validationMW");
-const authMW = require("./../Middlewares/authMW");
-const controller = require("./../Controllers/searchController");
+const validationMW = require("../Middlewares/validation.MW");
+const authMW = require("../Middlewares/auth.MW");
+const controller = require("../Controllers/search.controller");
 
 
 const router = express.Router();

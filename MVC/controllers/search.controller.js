@@ -1,8 +1,8 @@
 
-const Client = require("./../Models/clientSchema");
-// const Team = require("./../Models/teamSchema");
-// const Freelancer = require("./../Models/freelancerSchema");
-// const Project = require("./../Models/projectSchema");
+const Client = require("./../Models/client.model");
+// const Team = require("./../Models/team.model");
+// const Freelancer = require("./../Models/freelancer.model");
+// const Project = require("./../Models/project.model");
 
 
 module.exports.getJob = (req, res, next) => {

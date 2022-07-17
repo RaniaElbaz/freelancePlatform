@@ -47,7 +47,7 @@ const {
   updatePassword,
   blockClient,
   uploadImage
-} = require("../Controllers/clientController");
+} = require("../Controllers/client.controller");
 const {
   updateValidation,
   // signUpValidation,
@@ -60,9 +60,9 @@ const {
   AdminAndClientAuth,
   allAuth,
   freelancerAuth
-} = require("../Middlewares/usersAuthMW");
-const validationMW = require("../Middlewares/validationMW");
-const authMW = require("../Middlewares/authMW");
+} = require("../Middlewares/usersAuth.MW");
+const validationMW = require("../Middlewares/validation.MW");
+const authMW = require("../Middlewares/auth.MW");
 
 
 const router = express.Router();
