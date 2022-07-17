@@ -6,7 +6,7 @@ const talentSchema = require("./talent.model");
 const proposalSchema = require("./proposal.model");
 const budgetSchema = require("./budget.model");
 
-const validators = require("./validators.function");
+const validators = require("../helpers/functions");
 
 const minSkills = 3,
   maxSkills = 20,

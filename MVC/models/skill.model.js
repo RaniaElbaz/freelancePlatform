@@ -3,7 +3,7 @@ const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const talentSchema = require("./talent.model");
 
-const validators = require("./validators.function");
+const validators = require("../helpers/functions");
 
 const minCategories = 0;
 const maxCategories = 10;

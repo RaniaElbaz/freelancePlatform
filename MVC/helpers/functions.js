@@ -1,3 +1,10 @@
+module.exports.checkDuplicated = (value) => {
+  const duplicated = value.filter(
+    (item, index) => value.indexOf(item) !== index
+  );
+  return !Boolean(duplicated.length);
+};
+
 module.exports.itemsLimit = (items, min = 2, max = 15) => {
   return items.length <= max && items.length >= min;
 };

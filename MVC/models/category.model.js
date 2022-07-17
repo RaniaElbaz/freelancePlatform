@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
-const validators = require("./validators.function");
+const validators = require("../helpers/functions");
 
 const minSkills = 0;
 const maxSkills = 100;

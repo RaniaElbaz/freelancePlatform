@@ -5,6 +5,8 @@ const testimonialSchema = new mongoose.Schema(
     rating: {
       type: Number,
       required: true,
+      min: 0,
+      max: 5,
     },
     issued: {
       type: Date,
@@ -16,8 +18,8 @@ const testimonialSchema = new mongoose.Schema(
     },
     project: {
       type: Number,
-      required: true,
       ref: "projects",
+      required: true,
     },
   },
   { _id: false }

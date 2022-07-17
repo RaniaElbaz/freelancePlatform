@@ -4,7 +4,7 @@ module.exports = (request, response, next) => {
   let decodedToken = null;
   try {
     let token = request.get("Authorization").split(" ")[1];
-    decodedToken = jwt.verify(token, "mysecret");
+    decodedToken = jwt.verify(token, process.env.SECRET_KEY);
     request.role = decodedToken.role;
     request.id = decodedToken.id;
     next();

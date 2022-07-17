@@ -1,1 +1,8 @@
-/node_modules/
+# dependencies
+/node_modules
+/data
+/spec
+
+# misc
+.env
+package-lock.json

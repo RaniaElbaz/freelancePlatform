@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const testimonialSchema = require("./testimonial.model");
-const analyticSchema = require("./analytic.model");
+const analyticSchema = require("./analytics.model");
 const portfolioSchema = require("./portfolio.model");
 
-const validators = require("./validators.function");
+const validators = require("../helpers/functions");
 
 const teamSchema = new mongoose.Schema({
   _id: {
