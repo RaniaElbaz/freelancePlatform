@@ -3,10 +3,10 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 
-const teamRoutes = require("./routes/team.route");
-const skillRoutes = require("./routes/skill.route");
-const categoryRoutes = require("./routes/category.route");
-const projectRoutes = require("./routes/project.route");
+const teamRoutes = require("./MVC/routes/team.route");
+const skillRoutes = require("./MVC/routes/skill.route");
+const categoryRoutes = require("./MVC/routes/category.route");
+const projectRoutes = require("./MVC/routes/project.route");
 
 const app = express();
 
