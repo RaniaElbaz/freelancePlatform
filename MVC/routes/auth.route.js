@@ -7,7 +7,7 @@ const {
   resetPassword
 } = require("../Controllers/auth.controller");
 
-const { signUpValidation } = require("../Models/clientValidationArray");
+const { signUpValidation } = require("../models/clientValidationArray");
 const { AdminAndClientAuth } = require("../Middlewares/usersAuth.MW");
 const validationMW = require("../Middlewares/validation.MW");
 const authMW = require("../Middlewares/auth.MW");
@@ -15,18 +15,16 @@ const authMW = require("../Middlewares/auth.MW");
 
 const router = express.Router();
 
-//! Handling Generic for All users
 //authMW, AdminAndClientAuth,
-router.post("/client/signup", signUpValidation, validationMW, signUp);
-router.post("/client/activate-account", activateAccount);
+router.post("/signup/:userType", signUpValidation, validationMW, signUp);
+router.post("/activate-account/:userType", activateAccount);
 
-router.post("/client/forgot-password", forgotPassword)
-router.post("/client/reset-password", resetPassword)
+router.post("/forgot-password;/:userType", forgotPassword)
+router.post("/reset-password/:userType", resetPassword)
 
 router.post("/login/:userType", userLogin);
 
 // router.put("/reset/:userType", userReset);
-
 
 
 

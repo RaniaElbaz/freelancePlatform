@@ -1,4 +1,4 @@
-let Client = require("../Models/client.model");
+let Client = require("../models/client.model");
 const bcrypt = require("bcrypt");
 
 
@@ -12,6 +12,8 @@ const getAllClients = (request, response, next) => {
 
 
 const getClientById = (request, response, next) => {
+  console.log(request)
+
   Client.findOne({ _id: request.params.id }, { password: 0, isBlocked: 0 })
     .then(data => {
       if (!data) next(new Error("Client Not Found!"))

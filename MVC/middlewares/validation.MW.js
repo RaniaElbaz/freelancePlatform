@@ -12,4 +12,4 @@ module.exports = (request, response, next) => {
   } else {
     next();
   }
-}
+};

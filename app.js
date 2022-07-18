@@ -1,74 +1,79 @@
-const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
-const mongoose = require("mongoose");
 require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const morgan = require("morgan");
+
+const teamRoutes = require("./MVC/routes/team.route");
+const skillRoutes = require("./MVC/routes/skill.route");
+const categoryRoutes = require("./MVC/routes/category.route");
+const projectRoutes = require("./MVC/routes/project.route");
+const adminRoute = require("./MVC/routes/admin.route");
+const freelancerRoute = require("./MVC/routes/freelancer.route");
+const reportRoute = require("./MVC/routes/report.route");
+const testRoute = require("./MVC/routes/test.route");
+const loginRoute = require("./MVC/routes/login.route");
+const authRoute = require("./MVC/routes/auth.route");
+const clintRoute = require("./MVC/routes/client.route");
+const searchRoute = require("./MVC/routes/search.route");
+const changePasswordRoute = require("./MVC/routes/changePassword.route");
 
 
-const authRoute = require("./MVC/Routes/auth.route");
-const clintRoute = require("./MVC/Routes/client.route");
-const searchRoute = require("./MVC/Routes/search.route");
 
+const DB_URL = process.env.DB_URL;
 
+const app = express();
 
-
-// * 1)  Create Server
-const server = express();
-
-// todo: Connect to the DB
-mongoose.connect(process.env.DB_URL)//"mongodb://localhost:27017/FPDB")
+mongoose
+  .connect(DB_URL)
   .then(() => {
     console.log("DB Connected");
-
-    // * 2 ) Listen to server and port number
-    const port = process.env.PORT || 8080;
-    server.listen(port, () => {
-      console.log(`Server is running on: http://localhost:${port}`);
+    let port = process.env.PORT || 8080;
+    app.listen(port, () => {
+      console.log(`Listenning to port ${port}...`);
     });
-
   })
-  .catch(error => { console.log(error) });
+  .catch((error) => console.log("Db Connection Error " + error));
 
-// * 3 ) Create Middleware & Endpoints
-// 3 a) CORS MW
-// CORS => Cross-Origin Resource Sharing
-// It is a package allow the outside domains to connect with node server..
-// CORS must be used before the Rout.
-server.use(cors(
-  { origin: '*' }
-));
+/****************** middleware *****************/
+//1- MW url and method
+app.use(morgan("dev")); //method-url-status-ms- :res[content-length]
 
-// 3 b) Morgan MW to log the url & method
-server.use(morgan(function (tokens, req, res) {
-  return [
-    tokens.method(req, res),
-    tokens.url(req, res),
-    tokens.status(req, res),
-    // tokens.res(req, res, 'content-length'), '-',
-    // tokens['response-time'](req, res), 'ms'
-  ].join(' ')
-}));
+//2- all users CORS MW
+app.use(cors());
 
+/****************** routes *****************/
 
-// ^  EndPoints == Routes ==>
-// communication channel to grab data
-server.use(express.json()); // parse matched json http request bodies =>> express.json() must be before routes
-server.use(express.urlencoded({ extended: false }));
-server.use("/public", express.static("public")) // visualPath, static folder ==> http:localhost:port/visualPath/staticFolderDirectorOnTheServer
-server.use(authRoute);
-server.use(clintRoute);
-server.use(searchRoute);
+app.use("/public", express.static("public"))
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json()); //body parsing
+
+app.use(loginRoute);
+app.use(changePasswordRoute);
+app.use(freelancerRoute);
+app.use(adminRoute);
+app.use(reportRoute);
+app.use(testRoute);
+app.use("/team", teamRoutes);
+app.use("/skill", skillRoutes);
+app.use("/category", categoryRoutes);
+app.use("/project", projectRoutes);
+app.use(authRoute);
+app.use(clintRoute);
+app.use(searchRoute);
 
 
 
 
-// 3 c) Not Found MW
-server.use('/', (request, response, next) => {
-  response.status(404).json({ data: "Not Found" });
+//3- Not Found MW
+app.use((request, response) => {
+  console.log("Not Found MW");
+  response.status(404).json({ message: "Not Found" });
 });
 
-
-// 3 d) Error Handling MW
-server.use((error, request, response, next) => {
-  response.status(500).json({ message: `Internal ${error}` });
+//4- Error MW
+app.use((error, request, response, next) => {
+  console.log("Error MW");
+  let errorStatus = error.status || 500;
+  response.status(errorStatus).json({ message: "Internal Error:\n" + error });
 });

@@ -53,7 +53,7 @@ const {
   // signUpValidation,
   updatePasswordValidation,
   blockClientVA
-} = require("../Models/clientValidationArray");
+} = require("../models/clientValidationArray");
 const {
   adminAuth,
   clientAuth,

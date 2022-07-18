@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-const Client = require("../Models/client.model");
-// const Freelancer = require("./../Models/freelancer.model");
-// const Project = require("./../Models/project.model");
-// const Admin = require("./../Models/admin.model");
+const Client = require("../models/client.model");
+const Freelancer = require("./../models/freelancers.model");
+// const Company = require("./../models/company.model");
+const Admin = require("./../models/admins.model");
 
 const mailgun = require("mailgun-js");
 const DOMAIN = process.env.MailgunDOMAIN;
@@ -15,15 +15,31 @@ const mg = mailgun({ apiKey: api_key, domain: DOMAIN });
  *    & SignUp
  * **************** */
 let signUp = (req, res, next) => {
-  // console.log(req.body);
-  const { firstName, lastName, email, password } = req.body;
+  let User,
+    payload;
 
-  Client.findOne({ email })
+  req.params.userType == "freelancer" ? User = Freelancer :
+    // req.params.userType == "company" ? User = Company :
+    req.params.userType == "client" ? User = Client :
+      req.params.userType == "admin" ? User = Admin :
+        null;
+
+  if (["freelancer", "client", "admin"].includes(req.params.userType)) {
+    const { firstName, lastName, email, password } = req.body;
+    payload = { firstName, lastName, email, password };
+  } else if (req.params.userType == "company") {
+    const { name, email, password } = req.body;
+    payload = { name, email, password };
+  } else {
+    next(new Error("Invalid UserType!"))
+  }
+
+  User.findOne({ email })
     .then(user => {
       if (user) next(new Error("User is already registered!"));
 
       // Email Verification
-      let token = jwt.sign({ email, firstName, lastName, password }, process.env.secret, { expiresIn: "10m" })
+      let token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "10m" })
       const data = {
         from: 'geoAhmedHamdy1@gmail.com',
         to: email,
@@ -32,7 +48,7 @@ let signUp = (req, res, next) => {
         html: `
           <h2>Account Verification</h2>
           <pre>
-          Hello guy,
+          Hello,
           
           Thank you for choosing Our Freelancing platform 😍
           Please confirm your email address by clicking the link below..
@@ -63,20 +79,35 @@ let signUp = (req, res, next) => {
  * **************** */
 let activateAccount = (req, res, next) => {
   const { token } = req.body;
+  let User;
+
+  req.params.userType == "freelancer" ? User = Freelancer :
+    // req.params.userType == "company" ? User = Company :
+    req.params.userType == "client" ? User = Client :
+      req.params.userType == "admin" ? User = Admin :
+        null;
+
   try {
     if (!token) new Error("Something went Wrong!!");
-    let decodedToken = jwt.verify(token, process.env.secret);
+    let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
 
-    const { firstName, lastName, email, password } = decodedToken;
 
-    Client.findOne({ email })
+    if (["freelancer", "client", "admin"].includes(req.params.userType)) {
+      const { firstName, lastName, email, password } = decodedToken;
+    } else if (req.params.userType == "company") {
+      const { name, email, password } = decodedToken;
+    } else {
+      next(new Error("Invalid UserType!"))
+    }
+
+    User.findOne({ email })
       .then(user => {
         if (user) throw new Error("User is already registered!");
 
         bcrypt.hash(password, 10, (error, hash) => {
-          let newClient = new Client({ firstName, lastName, email, password: hash });
+          let newUser = new User({ firstName, lastName, email, password: hash });
 
-          newClient.save()
+          newUser.save()
             .then(data => {
               res.status(200).json({ message: "User SignedUP", data });
             })
@@ -95,24 +126,25 @@ let activateAccount = (req, res, next) => {
  *    & Login
  * **************** */
 const userLogin = (req, res, next) => {
-  let Schema;
+  let User;
 
   // ! Ensure from the Collection Names
-  req.params.userType == "freelancer" ? Schema = Freelancer :
-    req.params.userType == "team" ? Schema = Team :
-      req.params.userType == "client" ? Schema = Client :
-        req.params.userType == "admin" ? Schema = Admin :
-          null;
+  req.params.userType == "freelancer" ? User = Freelancer :
+    // req.params.userType == "company" ? User = Company :
+    req.params.userType == "client" ? User = Client :
+      req.params.userType == "admin" ? User = Admin :
+        null;
 
-  Schema.findOne({
+  User.findOne({
     email: req.body.email
-  })
+  }, { email: 1, password: 1, isBlocked: 1 })
     .then(user => {
       if (!user) { // user not found
         let error = new Error("Incorrect Username or Password!")
         error.status = 401;
         throw error;
       }
+      if (isBlocked) next(new Error("Login failed!"))
 
       let isMatch = bcrypt.compareSync(req.body.password, user.password);
 
@@ -122,7 +154,7 @@ const userLogin = (req, res, next) => {
         let token = jwt.sign({
           id: user._id,
           role: req.params.userType
-        }, process.env.secret, { expiresIn: "1h" });
+        }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
         user.updateOne({ loginToken: token })
           .then(data => {
@@ -143,12 +175,20 @@ const userLogin = (req, res, next) => {
  * **************** */
 let forgotPassword = (req, res, next) => {
   const { email } = req.body;
+  let User;
 
-  Client.findOne({ email }, { firstName: 1, email: 1, _id: 1 })
+  req.params.userType == "freelancer" ? User = Freelancer :
+    // req.params.userType == "company" ? User = Company :
+    req.params.userType == "client" ? User = Client :
+      req.params.userType == "admin" ? User = Admin :
+        null;
+
+
+  User.findOne({ email }, { firstName: 1, email: 1, _id: 1 })
     .then(user => {
       if (!user) throw new Error("User is Not Exist!");
 
-      let token = jwt.sign({ _id: user._id, email }, process.env.secret, { expiresIn: "10m" })
+      let token = jwt.sign({ _id: user._id, email }, process.env.SECRET_KEY, { expiresIn: "10m" })
       const data = {
         from: 'geoAhmedHamdy1@gmail.com',
         to: email,
@@ -195,11 +235,18 @@ let resetPassword = (req, res, next) => {
   if (!resetLink) next(new Error("Authentication Error!!"));
   let token = resetLink;
 
+  let User;
+  req.params.userType == "freelancer" ? User = Freelancer :
+    // req.params.userType == "company" ? User = Company :
+    req.params.userType == "client" ? User = Client :
+      req.params.userType == "admin" ? User = Admin :
+        null;
+
   try {
-    // let decodedToken = jwt.verify(token, process.env.secret);
+    // let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
     // const { _id, email } = decodedToken;
 
-    Client.findOne({ resetLink }, { password: 1 })
+    User.findOne({ resetLink }, { password: 1 })
       .then(user => {
         if (!user) next(new Error("User with this token doesn't exist!"));
 
@@ -219,15 +266,12 @@ let resetPassword = (req, res, next) => {
               .catch(error => next(error));
           })
         }
-
       })
       .catch(error => next(error));
   } catch (error) {
     next(error)
   }
-
 }
-
 
 
 module.exports = {
