@@ -1,10 +1,15 @@
+const mongoose = require('mongoose');
+const Freelancer = mongoose.model("freelancers");
+const Admin = mongoose.model("admins"); // ! Handling
+
+
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const Client = require("../models/client.model");
-const Freelancer = require("./../models/freelancers.model");
-// const Company = require("./../models/company.model");
-const Admin = require("./../models/admins.model");
+// const Freelancer = require("./../models/freelancers.model");
+// // const Company = require("./../models/company.model");
+// const Admin = require("./../models/admins.model");
 
 const mailgun = require("mailgun-js");
 const DOMAIN = process.env.MailgunDOMAIN;
@@ -24,15 +29,20 @@ let signUp = (req, res, next) => {
       req.params.userType == "admin" ? User = Admin :
         null;
 
+
   if (["freelancer", "client", "admin"].includes(req.params.userType)) {
-    const { firstName, lastName, email, password } = req.body;
+    var { firstName, lastName, email, password } = req.body;
     payload = { firstName, lastName, email, password };
+
   } else if (req.params.userType == "company") {
-    const { name, email, password } = req.body;
+    var { name, email, password } = req.body;
+    console.log(email, "<==Email here");
     payload = { name, email, password };
+
   } else {
     next(new Error("Invalid UserType!"))
   }
+
 
   User.findOne({ email })
     .then(user => {

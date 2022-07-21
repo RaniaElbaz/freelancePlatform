@@ -56,6 +56,6 @@ schema.plugin(AutoIncrement, { inc_field: '_id' });
 
 // B) Mapping: connecting between the related schema and Collection
 // Setter Schema
-module.exports = mongoose.model("Clients", schema);
+module.exports = mongoose.model("clients", schema);
 
 
