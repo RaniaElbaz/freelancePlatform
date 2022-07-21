@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const locationSchema = require("./locations");
-const analyticsSchema = require("./analytics");
-const testimonialSchema = require("./testimonial");
+const locationSchema = require("./locations.model");
+const analyticsSchema = require("./analytics.model");
+const testimonialSchema = require("./testimonial.model");
 
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 

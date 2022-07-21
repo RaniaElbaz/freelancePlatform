@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 const Freelancer = mongoose.model("freelancers");
-const Admin = mongoose.model("admins"); // ! Handling
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const Client = require("../models/client.model");
-// // const Company = require("./../models/company.model");
+const Company = require("./../models/company.model");
 
 const mailgun = require("mailgun-js");
 const DOMAIN = process.env.MailgunDOMAIN;
@@ -21,7 +20,7 @@ let signUp = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : // req.params.userType == "company" ? User = Company :
+    :  req.params.userType == "company" ? User = Company :
     req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
@@ -90,7 +89,7 @@ let activateAccount = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : // req.params.userType == "company" ? User = Company :
+    :  req.params.userType == "company" ? User = Company :
     req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
@@ -144,12 +143,10 @@ const userLogin = (req, res, next) => {
   // ! Ensure from the Collection Names
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : // req.params.userType == "company" ? User = Company :
+    :  req.params.userType == "company" ? User = Company :
     req.params.userType == "client"
     ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : next(new Error("Invalid User type"));
 
   User.findOne(
     {
@@ -202,7 +199,7 @@ let forgotPassword = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : // req.params.userType == "company" ? User = Company :
+    :  req.params.userType == "company" ? User = Company :
     req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
@@ -268,7 +265,7 @@ let resetPassword = (req, res, next) => {
   let User;
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : // req.params.userType == "company" ? User = Company :
+    :  req.params.userType == "company" ? User = Company :
     req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
@@ -276,8 +273,7 @@ let resetPassword = (req, res, next) => {
     : null;
 
   try {
-    // let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    // const { _id, email } = decodedToken;
+   
 
     User.findOne({ resetLink }, { password: 1 })
       .then((user) => {

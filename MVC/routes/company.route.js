@@ -1,8 +1,8 @@
 const express = require("express");
 const { body, param, query } = require("express-validator");
 const companyRoute = express.Router();
-const controller = require("../controllers/companyController");
-const loginController = require("../controllers/companyLoginController");
+const controller = require("../controllers/company.controller");
+
 let validationMW = require("../middlewares/validation.MW");
 const authMW = require("../middlewares/auth.MW");
 const { hashPassword } = require("../middlewares/hashPassword.MW");
@@ -42,10 +42,6 @@ companyRoute
     companyValidtion.infoValidator,
      validationMW, controller.updateCompanyInfo);
 
-//logIn
-companyRoute
-  .route("/company/login")
-  .put(validationMW, loginController.companyLogin);
 
 //get by id (puplic view)
 companyRoute

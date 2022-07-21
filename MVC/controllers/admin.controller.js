@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 require("../models/admins.model");
-
 let Admin = mongoose.model("admins");
 
 /** signup as an admin

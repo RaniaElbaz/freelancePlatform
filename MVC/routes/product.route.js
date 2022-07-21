@@ -1,12 +1,12 @@
 const express = require("express");
 const { body, param, query } = require("express-validator");
 const router = express.Router();
-const Controller = require("../controllers/productController");
+const Controller = require("../controllers/product.controller");
 let validationMW = require("../middlewares/validation.MW");
 // const productValidtionArray = require("../Models/productvalidtion");
 
 
-//another route of download 
+
 router
   .route("/product")
   //get

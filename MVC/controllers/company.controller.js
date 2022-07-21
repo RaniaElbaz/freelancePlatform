@@ -1,4 +1,4 @@
-let company = require("../Models/company")
+let company = require("../models/company.model")
 
 //get All Companies
 module.exports.getAllComapny=(req,res,next)=>{
