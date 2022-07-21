@@ -1,58 +1,13 @@
-<<<<<<< HEAD
-//require liberaries
-const express = require("express")
-const morgan = require("morgan")
-const mongoose=require("mongoose")
-
-
-//require Routes
-const companyRouter=require("./Routes/companyRoute")
-const productRouter=require("./Routes/productRoute")
-const changePassword=require("./Routes/changePasswordRoute")
-
-
-
-const server = express()
-mongoose.connect("mongodb://localhost:27017/companyDB")
-.then(()=>{
-    console.log("database connected");
-    server.listen(process.env.PORT||8080, () =>{
-      console.log( "sever is listening "); }
-    )
-})
-.catch(()=>{
-    console.log("data error");
-})
-
-server.use(morgan("tiny"))
-
-server.use(express.json())
-
-//serve Routes
-server.use(companyRouter)
-// server.use(changePassword)
-server.use(productRouter)
-
-
-
-server.use((request, response) => {
-  response.status(404).json({
-      message: "Not Found"
-  });
-}); 
-
-server.use((error, request, response, next) => {
-  response.status(error.status||500).json({
-      message: "Internal Error" + error
-  });
-})
-=======
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 
+
+const companyRouter=require("./MVC/routes/company.route")
+const productRouter=require("./MVC/routes/product.route")
+const changePassword=require("./MVC/routes/changePassword.route")
 const teamRoutes = require("./MVC/routes/team.route");
 const skillRoutes = require("./MVC/routes/skill.route");
 const categoryRoutes = require("./MVC/routes/category.route");
@@ -84,14 +39,14 @@ mongoose
   })
   .catch((error) => console.log("Db Connection Error " + error));
 
-/****************** middleware *****************/
+/****** middleware *******/
 //1- MW url and method
 app.use(morgan("dev")); //method-url-status-ms- :res[content-length]
 
 //2- all users CORS MW
 app.use(cors());
 
-/****************** routes *****************/
+/****** routes *******/
 
 app.use("/public", express.static("public"))
 app.use(express.urlencoded({ extended: false }));
@@ -110,6 +65,9 @@ app.use("/project", projectRoutes);
 app.use(authRoute);
 app.use(clintRoute);
 app.use(searchRoute);
+app.use(companyRouter)
+// app.use(changePassword)
+app.use(productRouter)
 
 
 
@@ -126,4 +84,3 @@ app.use((error, request, response, next) => {
   let errorStatus = error.status || 500;
   response.status(errorStatus).json({ message: "Internal Error:\n" + error });
 });
->>>>>>> 09398dd3a5d873777acb3087014eb26a8860e882

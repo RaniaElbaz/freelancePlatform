@@ -13,4 +13,4 @@ module.exports = (request, response, next) => {
     error.status = 403;
     next(error);
   }
-}; 
+};

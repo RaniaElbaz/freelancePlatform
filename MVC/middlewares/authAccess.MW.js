@@ -74,7 +74,7 @@
     }
   };
   const AdminAndCompanyAuth = (req, res, next) => {
-    if (["admin", "client"].includes(req.role)) {
+    if (["admin", "company"].includes(req.role)) {
       next();
     } else {
       let error = new Error("Not Authorized");

@@ -1,26 +1,21 @@
 const express = require("express");
-const {
- 
-  forgotPassword,
-  resetPassword
-} = require("../controllers/companyChAndRePWdController");
+const authMW = require("../middleWares/auth.MW");
 
-
+const { changePassword } = require("../controllers/changePassword.controller");
+const { allAuth } = require("../middlewares/authAccess.MW");
+const { loginValidator, oldPasswordValidator} = require("../middlewares/login.MW");
 const validationMW = require("../middlewares/validation.MW");
-const authMW = require("../middlewares/auth.MW");
 
+const changePasswordRoute = express.Router();
 
-const router = express.Router();
+changePasswordRoute.post(
+  "/changePassword",
+  authMW,
+  allAuth,
+  loginValidator,
+  oldPasswordValidator,
+  validationMW,
+  changePassword
+);
 
-
-
-// router.post("/company/forgot-password", forgotPassword)
-// router.post("/company/reset-password", resetPassword)
-
-
-
-
-
-
-
-module.exports = router;
+module.exports = changePasswordRoute;
