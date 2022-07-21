@@ -21,7 +21,7 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
   ];
   Freelancer.findById(request.params.id)
     .then((data) => {
-      if (!data) throw new Error("freelancer not found");
+      if (!data.length) throw new Error("freelancer not found");
       //info
       if (request.params.detail === "details") {
         for (let key of profileDetails) {
@@ -168,7 +168,7 @@ module.exports.removeData = (request, response, next) => {
 
 /** get freelancer data  by id (get profile / public view)
  */
-module.exports.getFreelancerById = (request, response, next) => {
+module.exports.getFreelancerPrivate= (request, response, next) => {
   Freelancer.findOne(
     { _id: request.params.id },
     {
@@ -191,20 +191,20 @@ module.exports.getFreelancerById = (request, response, next) => {
 
 /** get freelancer data  by id (get profile/ private view)
  */
-// module.exports.getFreelancerById = (request, response, next) => {
-//   if (request.id !== request.params.id) next(new Error("not authorized"))
-//     Freelancer.findOne(
-//       { _id: request.params.id },
-//       { isBlocked: 0, password: 0 }
-//     )
-//       .then((data) => {
-//         if (data == null) next(new Error("Freelancer not found"));
-//         response.status(200).json(data);
-//       })
-//       .catch((error) => {
-//         next(error);
-//       });
-// };
+module.exports.getFreelancerPublic = (request, response, next) => {
+  if (request.id !== request.params.id) next(new Error("not authorized"))
+    Freelancer.findOne(
+      { _id: request.params.id },
+      { isBlocked: 0, password: 0 }
+    )
+      .then((data) => {
+        if (data == null) next(new Error("Freelancer not found"));
+        response.status(200).json(data);
+      })
+      .catch((error) => {
+        next(error);
+      });
+};
 
 /** get all freelancer data
  * auth by users

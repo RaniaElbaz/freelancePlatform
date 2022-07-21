@@ -3,7 +3,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
+const paypal = require("paypal-rest-sdk");
 
+const paymentRoute = require("./MVC/routes/payment.route");
 const teamRoutes = require("./MVC/routes/team.route");
 const skillRoutes = require("./MVC/routes/skill.route");
 const categoryRoutes = require("./MVC/routes/category.route");
@@ -15,12 +17,16 @@ const testRoute = require("./MVC/routes/test.route");
 const loginRoute = require("./MVC/routes/login.route");
 const changePasswordRoute = require("./MVC/routes/changePassword.route");
 
-const DB_URL = process.env.DB_URL;
+paypal.configure({
+  mode: "sandbox", //sandbox or live
+  client_id: process.env.CLIENT_ID,
+  client_secret: process.env.CLIENT_SECRET,
+});
 
 const app = express();
 
 mongoose
-  .connect(DB_URL)
+  .connect(process.env.DB_URL)
   .then(() => {
     console.log("DB Connected");
     let port = process.env.PORT || 8080;
@@ -42,6 +48,9 @@ app.use(express.json()); //body parsing
 
 app.use(loginRoute);
 app.use(changePasswordRoute);
+
+app.use(paymentRoute);
+
 app.use(freelancerRoute);
 app.use(adminRoute);
 app.use(reportRoute);

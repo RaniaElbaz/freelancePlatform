@@ -134,7 +134,7 @@ const freelancerSchema = new mongoose.Schema(
     },
 
     // 1:Many parent ref relationships
-    projects: {
+    projects: {//in progress
       type: [Number],
       ref: "projects",
       validate: {
@@ -162,7 +162,6 @@ const freelancerSchema = new mongoose.Schema(
     },
 
     //1:1 embedded relationships
-    //paymentMethods: paymentSchema,
     analytics: {
       type: analyticsSchema,
       default: () => ({}),
