@@ -1,0 +1,48 @@
+{
+<<<<<<< HEAD
+  "name": "schema",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Company.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app"
+=======
+  "name": "freelance-platform",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "jasmine",
+    "start": "nodemon app.js"
+>>>>>>> 09398dd3a5d873777acb3087014eb26a8860e882
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+<<<<<<< HEAD
+    "express": "^4.18.1",
+    "express-validator": "^6.14.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.4.4",
+    "mongoose-sequence": "^5.3.1",
+    "morgan": "^1.10.0"
+=======
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.1",
+    "jsonwebtoken": "^8.5.1",
+    "mailgun-js": "^0.22.0",
+    "mongoose": "^6.3.8",
+    "mongoose-sequence": "^5.3.1",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "jasmine": "^4.2.1",
+    "morgan": "^1.10.0",
+    "cors": "^2.8.5"
+>>>>>>> 09398dd3a5d873777acb3087014eb26a8860e882
+  }
+}
