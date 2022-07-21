@@ -14,70 +14,63 @@ router
   .route("/")
   .get(authorization.allAuth, controller.getAllTeams) //all users
   .post(
+    authorization.AdminAndFreelancerAuth,
     mw.post,
     validationMW,
-    authorization.AdminAndFreelancerAuth,
     controller.createTeam
   ); //freelancer
 
-// router
-//   .route("/:id/removeMembers")
-//   .put(mw.removeMembers, validationMW, controller.removeMembers);
-
-// router
-//   .route("/:id/removeSkills")
-//   .put(mw.removeSkills, validationMW, controller.removeSkills);
+router
+  .route("/testimonial/:pId")
+  .put(
+    authorization.adminAuth,
+    tmw.getDelete,
+    validationMW,
+    controller.deleteTestimonialByProjectId
+  ); //admin
+//   .get(controller.getTestimonialByProjectId);
 
 //🟡will be moved to project routes
-router
-  .route("/:id/testimonial")
-  .put(
-    tmw.post,
-    validationMW,
-    authorization.AdminAndClientAndCompanyAuth,
-    controller.createTestimonial
-  ); // client or company &🟡 worked with the team
+router.route("/:id/testimonial").put(
+  authorization.AdminAndClientAndCompanyAuth,
+  tmw.post,
+  validationMW,
+  controller.createTestimonial //🟡test with client or company account
+); // client or company & worked with the team
 
 router
   .route("/:id/create/portfolio")
   .put(
+    authorization.AdminAndFreelancerAuth,
     mw.createPortfolio,
     validationMW,
-    authorization.AdminAndFreelancerAuth,
     controller.createPortfolio
   ); //freelancer & (member of the team)
 
 router
   .route("/:id/update/portfolio")
-
   .put(
+    authorization.AdminAndFreelancerAuth,
     mw.updatePortfolio,
     validationMW,
-    authorization.AdminAndFreelancerAuth,
     controller.updatePortfolio
   ); //feelancer & (member of the team)
 
 router
   .route("/:id/delete/portfolio")
   .put(
+    authorization.AdminAndFreelancerAuth,
     mw.deletePortfolio,
     validationMW,
-    authorization.AdminAndFreelancerAuth,
     controller.deletePortfolio
   ); //feelancer & (member of the team)
 
 router
-  .route("/testimonial/:pId")
-  .all(tmw.getDelete, validationMW)
-  .put(authorization.adminAuth, controller.deleteTestimonialByProjectId); //admin
-//   .get(controller.getTestimonialByProjectId);
-
-router
   .route("/:id")
   .put(
+    authorization.AdminAndFreelancerAuth,
     mw.put,
     validationMW,
-    authorization.AdminAndFreelancerAuth,
     controller.updateTeam
   ) //admin or freelancer & (member of the team)
   .all(mw.getDelete, validationMW)

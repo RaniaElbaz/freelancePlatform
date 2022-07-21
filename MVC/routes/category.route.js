@@ -11,25 +11,25 @@ router.use(auth);
 
 router
   .route("/")
-  .get(authorization.adminAuth, controller.getAllCategories)
+  .get(authorization.allAuth, controller.getAllCategories)
   .post(
+    authorization.adminAuth,
     mw.post,
     validationMW,
-    authorization.adminAuth,
     controller.createCategory
   );
 
 router
   .route("/:id")
   .put(
+    authorization.adminAuth,
     mw.paramId,
     mw.put,
     validationMW,
-    authorization.adminAuth,
     controller.updateCategory
   )
-  .all(mw.paramId, validationMW, authorization.adminAuth)
-  .get(controller.getCategoryById)
-  .delete(controller.deleteCategory);
+  .all(mw.paramId, validationMW)
+  .get(authorization.allAuth, controller.getCategoryById)
+  .delete(authorization.adminAuth, controller.deleteCategory);
 
 module.exports = router;

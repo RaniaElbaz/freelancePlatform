@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 require("../models/team.model");
 let Team = mongoose.model("teams");
 
+require("../models/project.model");
+let Project = mongoose.model("projects");
+
 module.exports.createTeam = (request, response, next) => {
   let object = new Team({
     name: request.body.name,
@@ -34,9 +37,9 @@ module.exports.getAllTeams = (request, response, next) => {
     {},
     { members: 0, projects: 0, portfolios: 0, testimonials: 0, wallet: 0 }
   )
-    // .populate({ path: "members", select: "fullName" })
-    // .populate({ path: "skills", select: "name" })
-    // .populate({ path: "projects", select: "name" })
+    .populate({ path: "members", select: "fullName" })
+    .populate({ path: "skills", select: "name" })
+    .populate({ path: "projects", select: "name" })
     .then((data) => {
       response.status(200).json(data);
     })
@@ -47,9 +50,9 @@ module.exports.getAllTeams = (request, response, next) => {
 
 module.exports.getTeamById = (request, response, next) => {
   Team.findOne({ _id: request.params.id }, { wallet: 0 })
-    // .populate({ path: "members", select: "fullName" })
-    // .populate({ path: "skills", select: "name" })
-    // .populate({ path: "projects", select: "name" })
+    .populate({ path: "members", select: "fullName" })
+    .populate({ path: "skills", select: "name" })
+    .populate({ path: "projects", select: "name" })
     .then((data) => {
       if (!data.members.includes(request.id))
         next(new Error("not team member"));
@@ -66,9 +69,10 @@ module.exports.getTeamById = (request, response, next) => {
 module.exports.updateTeam = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
-      if (!data.members.includes(request.id))
-        next(new Error("not team member"));
       if (!data) next(new Error("team not found"));
+      else if (!data.members.includes(request.id))
+        throw new Error("not team member");
+
       for (let prop in request.body) {
         if (prop == "name") {
           if (request.body[prop] == data[prop]) {
@@ -103,13 +107,12 @@ module.exports.updateTeam = (request, response, next) => {
       }
       Team.findOne({ members: data.members, name: { $ne: data.name } }).then(
         (team) => {
-          if (!team) {
-            data.save().then((data) => {
-              response.status(201).json({ msg: "team updated", data });
-            });
-          } else {
+          if (team) {
             next(new Error("team members already exist in another team"));
           }
+          return data.save().then((data) => {
+            response.status(201).json({ msg: "team updated", data });
+          });
         }
       );
     })
@@ -122,10 +125,10 @@ module.exports.updateTeam = (request, response, next) => {
 module.exports.deleteTeam = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
-      if (!data.members.includes(request.id))
-        next(new Error("not team member"));
       if (!data) {
         next(new Error("Team not found"));
+      } else if (!data.members.includes(request.id)) {
+        next(new Error("not team member"));
       } else {
         data.delete();
         response.status(200).json({ msg: "team deleted" });
@@ -134,96 +137,12 @@ module.exports.deleteTeam = (request, response, next) => {
     .catch((error) => next(error));
 };
 
-// module.exports.removeMembers = (request, response, next) => {
-//   Team.findById({ _id: request.params.id })
-//     .then((data) => {
-//       if (data.members.length < 3) {
-//         next(new Error("can't remove any team member (team members are 2)"));
-//       } else {
-//         for (let item of request.body.members) {
-//           console.log(item);
-//           if (data.members.indexOf(item) != -1) {
-//             data.members.splice(data.members.indexOf(item), 1);
-//             Team.findOne({ members: data.members }).then((team) => {
-//               if (!team) {
-//                 data.save().then(() => {
-//                   response.status(201).json({ msg: "team member/s removed" });
-//                 });
-//               } else {
-//                 next(new Error("team members already exist in another team"));
-//               }
-//             });
-//           } else {
-//             throw Error("team member not found");
-//           }
-//         }
-//       }
-//     })
-//     .catch((error) => next(error));
-// };
-
-// module.exports.removeSkills = (request, response, next) => {
-//   Team.findById({ _id: request.params.id })
-//     .then((data) => {
-//       if (data.skills.length < 3) {
-//         next(new Error("can't remove any team skill (team skills are 2)"));
-//       } else {
-//         for (let item of request.body.skills) {
-//           console.log(item);
-//           if (data.skills.indexOf(item) != -1) {
-//             data.skills.splice(data.skills.indexOf(item), 1);
-//             Team.findOne({ skills: data.skills }).then((team) => {
-//               if (!team) {
-//                 data.save().then(() => {
-//                   response.status(201).json({ msg: "team skill/s removed" });
-//                 });
-//               } else {
-//                 next(new Error("team skills already exist in another team"));
-//               }
-//             });
-//           } else {
-//             throw Error("team skill not found");
-//           }
-//         }
-//       }
-//     })
-//     .catch((error) => next(error));
-// };
-
-module.exports.createTestimonial = (request, response, next) => {
-  Team.findById(request.params.id)
-    .then((data) => {
-      if (!data) next(new Error("team not found"));
-      let object = {};
-      for (let prop in request.body) {
-        if (prop != "teamId") {
-          object[prop] = request.body[prop];
-        } else continue;
-      }
-      Team.findOne({ "testimonials.project": request.body.project }).then(
-        (team) => {
-          if (!team) {
-            data.testimonials.push(object);
-            data.projects.push(request.body.project);
-            data.save();
-            response
-              .status(200)
-              .json({ msg: "testimonial created", data: data.testimonials });
-          } else next(new Error("testimonial already exists for this project"));
-        }
-      );
-    })
-    .catch((error) => {
-      next(error);
-    });
-};
-
 module.exports.createPortfolio = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
-      if (!data.members.includes(request.id))
+      if (!data) throw new Error("team not found");
+      else if (!data.members.includes(request.id))
         next(new Error("not team member"));
-      if (!data) next(new Error("team not found"));
 
       let object = {};
       for (let prop in request.body) {
@@ -244,7 +163,8 @@ module.exports.createPortfolio = (request, response, next) => {
 module.exports.updatePortfolio = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
-      if (!data.members.includes(request.id))
+      if (!data) throw new Error("team not found");
+      else if (!data.members.includes(request.id))
         next(new Error("not team member"));
       data.portfolios[request.body.index] = request.body.portfolio;
       return data.save().then((data) => {
@@ -261,7 +181,8 @@ module.exports.updatePortfolio = (request, response, next) => {
 module.exports.deletePortfolio = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
-      if (!data.members.includes(request.id))
+      if (!data) throw new Error("team not found");
+      else if (!data.members.includes(request.id))
         next(new Error("not team member"));
       console.log(request.body.index);
       console.log(data.portfolios.length);
@@ -273,6 +194,49 @@ module.exports.deletePortfolio = (request, response, next) => {
       } else {
         throw Error("team portfolio not found");
       }
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+module.exports.createTestimonial = (request, response, next) => {
+  Team.findById(request.params.id)
+    .then((data) => {
+      if (!data) next(new Error("team not found"));
+      Project.findById(request.body.project).then((project) => {
+        if (!project) {
+          next(new Error("project not found"));
+        } else if (
+          project.recruiter == { id: request.id, type: request.role + "s" }
+        ) {
+          let object = {};
+          for (let prop in request.body) {
+            object[prop] = request.body[prop];
+          }
+          Team.findOne({ "testimonials.project": request.body.project }).then(
+            (team) => {
+              if (!team) {
+                data.testimonials.push(object);
+                data.projects.push(request.body.project);
+                return data.save().then((data) => {
+                  response.status(200).json({
+                    msg: "testimonial created",
+                    data: data.testimonials,
+                  });
+                });
+              } else
+                next(new Error("testimonial already exists for this project"));
+            }
+          );
+        } else {
+          next(
+            new Error(
+              "you can't create testimonial for this project since you're not the owner"
+            )
+          );
+        }
+      });
     })
     .catch((error) => {
       next(error);

@@ -1,15 +1,12 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Freelancer = mongoose.model("freelancers");
 const Admin = mongoose.model("admins"); // ! Handling
-
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const Client = require("../models/client.model");
-// const Freelancer = require("./../models/freelancers.model");
 // // const Company = require("./../models/company.model");
-// const Admin = require("./../models/admins.model");
 
 const mailgun = require("mailgun-js");
 const DOMAIN = process.env.MailgunDOMAIN;
@@ -20,40 +17,40 @@ const mg = mailgun({ apiKey: api_key, domain: DOMAIN });
  *    & SignUp
  * **************** */
 let signUp = (req, res, next) => {
-  let User,
-    payload;
+  let User, payload;
 
-  req.params.userType == "freelancer" ? User = Freelancer :
-    // req.params.userType == "company" ? User = Company :
-    req.params.userType == "client" ? User = Client :
-      req.params.userType == "admin" ? User = Admin :
-        null;
-
+  req.params.userType == "freelancer"
+    ? (User = Freelancer)
+    : // req.params.userType == "company" ? User = Company :
+    req.params.userType == "client"
+    ? (User = Client)
+    : req.params.userType == "admin"
+    ? (User = Admin)
+    : null;
 
   if (["freelancer", "client", "admin"].includes(req.params.userType)) {
     var { firstName, lastName, email, password } = req.body;
     payload = { firstName, lastName, email, password };
-
   } else if (req.params.userType == "company") {
     var { name, email, password } = req.body;
     console.log(email, "<==Email here");
     payload = { name, email, password };
-
   } else {
-    next(new Error("Invalid UserType!"))
+    next(new Error("Invalid UserType!"));
   }
 
-
   User.findOne({ email })
-    .then(user => {
+    .then((user) => {
       if (user) next(new Error("User is already registered!"));
 
       // Email Verification
-      let token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "10m" })
+      let token = jwt.sign(payload, process.env.SECRET_KEY, {
+        expiresIn: "10m",
+      });
       const data = {
-        from: 'geoAhmedHamdy1@gmail.com',
+        from: "geoAhmedHamdy1@gmail.com",
         to: email,
-        subject: 'Email Verification Link',
+        subject: "Email Verification Link",
         // text: 'Verify Email'
         html: `
           <h2>Account Verification</h2>
@@ -63,74 +60,80 @@ let signUp = (req, res, next) => {
           Thank you for choosing Our Freelancing platform 😍
           Please confirm your email address by clicking the link below..
 
-        <a href="http://localhost:${process.env.PORT}/authentication/activate/${token}">Verification</a>
+        <a href="http://localhost:${process.env.PORT}/activate-account/${req.params.userType}/${token}">Verification</a>
 
           If you did not sign up, you can simply disregard this mail.
 
           Happy Emailing!
             Freelancico Team.
           </pre>
-        `
+        `,
       };
       mg.messages().send(data, function (error, body) {
         if (error) next(error);
 
         // console.log(body);
-        res.status(201).json({ data: "Email verification link has been sent, kindly activate your account" })
+        res.status(201).json({
+          data: "Email verification link has been sent, kindly activate your account",
+        });
       });
-
     })
-    .catch(error => next(error));
+    .catch((error) => next(error));
 };
-
 
 /**************
  *    & Activate Email (Email Verification)
  * **************** */
 let activateAccount = (req, res, next) => {
-  const { token } = req.body;
+  const { token } = req.params;
   let User;
 
-  req.params.userType == "freelancer" ? User = Freelancer :
-    // req.params.userType == "company" ? User = Company :
-    req.params.userType == "client" ? User = Client :
-      req.params.userType == "admin" ? User = Admin :
-        null;
+  req.params.userType == "freelancer"
+    ? (User = Freelancer)
+    : // req.params.userType == "company" ? User = Company :
+    req.params.userType == "client"
+    ? (User = Client)
+    : req.params.userType == "admin"
+    ? (User = Admin)
+    : null;
 
   try {
     if (!token) new Error("Something went Wrong!!");
     let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
 
-
     if (["freelancer", "client", "admin"].includes(req.params.userType)) {
-      const { firstName, lastName, email, password } = decodedToken;
+      var { firstName, lastName, email, password } = decodedToken;
     } else if (req.params.userType == "company") {
-      const { name, email, password } = decodedToken;
+      var { name, email, password } = decodedToken;
     } else {
-      next(new Error("Invalid UserType!"))
+      next(new Error("Invalid UserType!"));
     }
 
     User.findOne({ email })
-      .then(user => {
+      .then((user) => {
         if (user) throw new Error("User is already registered!");
 
         bcrypt.hash(password, 10, (error, hash) => {
-          let newUser = new User({ firstName, lastName, email, password: hash });
+          let newUser = new User({
+            firstName,
+            lastName,
+            email,
+            password: hash,
+          });
 
-          newUser.save()
-            .then(data => {
+          newUser
+            .save()
+            .then((data) => {
               res.status(200).json({ message: "User SignedUP", data });
             })
-            .catch(error => next(`SignUp Activation Error: ${error}`));
+            .catch((error) => next(`SignUp Activation Error: ${error}`));
         });
       })
-      .catch(error => next(error));
-
+      .catch((error) => next(error));
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
-
 
 /**************
  *    & Login
@@ -139,46 +142,56 @@ const userLogin = (req, res, next) => {
   let User;
 
   // ! Ensure from the Collection Names
-  req.params.userType == "freelancer" ? User = Freelancer :
-    // req.params.userType == "company" ? User = Company :
-    req.params.userType == "client" ? User = Client :
-      req.params.userType == "admin" ? User = Admin :
-        null;
+  req.params.userType == "freelancer"
+    ? (User = Freelancer)
+    : // req.params.userType == "company" ? User = Company :
+    req.params.userType == "client"
+    ? (User = Client)
+    : req.params.userType == "admin"
+    ? (User = Admin)
+    : null;
 
-  User.findOne({
-    email: req.body.email
-  }, { email: 1, password: 1, isBlocked: 1 })
-    .then(user => {
-      if (!user) { // user not found
-        let error = new Error("Incorrect Username or Password!")
+  User.findOne(
+    {
+      email: req.body.email,
+    },
+    { email: 1, password: 1, isBlocked: 1 }
+  )
+    .then((user) => {
+      if (!user) {
+        // user not found
+        let error = new Error("Incorrect Username or Password!");
         error.status = 401;
         throw error;
       }
-      if (isBlocked) next(new Error("Login failed!"))
+      if (isBlocked) next(new Error("Login failed!"));
 
       let isMatch = bcrypt.compareSync(req.body.password, user.password);
 
       if (!isMatch) {
         if (error) throw new Error("Incorrect Password");
       } else {
-        let token = jwt.sign({
-          id: user._id,
-          role: req.params.userType
-        }, process.env.SECRET_KEY, { expiresIn: "1h" });
+        let token = jwt.sign(
+          {
+            id: user._id,
+            role: req.params.userType,
+          },
+          process.env.SECRET_KEY,
+          { expiresIn: "1h" }
+        );
 
-        user.updateOne({ loginToken: token })
-          .then(data => {
-            res.status(200).json({ data: "loginToken Saved successfully" })
+        user
+          .updateOne({ loginToken: token })
+          .then((data) => {
+            res.status(200).json({ data: "loginToken Saved successfully" });
           })
-          .catch(error => next(error));
+          .catch((error) => next(error));
 
-        res.status(200).json({ token, message: `${req.params.userType}Login` })
+        res.status(200).json({ token, message: `${req.params.userType}Login` });
       }
-
     })
-    .catch(error => next(error))
+    .catch((error) => next(error));
 };
-
 
 /**************
  *    & Forgot Password
@@ -187,22 +200,26 @@ let forgotPassword = (req, res, next) => {
   const { email } = req.body;
   let User;
 
-  req.params.userType == "freelancer" ? User = Freelancer :
-    // req.params.userType == "company" ? User = Company :
-    req.params.userType == "client" ? User = Client :
-      req.params.userType == "admin" ? User = Admin :
-        null;
-
+  req.params.userType == "freelancer"
+    ? (User = Freelancer)
+    : // req.params.userType == "company" ? User = Company :
+    req.params.userType == "client"
+    ? (User = Client)
+    : req.params.userType == "admin"
+    ? (User = Admin)
+    : null;
 
   User.findOne({ email }, { firstName: 1, email: 1, _id: 1 })
-    .then(user => {
+    .then((user) => {
       if (!user) throw new Error("User is Not Exist!");
 
-      let token = jwt.sign({ _id: user._id, email }, process.env.SECRET_KEY, { expiresIn: "10m" })
+      let token = jwt.sign({ _id: user._id, email }, process.env.SECRET_KEY, {
+        expiresIn: "10m",
+      });
       const data = {
-        from: 'geoAhmedHamdy1@gmail.com',
+        from: "geoAhmedHamdy1@gmail.com",
         to: email,
-        subject: 'Password Resiting Link',
+        subject: "Password Resiting Link",
         // text: 'Verify Email'
         html: `
           <h2 style="color: red; font-size: 50px">Password Resiting</h2>
@@ -218,24 +235,27 @@ let forgotPassword = (req, res, next) => {
           Happy Emailing!
             Freelancico Team.
           </pre>
-        `
+        `,
       };
 
-      user.updateOne({ resetLink: token })
-        .then(newData => {
+      user
+        .updateOne({ resetLink: token })
+        .then((newData) => {
           if (!newData) throw new Error("Reset Password Link error!");
 
           mg.messages().send(data, function (error, body) {
             if (error) next(error);
 
-            res.status(200).json({ data: "Reset Password link has been sent to your Email, kindly check your mail and follow the instructions" })
+            res.status(200).json({
+              data: "Reset Password link has been sent to your Email, kindly check your mail and follow the instructions",
+            });
             // console.log(body);
           });
         })
-        .catch(error => next(error));
+        .catch((error) => next(error));
     })
-    .catch(error => next(error))
-}
+    .catch((error) => next(error));
+};
 
 /**************
  *    & Reset Password
@@ -246,48 +266,52 @@ let resetPassword = (req, res, next) => {
   let token = resetLink;
 
   let User;
-  req.params.userType == "freelancer" ? User = Freelancer :
-    // req.params.userType == "company" ? User = Company :
-    req.params.userType == "client" ? User = Client :
-      req.params.userType == "admin" ? User = Admin :
-        null;
+  req.params.userType == "freelancer"
+    ? (User = Freelancer)
+    : // req.params.userType == "company" ? User = Company :
+    req.params.userType == "client"
+    ? (User = Client)
+    : req.params.userType == "admin"
+    ? (User = Admin)
+    : null;
 
   try {
     // let decodedToken = jwt.verify(token, process.env.SECRET_KEY);
     // const { _id, email } = decodedToken;
 
     User.findOne({ resetLink }, { password: 1 })
-      .then(user => {
+      .then((user) => {
         if (!user) next(new Error("User with this token doesn't exist!"));
 
         // bcrypt.compareSync(plainText, hashedText) ==> return true or false;
         let isMatch = bcrypt.compareSync(newPassword, user.password);
-
 
         if (isMatch) {
           // isMatch ==> the two password is the same..
           next(Error("This is the Old Password, Enter new One"));
         } else {
           bcrypt.hash(newPassword, 10, (error, hash) => {
-            user.updateOne({ password: hash, resetLink: "" })
-              .then(data => {
-                res.status(200).json({ data: "Password Resiting done successfully" })
+            user
+              .updateOne({ password: hash, resetLink: "" })
+              .then((data) => {
+                res
+                  .status(200)
+                  .json({ data: "Password Resiting done successfully" });
               })
-              .catch(error => next(error));
-          })
+              .catch((error) => next(error));
+          });
         }
       })
-      .catch(error => next(error));
+      .catch((error) => next(error));
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
-
+};
 
 module.exports = {
   userLogin,
   signUp,
   activateAccount,
   forgotPassword,
-  resetPassword
-}
+  resetPassword,
+};

@@ -11,14 +11,14 @@ router.use(auth);
 
 router
   .route("/")
-  .get(authorization.adminAuth, controller.getAllSkills)
-  .post(mw.post, validationMW, authorization.adminAuth, controller.createSkill);
+  .get(authorization.allAuth, controller.getAllSkills)
+  .post(authorization.adminAuth, mw.post, validationMW, controller.createSkill);
 
 router
   .route("/:id")
-  .put(mw.put, validationMW, authorization.adminAuth, controller.updateSkill)
-  .all(mw.getDelete, validationMW, authorization.adminAuth)
-  .get(controller.getSkillById)
-  .delete(controller.deleteSkill);
+  .put(authorization.adminAuth, mw.put, validationMW, controller.updateSkill)
+  .all(mw.getDelete, validationMW)
+  .get(authorization.allAuth, controller.getSkillById)
+  .delete(authorization.adminAuth, controller.deleteSkill);
 
 module.exports = router;
