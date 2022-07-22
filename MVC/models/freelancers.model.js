@@ -107,7 +107,7 @@ const freelancerSchema = new mongoose.Schema(
       default: 0,
       max: 1e6
     },
-    
+
     // 1:Many embedded relationships
     languages: {
       type: [String],
@@ -175,5 +175,5 @@ const freelancerSchema = new mongoose.Schema(
 );
 
 //mapping
-freelancerSchema.plugin(AutoIncrement, {id: 'freelancerId'});
-mongoose.model("freelancers",freelancerSchema);
+freelancerSchema.plugin(AutoIncrement, { id: 'freelancerId' });
+mongoose.model("freelancers", freelancerSchema);

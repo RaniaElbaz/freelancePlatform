@@ -2,7 +2,7 @@ const express = require("express");
 const { param } = require("express-validator");
 
 const freelancerController = require("../controllers/freelancer.controller");
-const {signup} = require("../controllers/auth.controller");
+const { signUp } = require("../controllers/auth.controller");
 const authMW = require("../middleWares/auth.MW");
 const validationMW = require("../middlewares/validation.MW");
 const {
@@ -35,7 +35,7 @@ freelancerRoute
  */
 freelancerRoute
   .route("/freelancers/register")
-  .post(signupValidator, validationMW, hashPassword, signup);
+  .post(signupValidator, validationMW, hashPassword, signUp);
 
 freelancerRoute
   .route("/freelancers/public/:id")

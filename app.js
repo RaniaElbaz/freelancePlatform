@@ -15,6 +15,9 @@ const freelancerRoute = require("./MVC/routes/freelancer.route");
 const reportRoute = require("./MVC/routes/report.route");
 const testRoute = require("./MVC/routes/test.route");
 const loginRoute = require("./MVC/routes/login.route");
+const authRoute = require("./MVC/routes/auth.route");
+const clintRoute = require("./MVC/routes/client.route");
+const searchRoute = require("./MVC/routes/search.route");
 const changePasswordRoute = require("./MVC/routes/changePassword.route");
 
 paypal.configure({
@@ -44,6 +47,9 @@ app.use(morgan("dev")); //method-url-status-ms- :res[content-length]
 app.use(cors());
 
 /****************** routes *****************/
+
+app.use("/public", express.static("public"))
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); //body parsing
 
 app.use(loginRoute);
@@ -59,6 +65,12 @@ app.use("/team", teamRoutes);
 app.use("/skill", skillRoutes);
 app.use("/category", categoryRoutes);
 app.use("/project", projectRoutes);
+app.use(authRoute);
+app.use(clintRoute);
+app.use(searchRoute);
+
+
+
 
 //3- Not Found MW
 app.use((request, response) => {

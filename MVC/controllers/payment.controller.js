@@ -35,9 +35,8 @@ module.exports.pay = (request, response, next) => {
         next(error);
       } else {
         for (let i = 0; i < payment.links.length; i++) {
-            if (payment.links[i].rel === "approval_url") {
-              console.log(payment.links[i].href);
-            response.redirect(payment.links[i].href);
+          if (payment.links[i].rel === "approval_url") {
+            response.status(200).json(payment.links[i].href);
           }
         }
       }
