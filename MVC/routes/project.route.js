@@ -16,7 +16,7 @@ router.use(auth);
 router
   .route("/")
   .get(
-    // allAuth,
+    // allAuth,//🟡posted only ??and onother route getAll for recruiter??
     controller.getAllProjects
   )
   .post(
@@ -41,11 +41,29 @@ router
   )
   .delete(controller.deleteProject);
 
-router.route("/:id/proposal").put(
-  //AdminAndFreelancerAuth
-  mw.createProposal,
-  validationMW,
-  controller.createProposal
-);
+router
+  .route("/:id/proposal")
+  .put(
+    //AdminAndFreelancerAuth
+    mw.createProposal,
+    validationMW,
+    controller.createProposal
+  )
+  .get(
+    //AdminAndClientAndCompanyAuth
+    controller.getProjectProposals
+  );
+
+router.route("/:id/proposal").post(
+  //AdminAndClientAndCompanyAuth
+  controller.selectProposal
+); /* validation MW ?? */
+//,addProjectToTalent
+
+router.route("/finish").put(
+  //AdminAndClientAndCompanyAuth
+  controller.finishProject
+); /* validation MW ?? */
+//,createTestimonial,updateAnalytic
 
 module.exports = router;

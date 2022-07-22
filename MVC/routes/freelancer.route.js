@@ -3,7 +3,7 @@ const { param } = require("express-validator");
 
 const freelancerController = require("../controllers/freelancer.controller");
 const { signUp } = require("../controllers/auth.controller");
-const authMW = require("../middleWares/auth.MW");
+const authMW = require("../middlewares/auth.MW");
 const validationMW = require("../middlewares/validation.MW");
 const {
   allAuth,
@@ -26,10 +26,7 @@ const freelancerRoute = express.Router();
  */
 freelancerRoute
   .route("/freelancers/")
-  .get(
-    authMW,
-    allAuth,
-    freelancerController.getAllFreelancers);
+  .get(authMW, allAuth, freelancerController.getAllFreelancers);
 
 /**Register route
  */

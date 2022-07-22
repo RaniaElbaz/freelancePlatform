@@ -48,7 +48,7 @@ module.exports.getAllTeams = (request, response, next) => {
     });
 };
 
-module.exports.getTeamById = (request, response, next) => {
+module.exports.getTeamByIdPublic = (request, response, next) => {
   Team.findOne({ _id: request.params.id }, { wallet: 0 })
     .populate({ path: "members", select: "fullName" })
     .populate({ path: "skills", select: "name" })
@@ -58,6 +58,26 @@ module.exports.getTeamById = (request, response, next) => {
         next(new Error("not team member"));
       if (data == null) next(new Error("team not found"));
       else {
+        response.status(200).json(data);
+      }
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+module.exports.getTeamByIdPrivate = (request, response, next) => {
+  Team.findOne({ _id: request.params.id }, { wallet: 0 })
+    .populate({ path: "members", select: "fullName" })
+    .populate({ path: "skills", select: "name" })
+    .populate({ path: "projects", select: "name" })
+    .then((data) => {
+      if (!data.members.includes(request.id))
+        next(new Error("not team member"));
+      if (data == null) next(new Error("team not found"));
+      else {
+        request.id = data.id;
+        request.role = "team";
         response.status(200).json(data);
       }
     })
@@ -259,6 +279,24 @@ module.exports.deleteTestimonialByProjectId = (request, response, next) => {
       }
     })
     .catch((error) => next(error));
+};
+
+module.exports.addProjectToTeam = (request, response, next) => {
+  Team.findById(request.params.id) //🟡
+    .then((data) => {
+      if (!data) throw new Error("team not found");
+      // else if (!data.members.includes(request.id))
+      //   next(new Error("not team member"));
+      data.projects.push(); //🟡
+      return data.save().then((data) => {
+        response
+          .status(200)
+          .json({ msg: "project added to team", data: data.projects });
+      });
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
 
 // module.exports.getTestimonialByProjectId = (request, response, next) => {

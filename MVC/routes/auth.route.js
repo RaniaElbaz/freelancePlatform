@@ -5,12 +5,12 @@ const {
   activateAccount,
   forgotPassword,
   resetPassword,
-} = require("../Controllers/auth.controller");
+} = require("../controllers/auth.controller");
 
-const { signUpValidation } = require("../models/clientValidationArray");
-const { AdminAndClientAuth } = require("../Middlewares/usersAuth.MW");
-const validationMW = require("../Middlewares/validation.MW");
-const authMW = require("../Middlewares/auth.MW");
+const { signUpValidation } = require("../middlewares/client.MW");
+const { AdminAndClientAuth } = require("../middlewares/usersAuth.MW");
+const validationMW = require("../middlewares/validation.MW");
+const authMW = require("../middlewares/auth.MW");
 
 const router = express.Router();
 

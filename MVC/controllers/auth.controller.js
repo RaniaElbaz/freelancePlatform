@@ -20,8 +20,9 @@ let signUp = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
@@ -40,7 +41,7 @@ let signUp = (req, res, next) => {
 
   User.findOne({ email })
     .then((user) => {
-      if (user) next(new Error("User is already registered!"));
+      if (user) throw new Error("User is already registered!");
 
       // Email Verification
       let token = jwt.sign(payload, process.env.SECRET_KEY, {
@@ -89,8 +90,9 @@ let activateAccount = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
@@ -143,8 +145,9 @@ const userLogin = (req, res, next) => {
   // ! Ensure from the Collection Names
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : next(new Error("Invalid User type"));
 
@@ -161,7 +164,7 @@ const userLogin = (req, res, next) => {
         error.status = 401;
         throw error;
       }
-      if (isBlocked) next(new Error("Login failed!"));
+      if (user.isBlocked) next(new Error("Login failed!"));
 
       let isMatch = bcrypt.compareSync(req.body.password, user.password);
 
@@ -199,8 +202,9 @@ let forgotPassword = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
@@ -265,16 +269,15 @@ let resetPassword = (req, res, next) => {
   let User;
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
     : null;
 
   try {
-   
-
     User.findOne({ resetLink }, { password: 1 })
       .then((user) => {
         if (!user) next(new Error("User with this token doesn't exist!"));

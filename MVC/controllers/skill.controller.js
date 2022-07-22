@@ -108,3 +108,19 @@ module.exports.updateSkill = (request, response, next) => {
       next(error);
     });
 };
+
+module.exports.addTalentToSkill = (request, response, next) => {
+  Skill.find({ _id: { $in: request.body.skills } })
+    .then((skills) => {
+      for (let skill in skills) {
+        if (!skill) next(new Error("skill not found"));
+        skill.talents.push({ id: request.id, type: request.role + "s" });
+      }
+      return skills.save().then((skills) => {
+        response.status(201).json({ msg: "talent added to skill", skills });
+      });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};

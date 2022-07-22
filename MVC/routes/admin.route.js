@@ -2,11 +2,9 @@ const express = require("express");
 const { param } = require("express-validator");
 
 const adminController = require("../controllers/admin.controller");
-const authMW = require("../middleWares/auth.MW");
+const authMW = require("../middlewares/auth.MW");
 const validationMW = require("../middlewares/validation.MW");
-const {
-  adminAuth,
-} = require("../middlewares/authAccess.MW");
+const { adminAuth } = require("../middlewares/authAccess.MW");
 const { hashPassword } = require("../middlewares/hashPassword.MW");
 // const {
 //   signupValidator,

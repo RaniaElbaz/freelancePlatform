@@ -117,6 +117,6 @@ module.exports.createProposal = [
     .withMessage("proposal text should be string"),
   check("files")
     .optional()
-    .isString()
-    .withMessage("proposal text should be string"),
+    .isArray()
+    .withMessage("proposal files should be array"),
 ];
