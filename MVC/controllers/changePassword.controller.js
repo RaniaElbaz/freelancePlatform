@@ -1,8 +1,11 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-
+require("../models/freelancers.model")
+require("../models/admins.model")
 const Freelancer = mongoose.model("freelancers");
 const Admin = mongoose.model("admins");
+const Company = require("../models/company.model")
+const Client = require("../models/client.model")
 
 module.exports.changePassword = (request, response, next) => {
   let User = null;
@@ -10,6 +13,10 @@ module.exports.changePassword = (request, response, next) => {
     ? (User = Freelancer)
     : request.role === "admin"
     ? (User = Admin)
+    : request.role === "company"
+    ? (User = Company)
+    : request.role === "client"
+    ? (User = Client)
     : null;
 
   //already logged in

@@ -67,14 +67,14 @@ module.exports.put = [
   check("logo").isString().optional().withMessage("team logo should be string"),
 
   check("members")
-    .isArray()
     .optional()
-    .withMessage("team members should be array"),
+    .isArray({ min: 2, max: 15 })
+    .withMessage("team members should be array 2:10"),
 
   check("skills")
-    .isArray()
     .optional()
-    .withMessage("team skills should be array"),
+    .isArray({ min: 2, max: 15 })
+    .withMessage("team skills should be array 2:15"),
 ];
 
 module.exports.getDelete = [

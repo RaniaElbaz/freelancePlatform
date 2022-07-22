@@ -176,4 +176,4 @@ const freelancerSchema = new mongoose.Schema(
 
 //mapping
 freelancerSchema.plugin(AutoIncrement, { id: 'freelancerId' });
-mongoose.model("freelancers", freelancerSchema);
+module.exports = mongoose.model("freelancers", freelancerSchema);

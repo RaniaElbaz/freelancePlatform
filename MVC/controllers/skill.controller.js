@@ -15,7 +15,7 @@ module.exports.createSkill = (request, response, next) => {
     throw Error("categories should be unique");
   Skill.find({ name: request.body.name })
     .then((data) => {
-      if (!data) {
+      if (!data.length) {
         return object.save();
       } else throw Error("skill name already token");
     })
@@ -34,8 +34,7 @@ module.exports.createSkill = (request, response, next) => {
 module.exports.getAllSkills = (request, response, next) => {
   Skill.find({})
     .populate({ path: "categories", select: "name" })
-    // .populate({ path: "teams", select: "name" })
-    // .populate({ path: "freelancers", select: "name" })
+    .populate({ path: "talents.id", select: "firstName" }) //🟡not working
     .then((data) => {
       response.status(200).json(data);
     })
@@ -47,10 +46,9 @@ module.exports.getAllSkills = (request, response, next) => {
 module.exports.getSkillById = (request, response, next) => {
   Skill.findById({ _id: request.params.id })
     .populate({ path: "categories", select: "name" })
-    // .populate({ path: "talents.id", select: "name" })//test
-    // .populate({ path: "categories.type", select: "name" })
+    .populate({ path: "talents.id", select: "firstName" }) //🟡not working
     .then((data) => {
-      if (data == null) next(new Error("team not found"));
+      if (data == null) next(new Error("skill not found"));
       else {
         console.log(data.talents.id);
         response.status(200).json(data);

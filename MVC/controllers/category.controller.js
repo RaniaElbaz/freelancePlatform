@@ -14,7 +14,7 @@ module.exports.createCategory = (request, response, next) => {
     throw Error("categories should be unique");
   Category.find({ name: request.body.name })
     .then((data) => {
-      if (!data) {
+      if (!data.length) {
         return object.save();
       } else throw Error("category name already token");
     })
@@ -33,9 +33,6 @@ module.exports.createCategory = (request, response, next) => {
 module.exports.getAllCategories = (request, response, next) => {
   Category.find({})
     .populate({ path: "skills", select: "name" })
-    // .populate({ path: "teams", select: "name" })
-    // .populate({ path: "categories", select: "name" })
-    // .populate({ path: "freelancers", select: "name" })
     .then((data) => {
       response.status(200).json(data);
     })
@@ -47,10 +44,8 @@ module.exports.getAllCategories = (request, response, next) => {
 module.exports.getCategoryById = (request, response, next) => {
   Category.findById({ _id: request.params.id })
     .populate({ path: "skills", select: "name" })
-    // .populate({ path: "talents.id", select: "name" })//test
-    // .populate({ path: "categories.type", select: "name" })
     .then((data) => {
-      if (data == null) next(new Error("team not found"));
+      if (data == null) next(new Error("category not found"));
       else {
         response.status(200).json(data);
       }
