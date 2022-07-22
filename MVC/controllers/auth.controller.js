@@ -1,10 +1,9 @@
-const mongoose = require("mongoose");
-const Freelancer = mongoose.model("freelancers");
-
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const Client = require("../models/client.model");
+const Freelancer = require("./../models/freelancers.model");
+const Admin = require("./../models/admins.model");
 const Company = require("./../models/company.model");
 
 const mailgun = require("mailgun-js");
@@ -24,9 +23,7 @@ let signUp = (req, res, next) => {
     ? (User = Company)
     : req.params.userType == "client"
     ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : next(new Error("Invalid User type"));
 
   if (["freelancer", "client", "admin"].includes(req.params.userType)) {
     var { firstName, lastName, email, password } = req.body;
@@ -94,9 +91,7 @@ let activateAccount = (req, res, next) => {
     ? (User = Company)
     : req.params.userType == "client"
     ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : next(new Error("Invalid User type"));
 
   try {
     if (!token) new Error("Something went Wrong!!");
@@ -208,7 +203,7 @@ let forgotPassword = (req, res, next) => {
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
-    : null;
+    : next(new Error("Invalid User type"));
 
   User.findOne({ email }, { firstName: 1, email: 1, _id: 1 })
     .then((user) => {
@@ -275,7 +270,7 @@ let resetPassword = (req, res, next) => {
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
-    : null;
+    : next(new Error("Invalid User type"));
 
   try {
     User.findOne({ resetLink }, { password: 1 })

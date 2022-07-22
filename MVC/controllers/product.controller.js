@@ -44,8 +44,8 @@ module.exports.createProduct = (req, res, next) => {
         description: req.body.description,
         price: req.body.price,
         skills: req.body.skills,
-        ownerId:req.body.ownerId, //sent by frontend
-        ownerModel:req.body.ownerModel  //sent by frontend
+        ownerId: req.body.ownerId, //sent by frontend
+        ownerModel: req.body.ownerModel, //sent by frontend
       });
 
       productobject
@@ -63,7 +63,8 @@ module.exports.updateProduct = (req, res, next) => {
   product
     .findOne({
       _id: req.params.id,
-    }).populate({ path: "ownerId", select: "name" })
+    })
+    .populate({ path: "ownerId", select: "name" })
     .then((data) => {
       for (let item in req.body) {
         data[item] = req.body[item];

@@ -34,6 +34,16 @@ freelancerRoute
   .route("/freelancers/register")
   .post(signupValidator, validationMW, hashPassword, signUp);
 
+freelancerRoute
+  .route("/freelancers/public/:id")
+  .all(
+    authMW,
+    [param("id").isNumeric().withMessage("Freelancer id wrong")],
+    validationMW
+  )
+  //get freelancer by id (show profile)
+  .get(allAuth, freelancerController.getFreelancerPublic);
+
 /** to be moved in another controller
  * update private access info
  * (isBlocked, isVerified, analytics, badges, connects, wallet)
@@ -103,7 +113,7 @@ freelancerRoute
     validationMW
   )
   //get freelancer by id (show profile)
-  .get(allAuth, freelancerController.getFreelancerById)
+  .get(allAuth, freelancerController.getFreelancerPrivate)
   //delete freelancer by id (dev purpose only)
   .delete(adminAuth, freelancerController.deleteFreelancer);
 

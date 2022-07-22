@@ -1,10 +1,7 @@
 const { body, param, query } = require("express-validator");
 
 const updateValidation = [
-  body("id")
-    .optional()
-    .isNumeric()
-    .withMessage("Child Id must be a Number"),
+  body("id").optional().isNumeric().withMessage("Child Id must be a Number"),
 
   body("firstName")
     .isAlpha()
@@ -18,9 +15,7 @@ const updateValidation = [
     .isLength({ min: 3, max: 10 })
     .withMessage("Clint's lastName length should be > 3 and < 10"),
 
-  body("email")
-    .isEmail()
-    .withMessage("You Should Enter a valid Email"),
+  body("email").isEmail().withMessage("You Should Enter a valid Email"),
 
   body("picture")
     .optional()
@@ -51,9 +46,7 @@ const updateValidation = [
     .withMessage("Address must be String"),
 
   // ! Handling
-  body("phoneNumber")
-    .isNumeric()
-    .withMessage("phoneNumber must be a Number"),
+  body("phoneNumber").isNumeric().withMessage("phoneNumber must be a Number"),
 
   /** Analytics
    */
@@ -61,22 +54,13 @@ const updateValidation = [
     .isNumeric()
     .withMessage("earnings must be a string"),
 
-  body("analytics.jobs")
-    .isNumeric()
-    .withMessage("jobs must be a string"),
+  body("analytics.jobs").isNumeric().withMessage("jobs must be a string"),
 
-  body("analytics.hours")
-    .isNumeric()
-    .withMessage("hours must be a string"),
+  body("analytics.hours").isNumeric().withMessage("hours must be a string"),
 
-  body("analytics.views")
-    .isNumeric()
-    .withMessage("views must be a string"),
+  body("analytics.views").isNumeric().withMessage("views must be a string"),
 
-
-  body("wallet")
-    .isNumeric()
-    .withMessage("wallet must be a Number"),
+  body("wallet").isNumeric().withMessage("wallet must be a Number"),
 
   body("description")
     .isString()
@@ -87,7 +71,6 @@ const updateValidation = [
     .isBoolean()
     .withMessage("isVerified must be a True or False"),
 ];
-
 
 const signUpValidation = [
   body("firstName")
@@ -102,14 +85,12 @@ const signUpValidation = [
     .isLength({ min: 3, max: 10 })
     .withMessage("Clint's lastName length should be > 3 and < 10"),
 
-  body("email")
-    .isEmail()
-    .withMessage("You Should Enter a valid Email"),
+  body("email").isEmail().withMessage("You Should Enter a valid Email"),
 
   body("password")
     // .matches()
     .isLength({ min: 8, max: 15 })
-    .withMessage("Password length must between 8 to 15")
+    .withMessage("Password length must between 8 to 15"),
 ];
 
 const updatePasswordValidation = [
@@ -117,17 +98,17 @@ const updatePasswordValidation = [
     // .matches()
     .isLength({ min: 8, max: 15 })
     .withMessage("Password length must between 8 to 15"),
-]
+];
 
 const blockClientVA = [
   body("isBlocked")
     .isBoolean()
     .withMessage("isBlocked must be a True or False"),
-]
+];
 
 module.exports = {
   updateValidation,
   signUpValidation,
   updatePasswordValidation,
-  blockClientVA
-}
+  blockClientVA,
+};

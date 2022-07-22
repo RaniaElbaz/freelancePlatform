@@ -17,8 +17,12 @@ const testSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    body: {
+    questions: {
       type: String,
+      required: true,
+    },
+    answers: {
+      type: [String],
       required: true,
     },
     badges: {

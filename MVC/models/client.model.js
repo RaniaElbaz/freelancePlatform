@@ -3,7 +3,7 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 
 let analyticsSchema = require("./analytics.model");
-let locationSchema = require("./location.model");
+let locationSchema = require("./locations.model");
 let testimonialSchema = require("./testimonial.model");
 
 

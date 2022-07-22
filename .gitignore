@@ -1,10 +1,15 @@
-# dependencies
-/node_modules
-/data
+# test
 /spec
+
+# Node and Mongo
+/node_modules
+package-lock.json
+/data
 
 # misc
 .env
-package-lock.json
-/.vscode
 .u
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
