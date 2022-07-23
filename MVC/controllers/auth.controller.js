@@ -19,12 +19,12 @@ let signUp = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   if (["freelancer", "client", "admin"].includes(req.params.userType)) {
     var { firstName, lastName, email, password } = req.body;
@@ -83,17 +83,17 @@ let signUp = (req, res, next) => {
  *    & Activate Email (Email Verification)
  * **************** */
 let activateAccount = (req, res, next) => {
-  const { token } = req.params;
+  const { token } = req.body;
   let User;
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   try {
     if (!token) new Error("Something went Wrong!!");
@@ -142,10 +142,10 @@ const userLogin = (req, res, next) => {
   // ! Ensure from the Collection Names
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
-    ? (User = Client)
-    : next(new Error("Invalid User type"));
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : next(new Error("Invalid User type"));
 
   User.findOne(
     {
@@ -198,12 +198,12 @@ let forgotPassword = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   User.findOne({ email }, { firstName: 1, email: 1, _id: 1 })
     .then((user) => {
@@ -264,15 +264,15 @@ let resetPassword = (req, res, next) => {
   let User;
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   try {
-   
+
 
     User.findOne({ resetLink }, { password: 1 })
       .then((user) => {

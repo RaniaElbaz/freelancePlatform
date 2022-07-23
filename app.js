@@ -6,8 +6,8 @@ const morgan = require("morgan");
 const paypal = require("paypal-rest-sdk");
 
 const paymentRoute = require("./MVC/routes/payment.route");
-const companyRouter=require("./MVC/routes/company.route")
-const productRouter=require("./MVC/routes/product.route")
+const companyRouter = require("./MVC/routes/company.route")
+const productRouter = require("./MVC/routes/product.route")
 const teamRoutes = require("./MVC/routes/team.route");
 const skillRoutes = require("./MVC/routes/skill.route");
 const categoryRoutes = require("./MVC/routes/category.route");
@@ -84,3 +84,7 @@ app.use((error, request, response, next) => {
   let errorStatus = error.status || 500;
   response.status(errorStatus).json({ message: "Internal Error:\n" + error });
 });
+
+
+// Jasmine Unit Test
+module.exports = app;
