@@ -164,7 +164,7 @@ const userLogin = (req, res, next) => {
       let isMatch = bcrypt.compareSync(req.body.password, user.password);
 
       if (!isMatch) {
-        if (error) throw new Error("Incorrect Password");
+        throw new Error("Incorrect Password");
       } else {
         let token = jwt.sign(
           {

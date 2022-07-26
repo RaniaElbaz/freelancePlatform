@@ -15,3 +15,6 @@ module.exports.passwordRegex = new RegExp(
  * valid phone format example: 11-111-1111
  */
 //  module.exports.phoneRegex = /\d{3}-\d{3}-\d{4}/
+
+module.exports.imageExtRegex = new RegExp(".(png|jpg)$");
+module.exports.fileExtRegex = new RegExp(".(pdf|docx)$");

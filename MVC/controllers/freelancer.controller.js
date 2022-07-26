@@ -56,7 +56,9 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
       //array of numbers
       else if (request.params.detail === "skills") {
         data.skills = [...new Set([...request.body.skills])];
-        return data.save();
+        return data.save().then((data) => {
+          next();
+        });
       } else {
         next(new Error("Invalid request"));
       }
@@ -168,7 +170,7 @@ module.exports.removeData = (request, response, next) => {
 
 /** get freelancer data  by id (get profile / public view)
  */
-module.exports.getFreelancerPrivate= (request, response, next) => {
+module.exports.getFreelancerPrivate = (request, response, next) => {
   Freelancer.findOne(
     { _id: request.params.id },
     {
@@ -192,18 +194,15 @@ module.exports.getFreelancerPrivate= (request, response, next) => {
 /** get freelancer data  by id (get profile/ private view)
  */
 module.exports.getFreelancerPublic = (request, response, next) => {
-  if (request.id !== request.params.id) next(new Error("not authorized"))
-    Freelancer.findOne(
-      { _id: request.params.id },
-      { isBlocked: 0, password: 0 }
-    )
-      .then((data) => {
-        if (data == null) next(new Error("Freelancer not found"));
-        response.status(200).json(data);
-      })
-      .catch((error) => {
-        next(error);
-      });
+  if (request.id !== request.params.id) next(new Error("not authorized"));
+  Freelancer.findOne({ _id: request.params.id }, { isBlocked: 0, password: 0 })
+    .then((data) => {
+      if (data == null) next(new Error("Freelancer not found"));
+      response.status(200).json(data);
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
 
 /** get all freelancer data

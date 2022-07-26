@@ -34,7 +34,7 @@ module.exports.createSkill = (request, response, next) => {
 module.exports.getAllSkills = (request, response, next) => {
   Skill.find({})
     .populate({ path: "categories", select: "name" })
-    .populate({ path: "talents.id", select: "firstName" }) //🟡not working
+    .populate({ path: "talents" })
     .then((data) => {
       response.status(200).json(data);
     })
@@ -46,9 +46,9 @@ module.exports.getAllSkills = (request, response, next) => {
 module.exports.getSkillById = (request, response, next) => {
   Skill.findById({ _id: request.params.id })
     .populate({ path: "categories", select: "name" })
-    .populate({ path: "talents.id", select: "firstName" }) //🟡not working
+    .populate({ path: "talents" })
     .then((data) => {
-      if (data == null) next(new Error("skill not found"));
+      if (!data) next(new Error("skill not found"));
       else {
         console.log(data.talents.id);
         response.status(200).json(data);
@@ -93,15 +93,19 @@ module.exports.updateSkill = (request, response, next) => {
               data[prop] = request.body[prop];
             }
           });
-        } else if (
-          [...data.categories, ...request.body.categories].length !==
-          new Set([...data.categories, ...request.body.categories]).size
-        )
-          throw Error("categories should be unique");
-        else data[prop] = request.body[prop] || data[prop];
+        } else data[prop] = request.body[prop] || data[prop];
       }
       return data.save().then((data) => {
-        response.status(201).json({ msg: "Skill updated", data });
+        Category.find({}).then((categories) => {
+          categories.map((category) => {
+            if (!request.body.categories.includes(category._id)) {
+              category.skills.splice(category.skills.indexOf(data._id), 1);
+            } else category.skills.push(data._id);
+            category.skills = [...new Set(category.skills)];
+            category.save();
+          });
+          response.status(201).json({ msg: "Skill updated", data });
+        });
       });
     })
     .catch((error) => {
@@ -114,7 +118,7 @@ module.exports.addTalentToSkill = (request, response, next) => {
     .then((skills) => {
       for (let skill in skills) {
         if (!skill) next(new Error("skill not found"));
-        skill.talents.push({ id: request.id, type: request.role + "s" });
+        skill.talents = [...new Set([...skill.talents, request.id])];
       }
       return skills.save().then((skills) => {
         response.status(201).json({ msg: "talent added to skill", skills });

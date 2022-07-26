@@ -47,7 +47,7 @@ const productSchema = new Schema(
     buyerModel: {
       type: String,
 
-      enum: ["companies", "clients"],
+      enum: ["company", "clients"],
     },
 
     skills: {

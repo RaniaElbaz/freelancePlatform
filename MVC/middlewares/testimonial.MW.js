@@ -1,6 +1,7 @@
 const { check } = require("express-validator");
+const { userTypes } = require("../helpers/enums");
 
-module.exports.post = [
+module.exports.createTestimonialMW = [
   check("rating")
     .notEmpty()
     .withMessage("testimonial rating is required")
@@ -9,23 +10,11 @@ module.exports.post = [
     .isLength({ min: 1, max: 5 })
     .withMessage("testimonial rating length should be between 1,5"),
 
-  check("issued")
-    .notEmpty()
-    .withMessage("testimonial issued is required")
-    .isDate()
-    .withMessage("testimonial issued should be date"),
-
   check("comment")
     .notEmpty()
     .withMessage("testimonial comment is required")
     .isString({ min: 50, max: 1000 })
     .withMessage("testimonial comment should be a string between 50 and 1000"),
-
-  check("project")
-    .notEmpty()
-    .withMessage("testimonial project is required")
-    .isNumeric()
-    .withMessage("testimonial project should be number"),
 ];
 
 // module.exports.put = [
@@ -52,6 +41,9 @@ module.exports.post = [
 //     .withMessage("testimonial project should be number"),
 // ];
 
-module.exports.getDelete = [
-  check("pId").isNumeric().withMessage("testimonial project shoud be number"),
+module.exports.deleteTestimonialMW = [
+  check("id").isNumeric().withMessage("testimonial project shoud be number"),
+  check("userType")
+    .isIn(userTypes)
+    .withMessage(`userType should be in ${userTypes}`),
 ];

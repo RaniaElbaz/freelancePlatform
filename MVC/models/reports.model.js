@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+const mongoose = require("mongoose");
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const { reportTypes, users } = require("../helpers/enums");
 
@@ -35,12 +35,12 @@ const reportSchema = new mongoose.Schema(
     reportedModel: {
       type: String,
       required: true,
-      enum: ["clients", "freelancers", "companies", "teams", "products"],
+      enum: ["clients", "freelancers", "company", "teams", "products"],
     },
   },
-  { _id: false , timestamps: true }
+  { _id: false, timestamps: true }
 );
 
 //mapping
-reportSchema.plugin(AutoIncrement, {id: 'reportsId'});
-mongoose.model("reports",reportSchema);
+reportSchema.plugin(AutoIncrement, { id: "reportsId" });
+mongoose.model("reports", reportSchema);

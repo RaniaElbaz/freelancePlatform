@@ -4,7 +4,6 @@ const AutoIncrement = require("mongoose-sequence")(mongoose);
 const recruiterSchema = require("./recruiter.model");
 const talentSchema = require("./talent.model");
 const proposalSchema = require("./proposal.model");
-const budgetSchema = require("./budget.model");
 
 const validators = require("../helpers/functions");
 
@@ -31,7 +30,9 @@ const projectSchema = new mongoose.Schema(
       default: false,
     },
     budget: {
-      type: budgetSchema,
+      type: Number,
+      required: true,
+      min: 5,
     },
     recruiter: { type: recruiterSchema, required: true },
     category: {
@@ -49,13 +50,13 @@ const projectSchema = new mongoose.Schema(
       },
     },
     duration: {
-      type: String,
+      type: Number,
       required: true,
     },
     connects: {
       type: Number,
       required: true,
-      min: 3,
+      min: 1,
       max: 20,
     },
 

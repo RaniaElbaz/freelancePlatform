@@ -1,18 +1,18 @@
-const mongoose = require('mongoose');
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+const mongoose = require("mongoose");
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
-const { languages } = require('../helpers/enums');
+const { languages } = require("../helpers/enums");
 
 const { emailRegex, passwordRegex, phoneRegex } = require("../helpers/regex");
 const { checkDuplicated } = require("../helpers/functions");
 
-const locationSchema = require('./locations.model');
-const educationSchema = require('./education.model');
-const analyticsSchema = require('./analytics.model');
-const certificateSchema = require('./certificates.model');
-const testimonialSchema = require('./testimonial.model');
-const portfolioSchema = require('./portfolio.model');
-const experinceSchema = require('./experince.model');
+const locationSchema = require("./locations.model");
+const educationSchema = require("./education.model");
+const analyticsSchema = require("./analytics.model");
+const certificateSchema = require("./certificates.model");
+const testimonialSchema = require("./testimonial.model");
+const portfolioSchema = require("./portfolio.model");
+const experinceSchema = require("./experince.model");
 
 //create schema object
 const freelancerSchema = new mongoose.Schema(
@@ -102,11 +102,6 @@ const freelancerSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    proposals: {
-      type: Number,
-      default: 0,
-      max: 1e6
-    },
 
     // 1:Many embedded relationships
     languages: {
@@ -134,7 +129,8 @@ const freelancerSchema = new mongoose.Schema(
     },
 
     // 1:Many parent ref relationships
-    projects: {//in progress
+    projects: {
+      //in progress
       type: [Number],
       ref: "projects",
       validate: {
@@ -175,5 +171,5 @@ const freelancerSchema = new mongoose.Schema(
 );
 
 //mapping
-freelancerSchema.plugin(AutoIncrement, { id: 'freelancerId' });
+freelancerSchema.plugin(AutoIncrement, { id: "freelancerId" });
 module.exports = mongoose.model("freelancers", freelancerSchema);

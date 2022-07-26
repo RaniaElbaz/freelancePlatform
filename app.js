@@ -5,6 +5,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const paypal = require("paypal-rest-sdk");
 
+const freelancerTestRoute = require("./MVC/routes/freelncer.testing");
 const paymentRoute = require("./MVC/routes/payment.route");
 const companyRouter = require("./MVC/routes/company.route");
 const productRouter = require("./MVC/routes/product.route");
@@ -59,6 +60,7 @@ app.use(changePasswordRoute);
 
 app.use(paymentRoute);
 
+app.use(freelancerTestRoute);
 app.use(freelancerRoute);
 app.use(adminRoute);
 app.use(reportRoute);

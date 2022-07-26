@@ -1,6 +1,6 @@
 const Client = require("../models/client.model");
 // const Team = require("./../models/team.model");
-// const Freelancer = require("./../models/freelancer.model");
+// const Freelancer = require("./../models/freelancers.model");
 // const Project = require("./../models/project.model");
 
 module.exports.getJob = (req, res, next) => {

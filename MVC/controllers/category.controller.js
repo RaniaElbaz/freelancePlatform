@@ -1,23 +1,42 @@
 const mongoose = require("mongoose");
 
+const multer = require("multer");
+const path = require("path");
+const { imageExtRegex } = require("../helpers/regex");
+
 require("../models/category.model");
 let Category = mongoose.model("categories");
 let Skill = mongoose.model("skills");
 
+const imageStorage = multer.diskStorage({
+  destination: "public/categories",
+  filename: (request, response, next) => {
+    next(null, request.params.id + path.extname(response.originalname));
+  },
+});
+
+module.exports.imageUpload = multer({
+  storage: imageStorage,
+  limits: {
+    fileSize: 1000000, // 1000000 Bytes = 1 MB
+  },
+  fileFilter(request, response, next) {
+    if (!response.originalname.match(imageExtRegex)) {
+      return next(new Error("Please upload an Image"));
+    }
+    next(undefined, true);
+  },
+}).single("image");
+
 module.exports.createCategory = (request, response, next) => {
   let object = new Category({
     name: request.body.name,
-    image: request.body.image,
     skills: request.body.skills,
   });
   if (object.skills.length !== new Set([...object.skills]).size)
-    throw Error("categories should be unique");
-  Category.find({ name: request.body.name })
-    .then((data) => {
-      if (!data.length) {
-        return object.save();
-      } else throw Error("category name already token");
-    })
+    throw Error("category skills should be unique");
+  return object
+    .save()
     .then((data) => {
       Skill.find({ _id: { $in: data.skills } }).then((skills) => {
         skills.map((skill) => {
@@ -56,23 +75,51 @@ module.exports.getCategoryById = (request, response, next) => {
 };
 
 module.exports.deleteCategory = (request, response, next) => {
-  Skill.find({ categories: request.params.id }).then((skills) => {
-    console.log(skills);
-    skills.map((skill) => {
-      skill.categories.splice(skill.categories.indexOf(request.params.id), 1);
-      skill.save();
-    });
-  });
   Category.deleteOne({ _id: request.params.id })
     .then((data) => {
       if (data.deletedCount == 0) {
         next(new Error("category not found"));
-      } else response.status(200).json({ msg: "category deleted" });
+      } else {
+        Skill.find({ categories: request.params.id }).then((skills) => {
+          skills.map((skill) => {
+            skill.categories.splice(
+              skill.categories.indexOf(request.params.id),
+              1
+            );
+            skill.save();
+          });
+        });
+        response.status(200).json({ msg: "category deleted" });
+      }
     })
     .catch((error) => next(error));
 };
 
+module.exports.updateImage = (request, response, next) => {
+  console.log(request.file.path);
+  console.log(request.body);
+  if (!request.file) next(new Error("file not found"));
+  Category.findById(request.params.id)
+    .then((data) => {
+      if (!data) next(new Error("category not found"));
+
+      // console.log(request.file.path);
+      data.image = `${request.protocol}://${request.hostname}:${
+        process.env.PORT
+      }/${request.file.path.replaceAll("\\", "/")}`;
+      return data.save().then((data) => {
+        response.status(201).json({ msg: "Category updated", data });
+      });
+    })
+    .catch((error) => {
+      next(error);
+    });
+  // response.send(request.file);
+};
+
 module.exports.updateCategory = (request, response, next) => {
+  console.log(request.body);
+  console.log(request.file);
   Category.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("category not found"));
@@ -81,22 +128,22 @@ module.exports.updateCategory = (request, response, next) => {
           if (request.body[prop] == data[prop]) {
             continue;
           }
-          Category.findOne({ name: request.body.name }).then((repeatedData) => {
-            if (repeatedData) {
-              next(new Error("category name is already token"));
-            } else {
-              data[prop] = request.body[prop];
-            }
-          });
-        } else if (
-          [...request.body.skills].length !==
-          new Set([...request.body.skills]).size
-        )
-          throw Error("skills should be unique");
-        else data[prop] = request.body[prop] || data[prop];
+          data[prop] = request.body[prop];
+        } else if (prop == "skills") {
+          for (let skill in request.body.skills) {
+            request.body.skills[skill] = parseInt(request.body.skills[skill]);
+          }
+          data.skills = [...new Set([...data.skills, ...request.body.skills])];
+        }
+      }
+      if (request.file) {
+        data.image = `${request.protocol}://${request.host}:${
+          process.env.PORT
+        }/${request.file.path.replaceAll("\\", "/")}`;
       }
 
       return data.save().then((data) => {
+        request.project = request.params.id;
         response.status(201).json({ msg: "Category updated", data });
       });
     })

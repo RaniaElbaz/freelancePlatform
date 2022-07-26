@@ -32,6 +32,8 @@ const teamSchema = new mongoose.Schema({
   },
   logo: {
     type: String,
+    default: `http://localhost:${process.env.PORT}/public/categories/default.jpg`,
+    //`${request.protocol}://${request.host}:${process.env.PORT}public/categories/default.jpg`,//🔴request is not defined
   },
   members: {
     type: [Number],
@@ -78,6 +80,12 @@ const teamSchema = new mongoose.Schema({
   },
   portfolios: {
     type: [portfolioSchema],
+  },
+  connects: {
+    type: Number,
+    default: 50,
+    min: 0,
+    max: 500,
   },
   analytics: analyticSchema,
   wallet: {
