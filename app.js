@@ -20,26 +20,30 @@ const authRoute = require("./MVC/routes/auth.route");
 const clintRoute = require("./MVC/routes/client.route");
 const searchRoute = require("./MVC/routes/search.route");
 const changePasswordRoute = require("./MVC/routes/changePassword.route");
-// const loginRoute = require("./MVC/routes/login.route");
 
-paypal.configure({
-  mode: "sandbox", //sandbox or live
-  client_id: process.env.CLIENT_ID,
-  client_secret: process.env.CLIENT_SECRET,
-});
+// paypal.configure({
+//   mode: "sandbox", //sandbox or live
+//   client_id: process.env.CLIENT_ID,
+//   client_secret: process.env.CLIENT_SECRET,
+// });
 
 const app = express();
 
-mongoose
-  .connect(process.env.DB_URL)
-  .then(() => {
-    console.log("DB Connected");
-    let port = process.env.PORT || 8080;
-    app.listen(port, () => {
-      console.log(`Listenning to port ${port}...`);
-    });
-  })
-  .catch((error) => console.log("Db Connection Error " + error));
+const db = async () => {
+  // ^ this changes for Jasmine unite test
+  let db = await mongoose
+    .connect(process.env.DB_URL)
+    .then(() => {
+      console.log("DB Connected");
+      let port = process.env.PORT || 8080;
+      app.listen(port, () => {
+        console.log(`Listenning to port ${port}...`);
+      });
+    })
+    .catch((error) => console.log("Db Connection Error " + error));
+  return db;
+};
+db();
 
 /****** middleware *******/
 //1- MW url and method
@@ -49,6 +53,7 @@ app.use(morgan("dev")); //method-url-status-ms- :res[content-length]
 app.use(cors());
 
 /****************** routes *****************/
+// visualPath, static folder ==> http:localhost:port/visualPath/staticFolderDirectoryOnTheServer
 app.use("/public", express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); //body parsing
@@ -84,3 +89,6 @@ app.use((error, request, response, next) => {
   let errorStatus = error.status || 500;
   response.status(errorStatus).json({ message: "Internal Error:\n" + error });
 });
+
+// Jasmine Unit Test
+module.exports = { app, db };

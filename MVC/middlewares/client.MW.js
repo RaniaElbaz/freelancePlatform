@@ -1,6 +1,6 @@
 const { body, param, query } = require("express-validator");
 
-const updateValidation = [
+const updateVA = [
   body("id").optional().isNumeric().withMessage("Child Id must be a Number"),
 
   body("firstName")
@@ -72,7 +72,7 @@ const updateValidation = [
     .withMessage("isVerified must be a True or False"),
 ];
 
-const signUpValidation = [
+const signUpVA = [
   body("firstName")
     .isAlpha()
     .withMessage("Clint's firstName should be a Characters")
@@ -93,7 +93,7 @@ const signUpValidation = [
     .withMessage("Password length must between 8 to 15"),
 ];
 
-const updatePasswordValidation = [
+const updatePasswordVA = [
   body("password")
     // .matches()
     .isLength({ min: 8, max: 15 })
@@ -106,9 +106,41 @@ const blockClientVA = [
     .withMessage("isBlocked must be a True or False"),
 ];
 
+const testimonialVA = [ // !Handling Rania
+  body("rating")
+    .notEmpty()
+    .withMessage("freelancer testimonial rating is required")
+    .isNumeric()
+    .withMessage("testimonial rating should be number")
+    .isLength({ min: 1, max: 5 })
+    .withMessage("freelancer testimonial rating length should be between 1,5"),
+
+  body("issued")
+    .notEmpty()
+    .withMessage("freelancer testimonial issued is required")
+    .isDate()
+    .withMessage("freelancer testimonial issued should be date"),
+
+  body("comment")
+    .notEmpty()
+    .withMessage("freelancertestimonial comment is required")
+    .isString({ min: 50, max: 1000 })
+    .withMessage(
+      "freelancer testimonial comment should be a string between 50 and 1000"
+    ),
+
+  body("project")
+    .notEmpty()
+    .withMessage("freelancer testimonial project is required")
+    .isNumeric()
+    .withMessage("freelancer testimonial project should be number"),
+];
+
+
 module.exports = {
-  updateValidation,
-  signUpValidation,
-  updatePasswordValidation,
+  updateVA,
+  signUpVA,
+  updatePasswordVA,
   blockClientVA,
+  testimonialVA
 };

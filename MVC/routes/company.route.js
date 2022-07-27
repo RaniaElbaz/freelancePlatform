@@ -1,4 +1,5 @@
 const express = require("express");
+
 const { body, param, query } = require("express-validator");
 const companyRoute = express.Router();
 const controller = require("../controllers/company.controller");
@@ -27,6 +28,7 @@ companyRoute
     validationMW,
     companyValidtion.paramValidator,
     companyValidtion.detailsValidator,
+    controller.imageUpload.single("logo"),
     controller.updateCompanyDetails
   );
 

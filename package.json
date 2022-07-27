@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "test-init": "npx jasmine init",
     "test": "jasmine",
     "start": "nodemon app.js"
   },
@@ -23,8 +24,10 @@
     "paypal-rest-sdk": "^1.8.1"
   },
   "devDependencies": {
+    "cors": "^2.8.5",
     "jasmine": "^4.2.1",
+    "jasmine-spec-reporter": "^7.0.0",
     "morgan": "^1.10.0",
-    "cors": "^2.8.5"
+    "supertest": "^6.2.4"
   }
 }

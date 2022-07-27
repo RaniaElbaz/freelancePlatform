@@ -1,5 +1,35 @@
 let company = require("../models/company.model");
 
+/**************multer****** */
+const multer = require("multer");
+const path = require("path");
+
+const imageStorage = multer.diskStorage({
+  // Destination to store image
+  destination: (re, file, cb) => {
+    cb(null, "./public/uploads/logo");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+module.exports.imageUpload = multer({
+  storage: imageStorage,
+  limits: {
+    fileSize: 1000000,
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(png|jpg)$/)) {
+      return cb(new Error("Please upload a Image"));
+    }
+    cb(undefined, true);
+  },
+});
+/****************************/
 //get All Companies
 module.exports.getAllComapny = (req, res, next) => {
   company
@@ -49,26 +79,40 @@ module.exports.getCampanyByIdPrivate = (req, res, next) => {
     });
 };
 
+//update detaials
 module.exports.updateCompanyDetails = (req, res, next) => {
+  console.log(req.file);
   company
     .findOne({
       _id: req.params.id,
     })
     .then((data) => {
+      console.log(req.body);
+
       for (let item in req.body) {
+        console.log(item);
         if (item == "location") {
           for (let nestedItem in req.body[item]) {
-            if (request.body.hasOwnProperty(nestedItem)) {
-              data.location[nestedItem] = request.body[nestedItem];
+            console.log(nestedItem);
+            if (
+              ["postalCode", "city", "address", "state"].includes(nestedItem)
+            ) {
+              // data["location"][nestedItem] = req.body["location"][nestedItem];
+              data["location"][nestedItem] = req.body["location"][nestedItem];
             }
-            // if (["postalCode", "state", "city", "address"].includes(nestedItem)) { //address&city&state Not object
-            //   data["location"][nestedItem] = req.body["location"][nestedItem];
-            // }
           }
         } else data[item] = req.body[item] || data[item];
       }
+      let logoPath = "";
+      if (req.file) {
+        logoPath = req.file.path;
+      } else {
+        logoPath = "./public/uploads/default.jpg"; //image
+      }
+      data.logo = logoPath;
+      data.save();
       res.status(200).json({ data });
-      return data.save();
+      return data;
     })
 
     .catch((error) => {
@@ -77,24 +121,25 @@ module.exports.updateCompanyDetails = (req, res, next) => {
 };
 
 // other function isblocked ,wallet , analytics, isverfiied
-module.exports.updateCompanyInfo = (request, response, next) => {
+module.exports.updateCompanyInfo = (req, res, next) => {
   const backInfo = ["analytics", "isVerified", "isBlocked", "wallet"];
-  Freelancer.findById(request.params.id)
+  company
+    .findById(req.params.id)
     .then((data) => {
       if (!data) throw new Error("company not found");
-      for (let key of backInfo) {
-        if (key === "analytics") {
-          for (let analyticKey in data[key]) {
-            if (request.body.hasOwnProperty(analyticKey)) {
-              data.analytics[analyticKey] = request.body[analyticKey];
+      for (let item in req.body) {
+        if (item == "analytics") {
+          for (let nestedItem in req.body[item]) {
+            if (["earnings", "jobs", "hours", "views"].includes(nestedItem)) {
+              data["analytics"][nestedItem] = req.body["analytics"][nestedItem];
             }
           }
-        } else data[key] = request.body[key] || data[key];
+        } else data[item] = req.body[item] || data[item];
       }
       return data.save();
     })
     .then((data) => {
-      response.status(201).json({ data: "updated" });
+      res.status(201).json({ data });
     })
     .catch((error) => next(error));
 };
@@ -103,7 +148,7 @@ module.exports.updateCompanyInfo = (request, response, next) => {
 module.exports.deleteCompany = (req, res, next) => {
   company
     .deleteOne({
-      _id: req.body.id,
+      _id: req.params.id,
     })
     .then((data) => {
       res.status(200).json({

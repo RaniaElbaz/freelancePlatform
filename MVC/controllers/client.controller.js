@@ -24,43 +24,6 @@ const getClientById = (request, response, next) => {
     });
 };
 
-// const signUp = (req, res, next) => {
-//   // Ensure the user not registered before & not Blocked
-//   Client.find(
-//     { email: req.body.email },
-//     { _id: 0, email: 1, isBlocked: 1 }
-//   )
-//     .then(data => {
-//       // console.log(data[0].email, "=> Data")
-//       // console.log(data[0].isBlocked, "=> Data")
-//       if (data[0]) {
-//         if (data[0].email) throw new Error("This user is already registered!");
-//         if (data[0].isBlocked == true) throw new Error("Access Denied");
-//       }
-//     }).then(newData => {
-//       bcrypt.hash(req.body.password, 10, (error, hash) => {
-//         // a) Created Object from the schema
-//         let object = new Client({
-//           firstName: req.body.firstName,
-//           lastName: req.body.lastName,
-//           password: hash,
-//           email: req.body.email
-//         });
-//         // b) insert the Object in the db => save data in the db
-//         object.save()
-//           .then(data => {
-//             res.status(201).json({ data: "SignedUP" });
-//           })
-//           .catch(error => {
-//             next(error);
-//           });
-//       })
-//     })
-//     .catch(error => next(error));
-
-//   // res.json({ mes: "test" })
-// };
-
 const updateClient = (request, response, next) => {
   Client.findOne({ _id: request.params.id })
     .then((data) => {
@@ -103,6 +66,8 @@ const updateClient = (request, response, next) => {
 };
 
 const uploadImage = (request, response, next) => {
+  // if (!request.file) throw new Error("There is no image uploaded");
+
   const file = request.file;
   const host = request.host;
   const imgPath = `${request.protocol}://${host}:${
@@ -118,14 +83,12 @@ const uploadImage = (request, response, next) => {
       client
         .updateOne({ picture: { imgPath, name: file.originalname } })
         .then((data) => {
-          response
-            .status(201)
-            .json({
-              msg: "imageUploaded",
-              file: file,
-              data: request.body,
-              imgPath,
-            });
+          response.status(201).json({
+            msg: "imageUploaded",
+            file: file,
+            data: request.body,
+            imgPath,
+          });
         })
         .catch((error) => next(error));
     })
@@ -181,12 +144,10 @@ const blockClient = (request, response, next) => {
       user
         .updateOne({ isBlocked: request.body.isBlocked })
         .then((data) => {
-          response
-            .status(200)
-            .json({
-              data: data,
-              message: "Password Resiting done successfully",
-            });
+          response.status(200).json({
+            data: data,
+            message: "Password Resiting done successfully",
+          });
         })
         .catch((error) => next(error));
     })
@@ -216,7 +177,23 @@ const updateTestimonials = (request, response, next) => {
     .catch((error) => next(error));
 };
 
-// const deleteTestimonials = () =>{} // ! handling
+const deleteTestimonial = (request, response, next) => {
+  Freelancer.findOne({ "testimonials.project": request.body.project })
+    .then((data) => {
+      if (!data) {
+        next(new Error("testimonial not found"));
+      } else {
+        for (let item of data.testimonials) {
+          if (item.project == request.body.project) {
+            data.testimonials.splice(data.testimonials.indexOf(item), 1);
+            data.save();
+            response.status(200).json({ msg: "testimonial deleted" });
+          }
+        }
+      }
+    })
+    .catch((error) => next(error));
+};
 
 module.exports = {
   getAllClients,
@@ -228,4 +205,5 @@ module.exports = {
   updatePassword,
   blockClient,
   uploadImage,
+  deleteTestimonial,
 };

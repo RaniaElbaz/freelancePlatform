@@ -23,7 +23,9 @@ let signUp = (req, res, next) => {
     ? (User = Company)
     : req.params.userType == "client"
     ? (User = Client)
-    : next(new Error("Invalid User type"));
+    : req.params.userType == "admin"
+    ? (User = Admin)
+    : null;
 
   if (["freelancer", "client", "admin"].includes(req.params.userType)) {
     var { firstName, lastName, email, password } = req.body;
@@ -82,7 +84,7 @@ let signUp = (req, res, next) => {
  *    & Activate Email (Email Verification)
  * **************** */
 let activateAccount = (req, res, next) => {
-  const { token } = req.params;
+  const { token } = req.body;
   let User;
 
   req.params.userType == "freelancer"
@@ -91,7 +93,9 @@ let activateAccount = (req, res, next) => {
     ? (User = Company)
     : req.params.userType == "client"
     ? (User = Client)
-    : next(new Error("Invalid User type"));
+    : req.params.userType == "admin"
+    ? (User = Admin)
+    : null;
 
   try {
     if (!token) new Error("Something went Wrong!!");
@@ -110,12 +114,21 @@ let activateAccount = (req, res, next) => {
         if (user) throw new Error("User is already registered!");
 
         bcrypt.hash(password, 10, (error, hash) => {
-          let newUser = new User({
-            firstName,
-            lastName,
-            email,
-            password: hash,
-          });
+          let newUser;
+          if (req.params.userType != "company") {
+            newUser = new User({
+              firstName,
+              lastName,
+              email,
+              password: hash,
+            });
+          } else {
+            newUser = new User({
+              name,
+              email,
+              password: hash,
+            });
+          }
 
           newUser
             .save()
@@ -155,6 +168,7 @@ const userLogin = (req, res, next) => {
     .then((user) => {
       if (!user) {
         // user not found
+
         let error = new Error("Incorrect Username or Password!");
         error.status = 401;
         throw error;
@@ -203,7 +217,7 @@ let forgotPassword = (req, res, next) => {
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
-    : next(new Error("Invalid User type"));
+    : null;
 
   User.findOne({ email }, { firstName: 1, email: 1, _id: 1 })
     .then((user) => {
@@ -270,7 +284,7 @@ let resetPassword = (req, res, next) => {
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
-    : next(new Error("Invalid User type"));
+    : null;
 
   try {
     User.findOne({ resetLink }, { password: 1 })

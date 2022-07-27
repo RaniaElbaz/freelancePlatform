@@ -12,12 +12,12 @@ module.exports.changePassword = (request, response, next) => {
   request.role === "freelancer"
     ? (User = Freelancer)
     : request.role === "admin"
-    ? (User = Admin)
-    : request.role === "company"
-    ? (User = Company)
-    : request.role === "client"
-    ? (User = Client)
-    : null;
+      ? (User = Admin)
+      : request.role === "company"
+        ? (User = Company)
+        : request.role === "client"
+          ? (User = Client)
+          : null;
 
   //already logged in
   User.findOne({ _id: request.id }, { email: 1, password: 1 })
