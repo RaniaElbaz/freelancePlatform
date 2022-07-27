@@ -7,7 +7,7 @@ let Report = mongoose.model("reports");
 /** get all Report data
  */
 module.exports.getAllReports = (request, response, next) => {
-  Report.find({}, { createdAt: 1, reporter: 1, reported: 1})
+  Report.find({}, { createdAt: 1, reporter: 1, reported: 1 })
     .sort({ _id: -1 })
     .then((data) => {
       response.status(200).json(data);
@@ -21,8 +21,8 @@ module.exports.getAllReports = (request, response, next) => {
  */
 module.exports.getReportById = (request, response, next) => {
   Report.findOne({ _id: request.params.id })
-    .populate({ path: "reporter", select: "email -_id" })
-    //   .populate({ path: "reported", select: "description" })
+    .populate({ path: "reporter", select: "email -_id " })
+    .populate({ path: "reported", select: "description" })
     .then((data) => {
       if (!data) next(new Error("report not found"));
       else response.status(200).json(data);

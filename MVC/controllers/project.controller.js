@@ -1,3 +1,5 @@
+const fs = require("fs");
+const multer = require("multer");
 const mongoose = require("mongoose");
 
 require("../models/project.model");
@@ -11,6 +13,9 @@ let Company = mongoose.model("company");
 
 require("../models/team.model");
 let Team = mongoose.model("teams");
+
+require("../models/freelancers.model");
+let Freelancer = mongoose.model("freelancers");
 
 module.exports.createProject = (request, response, next) => {
   if (request.body.isInternship) {
@@ -53,11 +58,21 @@ module.exports.createProject = (request, response, next) => {
 };
 
 module.exports.getAllProjects = (request, response, next) => {
-  Project.find({ status: "posted" })
+  Project
+    .find
+    // { status: "posted" }//⭐
+    ()
     .populate({ path: "skills", select: "name" })
     .populate({ path: "category", select: "name" })
-    // .populate({ path: "talent" })
-    .populate({ path: "proposals.talent" })
+    .populate({
+      path: "talent",
+      populate: {
+        path: "id",
+        model: ["freelancers", "teams"],
+        select: "firstName",
+      },
+    })
+    // .populate({ path: "proposals.talent" })
     .then((data) => {
       response.status(200).json(data);
     })
@@ -70,7 +85,21 @@ module.exports.getProjectById = (request, response, next) => {
   Project.findById(request.params.id)
     .populate({ path: "skills", select: "name" })
     .populate({ path: "category", select: "name" })
-    // .populate({ path: "talent" })
+    .populate({
+      path: "talent",
+      populate: [
+        // {
+        //   path: "id",
+        //   model: "teams",
+        //   // select: "name",
+        // },
+        {
+          path: "id",
+          model: ["freelancers", "teams"],
+          // select: "firstName",
+        },
+      ],
+    })
     .populate({ path: "proposals.talent" })
     .then((data) => {
       if (!data) next(new Error("project not found"));
@@ -141,6 +170,39 @@ module.exports.updateProject = (request, response, next) => {
       next(error);
     });
 };
+
+const filesStorage = multer.diskStorage({
+  destination: `public/projectProposals`,
+  filename: (request, response, next) => {
+    Team.findById(request.params.id).then((data) => {
+      if (!data) next(new Error("Team not found"));
+      else
+        next(
+          null,
+          request.role +
+            request.id +
+            "_" +
+            new Date().getTime() +
+            "_" +
+            response.originalname
+        );
+    });
+  },
+});
+
+module.exports.filesUpload = multer({
+  storage: filesStorage,
+  limits: {
+    fileSize: 300000000, // 300000000 Bytes = 0.3 GB
+  },
+  fileFilter(request, response, next) {
+    console.log(response);
+    if (!response.originalname.match(fileExtRegex)) {
+      return next(new Error("Please upload a File"));
+    }
+    next(undefined, true);
+  },
+}).array("files", 2);
 
 module.exports.createProposal = (request, response, next) => {
   //🟢

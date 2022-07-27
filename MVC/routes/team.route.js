@@ -53,6 +53,7 @@ router
     authorization.AdminAndFreelancerAuth,
     mw.put,
     validationMW,
+    controller.imageUpload,
     controller.updateTeam
   )
   .all(mw.getDelete, validationMW)

@@ -50,8 +50,9 @@ router
   .route("/:id/proposal")
   .put(
     AdminAndFreelancerAndTeamAuth,
-    mw.createProposal,
-    validationMW,
+    // mw.createProposal,
+    // validationMW,
+    controller.filesUpload,
     controller.createProposal //🟢
     // decreaseConnectionsFromTalent
   )

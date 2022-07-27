@@ -26,5 +26,5 @@ module.exports.languages = [
 //report reasons
 module.exports.reportTypes = ["inappropraite", "spam", "issue"];
 //users
-module.exports.users = ["clients", "freelancers", "company", "teams"];
+module.exports.users = ["clients", "freelancers", "company", "teams", "admins"];
 module.exports.userTypes = ["client", "freelancer", "company", "team"];
