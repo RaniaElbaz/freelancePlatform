@@ -30,16 +30,20 @@ paypal.configure({
 
 const app = express();
 
-mongoose
-  .connect(process.env.DB_URL)
-  .then(() => {
-    console.log("DB Connected");
-    let port = process.env.PORT || 8080;
-    app.listen(port, () => {
-      console.log(`Listenning to port ${port}...`);
-    });
-  })
-  .catch((error) => console.log("Db Connection Error " + error));
+const db = async () => { // ^ this changes for Jasmine unite test
+  let db = await mongoose
+    .connect(process.env.DB_URL)
+    .then(() => {
+      console.log("DB Connected");
+      let port = process.env.PORT || 8080;
+      app.listen(port, () => {
+        console.log(`Listenning to port ${port}...`);
+      });
+    })
+    .catch((error) => console.log("Db Connection Error " + error));
+  return db
+}
+db();
 
 /****** middleware *******/
 //1- MW url and method
@@ -49,7 +53,8 @@ app.use(morgan("dev")); //method-url-status-ms- :res[content-length]
 app.use(cors());
 
 /****************** routes *****************/
-app.use("/public", express.static("public"))
+// visualPath, static folder ==> http:localhost:port/visualPath/staticFolderDirectoryOnTheServer
+app.use("/public", express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); //body parsing
 
@@ -86,5 +91,7 @@ app.use((error, request, response, next) => {
 });
 
 
+
+
 // Jasmine Unit Test
-module.exports = app;
+module.exports = { app, db };

@@ -98,6 +98,8 @@ const updateClient = (request, response, next) => {
 
 
 const uploadImage = (request, response, next) => {
+  // if (!request.file) throw new Error("There is no image uploaded");
+
   const file = request.file;
   const host = request.host;
   const imgPath = `${request.protocol}://${host}:${process.env.PORT}${file.destination.slice(1)}${file.filename}`;
@@ -188,7 +190,24 @@ const updateTestimonials = (request, response, next) => {
     .catch((error) => next(error));
 };
 
-// const deleteTestimonials = () =>{} // ! handling
+
+const deleteTestimonial = (request, response, next) => {
+  Freelancer.findOne({ "testimonials.project": request.body.project })
+    .then((data) => {
+      if (!data) {
+        next(new Error("testimonial not found"));
+      } else {
+        for (let item of data.testimonials) {
+          if (item.project == request.body.project) {
+            data.testimonials.splice(data.testimonials.indexOf(item), 1);
+            data.save();
+            response.status(200).json({ msg: "testimonial deleted" });
+          }
+        }
+      }
+    })
+    .catch((error) => next(error));
+};
 
 module.exports = {
   getAllClients,
@@ -199,5 +218,6 @@ module.exports = {
   updateTestimonials,
   updatePassword,
   blockClient,
-  uploadImage
+  uploadImage,
+  deleteTestimonial
 };

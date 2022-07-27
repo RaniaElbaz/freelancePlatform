@@ -160,12 +160,12 @@ const userLogin = (req, res, next) => {
         error.status = 401;
         throw error;
       }
-      if (isBlocked) next(new Error("Login failed!"));
+      if (user.isBlocked) next(new Error("Login failed!"));
 
       let isMatch = bcrypt.compareSync(req.body.password, user.password);
 
       if (!isMatch) {
-        if (error) throw new Error("Incorrect Password");
+        throw new Error("Incorrect Password");
       } else {
         let token = jwt.sign(
           {

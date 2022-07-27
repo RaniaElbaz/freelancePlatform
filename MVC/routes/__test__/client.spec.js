@@ -1,8 +1,11 @@
 const supertest = require("supertest");
-const app = require("../../../app");
-
+const { app, db } = require("../../../app");
 // Create a Request Object
 const request = supertest(app);
+
+const ClientModel = require("../../models/client.model");
+
+
 
 describe("Test the Client Route", () => {
   it("GET / Route", async () => {
