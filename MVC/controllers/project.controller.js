@@ -58,10 +58,8 @@ module.exports.createProject = (request, response, next) => {
 };
 
 module.exports.getAllProjects = (request, response, next) => {
-  Project
-    .find
-    // { status: "posted" }//⭐
-    ()
+  Project.find({ status: "posted" })
+
     .populate({ path: "skills", select: "name" })
     .populate({ path: "category", select: "name" })
     .populate({

@@ -129,8 +129,12 @@ const freelancerSchema = new mongoose.Schema(
     },
 
     // 1:Many parent ref relationships
+<<<<<<< HEAD
     projects: {
       //in progress
+=======
+    projects: {//in progress
+>>>>>>> e9762852921fbadd5ca7a3fdcda84454884c19db
       type: [Number],
       ref: "projects",
       validate: {
@@ -171,5 +175,9 @@ const freelancerSchema = new mongoose.Schema(
 );
 
 //mapping
+<<<<<<< HEAD
 freelancerSchema.plugin(AutoIncrement, { id: "freelancerId" });
+=======
+freelancerSchema.plugin(AutoIncrement, { id: 'freelancerId' });
+>>>>>>> e9762852921fbadd5ca7a3fdcda84454884c19db
 module.exports = mongoose.model("freelancers", freelancerSchema);

@@ -69,5 +69,10 @@ const companyschema = new mongoose.Schema(
   },
   { _id: false }
 );
+<<<<<<< HEAD
 companyschema.plugin(AutoIncrement, { id: "company_id" });
 module.exports = mongoose.model("company", companyschema);
+=======
+companyschema.plugin(AutoIncrement,{id:"company_id"});
+module.exports= mongoose.model("company", companyschema);
+>>>>>>> e9762852921fbadd5ca7a3fdcda84454884c19db
