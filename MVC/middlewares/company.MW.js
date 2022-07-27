@@ -29,11 +29,11 @@ module.exports.detailsValidator=[
 module.exports.infoValidator=[
     // body("isBlocked").Boolean().withMessage("isblocked should be boolean"),
     // body("isVerified").Boolean().withMessage("isVerfied should be boolean"),
-    body("analytics.earnings").isNumeric().withMessage("earnings must be a string"),
-    body("analytics.jobs").isNumeric().withMessage("jobs must be a string"),
-    body("analytics.hours").isNumeric().withMessage("hours must be a string"),
-    body("analytics.views").isNumeric().withMessage("views must be a string"),
-    body("wallet").isNumeric().withMessage("wallet must be a Number"),
+    body("analytics.earnings").optional().isNumeric().withMessage("earnings must be a string"),
+    body("analytics.jobs").optional().isNumeric().withMessage("jobs must be a string"),
+    body("analytics.hours").optional().isNumeric().withMessage("hours must be a string"),
+    body("analytics.views").optional().isNumeric().withMessage("views must be a string"),
+    body("wallet").optional().isNumeric().withMessage("wallet must be a Number"),
 ]
 
 module.exports.testimonialValidator = [

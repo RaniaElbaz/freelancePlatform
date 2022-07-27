@@ -20,8 +20,9 @@ let signUp = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
@@ -68,13 +69,17 @@ let signUp = (req, res, next) => {
           </pre>
         `,
       };
-      mg.messages().send(data, function (error, body) {
-        if (error) next(error);
+      // mg.messages().send(data, function (error, body) {
+      //   if (error) next(error);
 
-        // console.log(body);
-        res.status(201).json({
-          data: "Email verification link has been sent, kindly activate your account",
-        });
+      //   // console.log(body);
+      //   res.status(201).json({
+      //     data: "Email verification link has been sent, kindly activate your account",
+      //   });
+      // });
+      
+      res.status(201).json({
+        data: token,
       });
     })
     .catch((error) => next(error));
@@ -89,8 +94,9 @@ let activateAccount = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
@@ -113,12 +119,22 @@ let activateAccount = (req, res, next) => {
         if (user) throw new Error("User is already registered!");
 
         bcrypt.hash(password, 10, (error, hash) => {
-          let newUser = new User({
+          let newUser
+          if(req.params.userType!="company"){
+           newUser = new User({
             firstName,
             lastName,
             email,
             password: hash,
           });
+        }else{
+           newUser = new User({
+            name,
+            email,
+            password: hash,
+          });
+        }
+
 
           newUser
             .save()
@@ -143,8 +159,9 @@ const userLogin = (req, res, next) => {
   // ! Ensure from the Collection Names
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : next(new Error("Invalid User type"));
 
@@ -156,12 +173,13 @@ const userLogin = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        // user not found
+        // user not found        
+        
         let error = new Error("Incorrect Username or Password!");
         error.status = 401;
         throw error;
       }
-      if (isBlocked) next(new Error("Login failed!"));
+      if (user.isBlocked) next(new Error("Login failed!"));
 
       let isMatch = bcrypt.compareSync(req.body.password, user.password);
 
@@ -199,8 +217,9 @@ let forgotPassword = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
@@ -265,16 +284,15 @@ let resetPassword = (req, res, next) => {
   let User;
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
     : null;
 
   try {
-   
-
     User.findOne({ resetLink }, { password: 1 })
       .then((user) => {
         if (!user) next(new Error("User with this token doesn't exist!"));

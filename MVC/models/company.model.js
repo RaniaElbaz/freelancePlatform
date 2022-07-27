@@ -49,10 +49,10 @@ const companyschema = new mongoose.Schema(
       type: String,
     },
     location: {
-      type: locationSchema,
+      type: locationSchema,default:{}
     },
     analytics: {
-      type: analyticsSchema,
+      type: analyticsSchema,default:{}
     },
     wallet: {
       type: Number,

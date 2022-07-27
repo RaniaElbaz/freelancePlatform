@@ -10,7 +10,7 @@ const recruiterSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ["clients", "companies"],
+    enum: ["clients", "company"],
   },
 });
 

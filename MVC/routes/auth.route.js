@@ -15,7 +15,7 @@ const authMW = require("../Middlewares/auth.MW");
 const router = express.Router();
 
 //authMW, AdminAndClientAuth,
-router.post("/signup/:userType", signUpValidation, validationMW, signUp);
+router.post("/signup/:userType", /*signUpValidation,*/ validationMW, signUp);
 router.post("/activate-account/:userType/:token", activateAccount);
 
 router.post("/forgot-password/:userType", forgotPassword);
