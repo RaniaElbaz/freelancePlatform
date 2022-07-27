@@ -62,9 +62,9 @@ const {
   allAuth,
   freelancerAuth,
   freelancerAndCompanyAuth
-} = require("../Middlewares/usersAuth.MW");
-const validationMW = require("../Middlewares/validation.MW");
-const authMW = require("../Middlewares/auth.MW");
+} = require("../middlewares/usersAuth.MW");
+const validationMW = require("../middlewares/validation.MW");
+const authMW = require("../middlewares/auth.MW");
 
 
 const router = express.Router();

@@ -22,42 +22,6 @@ const getClientById = (request, response, next) => {
     .catch(error => { next(error) });
 };
 
-// const signUp = (req, res, next) => {
-//   // Ensure the user not registered before & not Blocked
-//   Client.find(
-//     { email: req.body.email },
-//     { _id: 0, email: 1, isBlocked: 1 }
-//   )
-//     .then(data => {
-//       // console.log(data[0].email, "=> Data")
-//       // console.log(data[0].isBlocked, "=> Data")
-//       if (data[0]) {
-//         if (data[0].email) throw new Error("This user is already registered!");
-//         if (data[0].isBlocked == true) throw new Error("Access Denied");
-//       }
-//     }).then(newData => {
-//       bcrypt.hash(req.body.password, 10, (error, hash) => {
-//         // a) Created Object from the schema
-//         let object = new Client({
-//           firstName: req.body.firstName,
-//           lastName: req.body.lastName,
-//           password: hash,
-//           email: req.body.email
-//         });
-//         // b) insert the Object in the db => save data in the db
-//         object.save()
-//           .then(data => {
-//             res.status(201).json({ data: "SignedUP" });
-//           })
-//           .catch(error => {
-//             next(error);
-//           });
-//       })
-//     })
-//     .catch(error => next(error));
-
-//   // res.json({ mes: "test" })
-// };
 
 const updateClient = (request, response, next) => {
   Client.findOne({ _id: request.params.id })
