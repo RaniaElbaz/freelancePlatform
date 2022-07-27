@@ -52,4 +52,4 @@ const adminSchema = new mongoose.Schema(
 );
 
 adminSchema.plugin(AutoIncrement, { id: "adminId" });
-mongoose.model("admins", adminSchema);
+module.exports = mongoose.model("admins", adminSchema);

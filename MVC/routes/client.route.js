@@ -6,24 +6,21 @@ const multer = require("multer");
 // Set Storage Engine
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./public/uploads/");
+    cb(null, "./public/profileImages/clients/");
   },
   filename: function (req, file, cb) {
-    // cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname);
     cb(null, `${req.params.id}_${path.extname(file.originalname)}`);
   }
 });
 
 const fileFilter = (req, file, cb) => {
   // here we can accept or reject files
-
   if (["image/jpeg", "image/png", "image/jpg"].includes(file.mimetype)) {
     cb(null, true); // accept file: store it
     // cb(new Error("Image format not supported!"), true); 
   } else {
     cb(null, false); // ignore file: not stored
   }
-  // cb(true); // return error
 }
 
 const upload = multer({
@@ -46,23 +43,28 @@ const {
   updateTestimonials,
   updatePassword,
   blockClient,
-  uploadImage
+  uploadImage,
+  deleteTestimonial
 } = require("../Controllers/client.controller");
+
 const {
-  updateValidation,
-  // signUpValidation,
-  updatePasswordValidation,
-  blockClientVA
-} = require("../models/clientValidationArray");
+  updateVA,
+  // signUpVA,
+  updatePasswordVA,
+  blockClientVA,
+  testimonialVA
+} = require("../middlewares/client.MW");
+
 const {
   adminAuth,
   clientAuth,
   AdminAndClientAuth,
   allAuth,
-  freelancerAuth
-} = require("../Middlewares/usersAuth.MW");
-const validationMW = require("../Middlewares/validation.MW");
-const authMW = require("../Middlewares/auth.MW");
+  freelancerAuth,
+  freelancerAndCompanyAuth
+} = require("../middlewares/usersAuth.MW");
+const validationMW = require("../middlewares/validation.MW");
+const authMW = require("../middlewares/auth.MW");
 
 
 const router = express.Router();
@@ -70,30 +72,47 @@ const router = express.Router();
 
 // authMw => roleAuth (authorization) => validationArray => validationMW => controller
 router.route("/client")
-  .get(authMW, adminAuth, getAllClients) // admin
-// .post(authMW, AdminAndClientAuth, signUpValidation, validationMW, signUp)
-
+  .get(authMW, adminAuth, getAllClients)
 
 router.route("/client/:id")
   .all([
     param("id").isNumeric().withMessage("Id isn't correct")
   ])
-  .get(authMW, allAuth, getClientById) // admin & client & freelancer & company
-  .put(authMW, AdminAndClientAuth, updateValidation, validationMW, updateClient) // Admin & client
-  .delete(authMW, adminAuth, deleteClient); // admin
+  .get(authMW, allAuth, getClientById)
+  .put(
+    authMW,
+    AdminAndClientAuth,
+    updateVA,
+    validationMW,
+    updateClient
+  )
+  .delete(authMW, adminAuth, deleteClient);
 
 
 
-router.put("/client/:id/uploadImage", authMW, AdminAndClientAuth, upload.single("picture"), uploadImage) // client
-
-router.put("/client/:id/updatePassword", updatePasswordValidation, updatePassword) // ^ authorization handled by using token
-
-router.put("/client/:id/blockClient", authMW, adminAuth, blockClientVA, blockClient)
+router.put("/client/:id/uploadImage", authMW, AdminAndClientAuth, upload.single("picture"), uploadImage)
 
 
-router.route("/client/:id/testimonials") // freelancer
-  .put(authMW, freelancerAuth, updateTestimonials);
-// .delete(controller.updateTestimonials); // ! handling
+router.put("/client/:id/updatePassword", updatePasswordVA, updatePassword) // ^ authorization handled by using token
+
+router.put(
+  "/client/:id/blockClient",
+  authMW,
+  adminAuth,
+  blockClientVA,
+  blockClient
+)
+
+
+
+router.route("/client/:id/testimonials")
+  .put(authMW, freelancerAuth, updateTestimonials)
+  .delete(
+    authMW, freelancerAndCompanyAuth,
+    testimonialVA,
+    validationMW,
+    deleteTestimonial
+  );
 
 
 module.exports = router;

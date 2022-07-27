@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "test-init": "npx jasmine init",
     "test": "jasmine",
     "start": "nodemon app.js"
   },
@@ -19,11 +20,14 @@
     "mailgun-js": "^0.22.0",
     "mongoose": "^6.3.8",
     "mongoose-sequence": "^5.3.1",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "paypal-rest-sdk": "^1.8.1"
   },
   "devDependencies": {
+    "cors": "^2.8.5",
     "jasmine": "^4.2.1",
+    "jasmine-spec-reporter": "^7.0.0",
     "morgan": "^1.10.0",
-    "cors": "^2.8.5"
+    "supertest": "^6.2.4"
   }
 }

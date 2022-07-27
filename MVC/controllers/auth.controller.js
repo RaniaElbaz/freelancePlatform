@@ -1,10 +1,9 @@
-const mongoose = require("mongoose");
-const Freelancer = mongoose.model("freelancers");
-
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const Client = require("../models/client.model");
+const Freelancer = require("./../models/freelancers.model");
+const Admin = require("./../models/admins.model");
 const Company = require("./../models/company.model");
 
 const mailgun = require("mailgun-js");
@@ -20,13 +19,12 @@ let signUp = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : req.params.userType == "company"
-    ? (User = Company)
-    : req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   if (["freelancer", "client", "admin"].includes(req.params.userType)) {
     var { firstName, lastName, email, password } = req.body;
@@ -69,18 +67,16 @@ let signUp = (req, res, next) => {
           </pre>
         `,
       };
-      // mg.messages().send(data, function (error, body) {
-      //   if (error) next(error);
+      mg.messages().send(data, function (error, body) {
+        if (error) next(error);
 
-      //   // console.log(body);
-      //   res.status(201).json({
-      //     data: "Email verification link has been sent, kindly activate your account",
-      //   });
-      // });
-      
-      res.status(201).json({
-        data: token,
+        // console.log(body);
+        res.status(201).json({
+          data: "Email verification link has been sent, kindly activate your account",
+        });
       });
+      
+     
     })
     .catch((error) => next(error));
 };
@@ -89,18 +85,17 @@ let signUp = (req, res, next) => {
  *    & Activate Email (Email Verification)
  * **************** */
 let activateAccount = (req, res, next) => {
-  const { token } = req.params;
+  const { token } = req.body;
   let User;
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : req.params.userType == "company"
-    ? (User = Company)
-    : req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   try {
     if (!token) new Error("Something went Wrong!!");
@@ -159,11 +154,10 @@ const userLogin = (req, res, next) => {
   // ! Ensure from the Collection Names
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : req.params.userType == "company"
-    ? (User = Company)
-    : req.params.userType == "client"
-    ? (User = Client)
-    : next(new Error("Invalid User type"));
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : next(new Error("Invalid User type"));
 
   User.findOne(
     {
@@ -184,7 +178,7 @@ const userLogin = (req, res, next) => {
       let isMatch = bcrypt.compareSync(req.body.password, user.password);
 
       if (!isMatch) {
-        if (error) throw new Error("Incorrect Password");
+        throw new Error("Incorrect Password");
       } else {
         let token = jwt.sign(
           {
@@ -217,13 +211,12 @@ let forgotPassword = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : req.params.userType == "company"
-    ? (User = Company)
-    : req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   User.findOne({ email }, { firstName: 1, email: 1, _id: 1 })
     .then((user) => {
@@ -284,15 +277,16 @@ let resetPassword = (req, res, next) => {
   let User;
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : req.params.userType == "company"
-    ? (User = Company)
-    : req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   try {
+
+
     User.findOne({ resetLink }, { password: 1 })
       .then((user) => {
         if (!user) next(new Error("User with this token doesn't exist!"));

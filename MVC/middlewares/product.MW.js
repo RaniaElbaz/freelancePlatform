@@ -11,7 +11,7 @@ module.exports.paramValidator=[
 
 module.exports.postValidator=[
     body("productName").isAlpha().withMessage("productName should be string"),
-    body("description").optional().isAlpha()/*.isLength({ min: 100, max: 500 })*/.withMessage("description must be a String"),
+    body("description").isAlpha().isLength({ min: 100, max: 500 }).withMessage("description must be a String"),
     body("price").isNumeric().withMessage("price should be Numeric"),           
     body("skills").isNumeric().withMessage("skills should be Numeric")           
 ]

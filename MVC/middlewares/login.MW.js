@@ -1,6 +1,6 @@
 const { check } = require("express-validator");
 
-module.exports.loginValidator = [
+module.exports.loginVA = [
   /**********login**********/
   //email
   check("email")
@@ -16,7 +16,7 @@ module.exports.loginValidator = [
     .withMessage("user's password should be 8~15"),
 ];
 
-module.exports.oldPasswordValidator = [
+module.exports.oldPasswordVA = [
   check("oldPassword")
     .notEmpty()
     .withMessage("users's password reqiured")
