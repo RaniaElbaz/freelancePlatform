@@ -6,10 +6,10 @@ const authMW = require("../middlewares/auth.MW");
 const validationMW = require("../middlewares/validation.MW");
 const { adminAuth } = require("../middlewares/authAccess.MW");
 const { hashPassword } = require("../middlewares/hashPassword.MW");
-// const {
-//   signupValidator,
-//   putValidator,
-// } = require("../middlewares/admin.MW");
+const {
+  signupValidator,
+  putValidator,
+} = require("../middlewares/admin.MW");
 
 const adminRoute = express.Router();
 
@@ -22,22 +22,32 @@ adminRoute.route("/admin").get(authMW, adminAuth, adminController.getAllAdmins);
 adminRoute.route("/admin/register").post(
   authMW,
   adminAuth,
-  // signupValidator,
-  // validationMW,
+  signupValidator,
+  validationMW,
   hashPassword,
   adminController.addAdmin
 );
 
 /** update profile details
  */
-adminRoute.route("/admin/:id/update/").put(
+adminRoute.route("/admin/:id/update").put(
   authMW,
   adminAuth,
-  // putValidator,
-  // validationMW,
+  putValidator,
+  validationMW,
   adminController.updateAdminDetails
 );
 
+/** update profile image */
+adminRoute
+  .route("/admin/:id/update/image")
+  .put(
+    authMW,
+    adminAuth,
+    adminController.imageUpload,
+    adminController.updateAdminImage
+  );
+  
 adminRoute
   .route("/admin/:id")
   .all(

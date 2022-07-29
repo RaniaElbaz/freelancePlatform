@@ -21,7 +21,8 @@
     "mongoose": "^6.3.8",
     "mongoose-sequence": "^5.3.1",
     "multer": "^1.4.5-lts.1",
-    "paypal-rest-sdk": "^1.8.1"
+    "paypal-rest-sdk": "^1.8.1",
+    "stripe": "^9.14.0"
   },
   "devDependencies": {
     "cors": "^2.8.5",

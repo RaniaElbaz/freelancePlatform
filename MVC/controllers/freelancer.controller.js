@@ -1,12 +1,92 @@
-const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
-require("../models/freelancers.model");
+const Team = require("../models/team.model");
+const Freelancer = require("../models/freelancers.model");
 
-let Freelancer = mongoose.model("freelancers");
+const { imageExtRegex, fileExtRegex } = require("../helpers/regex");
+
+/** for testing */
+module.exports.freelancerSignup = (req, res, next) => {
+  let { firstName, lastName, email, password } = req.body;
+  Freelancer.findOne({ email })
+    .then((user) => {
+      if (user) next(new Error("User is already registered!"));
+      bcrypt.hash(password, 10, (error, hash) => {
+        let newUser = new Freelancer({
+          firstName,
+          lastName,
+          email,
+          password: hash,
+        });
+
+        newUser
+          .save()
+          .then((data) => {
+            res.status(200).json({ message: "User SignedUP", data });
+          })
+          .catch((error) => next(`SignUp Activation Error: ${error}`));
+      });
+    })
+    .catch((error) => next(error));
+};
+
+/** multer */
+const imageStorage = multer.diskStorage({
+  destination: `public/profileImages/freelancers`,
+  filename: (request, response, next) => {
+    next(null, request.params.id + path.extname(response.originalname));
+  },
+});
+
+module.exports.imageUpload = multer({
+  storage: imageStorage,
+  limits: {
+    fileSize: 1000000, // 1 MB
+  },
+  fileFilter(request, response, next) {
+    if (!response.originalname.match(imageExtRegex)) {
+      return next(new Error("Please upload an Image"));
+    }
+    next(undefined, true);
+  },
+}).single("image");
+
+const filesStorage = multer.diskStorage({
+  destination: `public/portfolioFiles/freelancers`,
+  filename: (request, response, next) => {
+    Freelancer.findById(request.params.id).then((data) => {
+      if (!data) next(new Error("freelncer not found"));
+      else
+        next(
+          null,
+          request.id + "_" + new Date().getTime() + "_" + response.originalname
+        );
+    });
+  },
+});
+
+module.exports.filesUpload = multer({
+  storage: filesStorage,
+  limits: {
+    fileSize: 300000000, // 300000000 Bytes = 0.3 GB
+  },
+  fileFilter(request, response, next) {
+    console.log(response);
+    if (!response.originalname.match(fileExtRegex)) {
+      return next(new Error("Please upload a File"));
+    }
+    next(undefined, true);
+  },
+}).array("files", 5);
 
 /** update a freelancer data (update profile)
  */
 module.exports.updateFreelancerDetails = (request, response, next) => {
+  if (request.role == "freelancer" && request.id != request.params.id)
+    next(new Error("not Authorized"));
   const profileDetails = [
     "firstName",
     "lastName",
@@ -19,9 +99,9 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
     "hoursPerWeek",
     "hourlyRate",
   ];
-  Freelancer.findById(request.params.id)
+  Freelancer.findById(request.id)
     .then((data) => {
-      if (!data.length) throw new Error("freelancer not found");
+      if (!data) next(new Error("freelancer not found"));
       //info
       if (request.params.detail === "details") {
         for (let key of profileDetails) {
@@ -49,7 +129,17 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
         for (let key in request.body) {
           detailObject[key] = request.body[key];
         }
-        detailObject.index = data[request.params.detail].length;
+        /***********portfolio files ************/
+        if (request.params.detail == "portfolio") {
+          detailObject.files = [];
+          request.files.map((file) => {
+            detailObject.files.push(
+              `${request.protocol}://${request.hostname}:${
+                process.env.PORT
+              }/${file.path.replaceAll("\\", "/")}`
+            );
+          });
+        }
         data[request.params.detail].push(detailObject);
         return data.save();
       }
@@ -64,9 +154,29 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
       }
     })
     .then((data) => {
-      response.status(201).json({ data: "updated" });
+      response.status(201).json({ data: "updated", data });
     })
     .catch((error) => next(error));
+};
+
+/** update a freelancer image (update)
+ */
+module.exports.updateFreelancerImage = (request, response, next) => {
+  if (request.params.id != request.id) next(new Error("not Authorized"));
+  if (!request.file) next(new Error("file not found"));
+  Freelancer.findById(request.id)
+    .then((data) => {
+      if (!data) next(new Error("freelancer not found"));
+      data.profileImage = `${request.protocol}://${request.hostname}:${
+        process.env.PORT
+      }/${request.file.path.replaceAll("\\", "/")}`;
+      return data.save().then((data) => {
+        response.status(201).json({ msg: "freelancer updated", data });
+      });
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
 
 /** update a freelancer data (update projects and testimonials)
@@ -74,7 +184,7 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
 module.exports.updateFreelancerTestimonials = (request, response, next) => {
   Freelancer.findById(request.params.id)
     .then((data) => {
-      if (!data) throw new Error("freelancer not found");
+      if (!data) next(new Error("freelancer not found"));
       testimonialObject = {};
       for (let key in request.body) {
         testimonialObject[key] = request.body[key];
@@ -102,7 +212,7 @@ module.exports.updateFreelancerInfo = (request, response, next) => {
   ];
   Freelancer.findById(request.params.id)
     .then((data) => {
-      if (!data) throw new Error("freelancer not found");
+      if (!data) next(new Error("freelancer not found"));
       for (let key of backInfo) {
         if (key === "analytics") {
           for (let analyticKey in data[key]) {
@@ -112,7 +222,7 @@ module.exports.updateFreelancerInfo = (request, response, next) => {
           }
         } else if (key === "badges" && request.body[key]) {
           /*****************badges */
-          data.badges = [...new Set([...data.badges, ...request.body.badges])];
+          data.badges = [...new Set([...data.badges, request.body.badges])];
         } else data[key] = request.body[key] || data[key];
       }
       return data.save();
@@ -126,6 +236,8 @@ module.exports.updateFreelancerInfo = (request, response, next) => {
 /** edit an object in an array (update)
  */
 module.exports.editData = (request, response, next) => {
+  if ((request.role == "freelancer", request.id != request.params.id))
+    throw new Error("not Authorized");
   Freelancer.findById(
     { _id: request.params.id },
     { education: 1, certificates: 1, eperience: 1, portfolio: 1 }
@@ -151,15 +263,27 @@ module.exports.editData = (request, response, next) => {
 /** delete an object in an array (update) data
  */
 module.exports.removeData = (request, response, next) => {
+  if ((request.role == "freelancer", request.id != request.params.id))
+    throw new Error("not Authorized");
   Freelancer.findById(
-    { _id: request.params.id },
+    { _id: request.id },
     { education: 1, certificates: 1, eperience: 1, portfolio: 1 }
   )
     .then((data) => {
       if (!data) next(new Error("freelancer not found"));
-      if (request.body.index < data[request.params.detail].length)
+      if (request.body.index < data[request.params.detail].length) {
+        if (request.params.detail == "portfolio") {
+          data.portfolio[request.body.index].files.map((file) => {
+            fs.unlinkSync(
+              file.replace(
+                `${request.protocol}://${request.hostname}:${process.env.PORT}/`,
+                ""
+              )
+            );
+          });
+        }
         data[request.params.detail].splice(request.body.index, 1);
-      else next(new Error(`freelancer's ${request.params.detail} not found`));
+      } else next(new Error(`freelancer's ${request.params.detail} not found`));
       return data.save();
     })
     .then(() => {
@@ -170,7 +294,7 @@ module.exports.removeData = (request, response, next) => {
 
 /** get freelancer data  by id (get profile / public view)
  */
-module.exports.getFreelancerPrivate = (request, response, next) => {
+module.exports.getFreelancerPublic = (request, response, next) => {
   Freelancer.findOne(
     { _id: request.params.id },
     {
@@ -179,12 +303,13 @@ module.exports.getFreelancerPrivate = (request, response, next) => {
       password: 0,
       email: 0,
       connects: 0,
-      proposals: 0,
     }
   )
+    .populate({ path: "projects", select: "-proposals" })
+    .populate({ path: "portfolio", populate: { path: "skills relatedJob" } })
     .then((data) => {
-      if (data == null) next(new Error("Freelancer not found"));
-      response.status(200).json(data);
+      if (!data) next(new Error("Freelancer not found"));
+      else response.status(200).json(data);
     })
     .catch((error) => {
       next(error);
@@ -193,16 +318,24 @@ module.exports.getFreelancerPrivate = (request, response, next) => {
 
 /** get freelancer data  by id (get profile/ private view)
  */
-module.exports.getFreelancerPublic = (request, response, next) => {
-  if (request.id !== request.params.id) next(new Error("not authorized"));
-  Freelancer.findOne({ _id: request.params.id }, { isBlocked: 0, password: 0 })
-    .then((data) => {
-      if (data == null) next(new Error("Freelancer not found"));
-      response.status(200).json(data);
-    })
-    .catch((error) => {
-      next(error);
-    });
+module.exports.getFreelancerPrivate = (request, response, next) => {
+  if (request.role == "freelancer" && request.id != request.params.id) {
+    next(new Error(`not authorized`));
+  } else {
+    Freelancer.findOne(
+      { _id: request.params.id },
+      { isBlocked: 0, password: 0 }
+    )
+      .populate({ path: "projects", select: "-proposals" })
+      .populate({ path: "portfolio", populate: { path: "skills relatedJob" } })
+      .then((data) => {
+        if (!data) next(new Error("Freelancer not found"));
+        response.status(200).json(data);
+      })
+      .catch((error) => {
+        next(error);
+      });
+  }
 };
 
 /** get all freelancer data
@@ -221,6 +354,7 @@ module.exports.getAllFreelancers = (request, response, next) => {
       analytics: 1,
     }
   )
+    .populate({ path: "skills", select: "name" })
     .then((data) => {
       response.status(200).json(data);
     })
@@ -241,23 +375,40 @@ module.exports.deleteFreelancer = (request, response, next) => {
     .catch((error) => next(error));
 };
 
-/** delete a testimonial
- * authorized by admin only
+/** update (add) connects
+ * monthly 50 connects
  */
-module.exports.deleteTestimonialByProjectId = (request, response, next) => {
-  Freelancer.findOne({ "testimonials.project": request.body.project })
-    .then((data) => {
-      if (!data) {
-        next(new Error("testimonial not found"));
-      } else {
-        for (let item of data.testimonials) {
-          if (item.project == request.body.project) {
-            data.testimonials.splice(data.testimonials.indexOf(item), 1);
-            data.save();
-            response.status(200).json({ msg: "testimonial deleted" });
-          }
+module.exports.updateConnects = (request, response, next) => {
+  let User;
+
+  request.params.userType == "freelancer"
+    ? (User = Freelancer)
+    : request.params.userType == "team"
+    ? (User = Team)
+    : next(new Error("Invalid User type"));
+
+  User.findById(request.id)
+    .then((user) => {
+      console.log(user);
+      if (!user) next(new Error("user not found"));
+      else {
+        /** monthly at 1st*/
+        // const today = new Date(request.body.date); //test
+        const today = new Date();
+        // const dTime = Math.abs(today - data.createdAt);
+        // const dDays = Math.floor(dTime / (1000 * 60 * 60 * 24));
+        // if (dDays > 30) data.connects += 50;
+        if (today.getDate() == 1) {
+          user.connects += 50;
+          if (user.connects - 500) user.connects -= user.connects - 500; //connects cant exceed 500
+        } else {
+          next(new Error("not today bud!"));
         }
       }
+      return user.save();
+    })
+    .then((data) => {
+      response.status(201).json({ data: "updated" });
     })
     .catch((error) => next(error));
 };

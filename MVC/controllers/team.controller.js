@@ -3,10 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const { imageExtRegex, fileExtRegex } = require("../helpers/regex");
 
-const mongoose = require("mongoose");
-
-require("../models/team.model");
-let Team = mongoose.model("teams");
+let Team = require("../models/team.model");
 
 module.exports.createTeam = (request, response, next) => {
   let object = new Team({
@@ -56,6 +53,8 @@ module.exports.getTeamByIdPublic = (request, response, next) => {
     .then((data) => {
       if (data == null) next(new Error("team not found"));
       else {
+        request.id = data.id;
+        request.role = "team";
         response.status(200).json(data);
       }
     })

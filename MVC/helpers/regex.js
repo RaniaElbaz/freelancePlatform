@@ -15,10 +15,14 @@ const passwordRegex = new RegExp(
  * valid phone format example: 11-111-1111
  */
 //  module.exports.phoneRegex = /\d{3}-\d{3}-\d{4}/
-
+/**
+ * valid image format
+ */
 module.exports.imageExtRegex = new RegExp(".(png|jpg)$");
-module.exports.fileExtRegex = new RegExp(".(pdf|docx)$");
-//   const phoneRegex = /\d{3}-\d{3}-\d{4}/
+/**
+ * valid file format
+ */
+module.exports.fileExtRegex = new RegExp(".(pdf|png|jpg|jpeg)$");
 
 module.exports = {
   emailRegex,

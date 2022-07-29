@@ -5,19 +5,16 @@ const testController = require("../controllers/test.controller");
 const authMW = require("../middlewares/auth.MW");
 const validationMW = require("../middlewares/validation.MW");
 const testValidation = require("../middlewares/tests.MW");
-const { allAuth, adminAuth } = require("../middlewares/authAccess.MW")
+const { allAuth, adminAuth } = require("../middlewares/authAccess.MW");
 
 const testRoute = express.Router();
 
 testRoute
   .route("/tests")
-    .get(
-        // authMW,
-        // allAuth,
-        testController.getAllTests)
+  .get(authMW, allAuth, testController.getAllTests)
   .post(
-    // authMW,
-    // adminAuth,
+    authMW,
+    adminAuth,
     testValidation.postTestValidator,
     validationMW,
     testController.createTest
@@ -27,8 +24,8 @@ testRoute
 testRoute
   .route("/tests/:id")
   .all(
-    // authMW,
-    // adminAuth,
+    authMW,
+    adminAuth,
     [param("id").isNumeric().withMessage("test id wrong")],
     validationMW
   )

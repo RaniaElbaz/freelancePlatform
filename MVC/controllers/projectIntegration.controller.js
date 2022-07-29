@@ -1,59 +1,7 @@
-const mongoose = require("mongoose");
-
-require("../models/team.model");
-let Team = mongoose.model("teams");
-
-require("../models/freelancers.model");
-let Freelancer = mongoose.model("freelancers");
-
 let Client = require("../models/client.model");
-
-require("../models/company.model");
-let Company = mongoose.model("company");
-
-/* when project is posted */
-// module.exports.addProjectToRecruiter = (request, response, next) => {
-//   let Recruiter;
-//   if (request.role == "company") Recruiter = Company;
-//   else if (request.role == "client") Recruiter = Client;
-//   else next(new Error("invalid recruiter type"));
-
-//   Recruiter.findById(request.id)
-//     .populate("projects")
-//     .then((data) => {
-//       if (!data) throw new Error("recruiter not found");
-//       data.projects.push(request.project); //🔅
-//       return data.save().then((data) => {
-//         response
-//           .status(200)
-//           .json({ msg: "project added to recruiter", data: data.projects });
-//       });
-//     })
-//     .catch((error) => {
-//       next(error);
-//     });
-// };
-/*when talent creates a proposal for project */
-// module.exports.decreaseConnectionsFromTalent = (request, response, next) => {
-//   let Talent;
-//   if (request.role == "freelancer") Talent = Freelancer;
-//   else if (request.role == "team") Talent = Team;
-//   else next(new Error("invalid talent type"));
-
-//   Talent.findById(request.id)
-//     .then((data) => {
-//       if (!data) throw new Error("talent not found");
-//       data.connects -= request.connects; //🔅
-//       return data.save().then((data) => {
-//         response
-//           .status(200)
-//           .json({ msg: "project added to talent", data: data.projects });
-//       });
-//     })
-//     .catch((error) => {
-//       next(error);
-//     });
-// };
+let Freelancer = require("../models/freelancers.model");
+let Company = require("../models/company.model");
+let Team = require("../models/team.model");
 
 /* when project is ongoing */
 module.exports.addProjectToTalent = (request, response, next) => {
@@ -63,8 +11,9 @@ module.exports.addProjectToTalent = (request, response, next) => {
   else next(new Error("invalid talent type"));
 
   Talent.findById(request.body.talent.id)
-    .populate("projects")
+    .populate({ path: "projects", populate: { path: "proposals" } })
     .then((data) => {
+      console.log(data);
       if (!data) throw new Error("talent not found");
       data.projects.push(request.params.id);
       return data.save().then((data) => {
@@ -79,40 +28,6 @@ module.exports.addProjectToTalent = (request, response, next) => {
 };
 
 /*when project is fininshed */
-// module.exports.createTestimonialToTalent = (request, response, next) => {
-//   let Talent;
-//   if (request.talent_type == "freelancers") Talent = Freelancer; //🔅
-//   else if (request.talent_type == "teams") Talent = Team; //🔅
-//   else next(new Error("invalid talent type"));
-
-//   Talent.findOne({ projects: request.params.id })
-//     .populate({ path: "projects" })
-//     .then((data) => {
-//       if (!data) next(new Error("Project not found"));
-//       let testimonial = {};
-//       testimonial.project = request.params.id;
-//       testimonial.issued = new Date();
-//       testimonial.rating = request.body.rating;
-//       testimonial.comment = request.body.comment;
-//       data.testimonials.push(testimonial);
-//       let project = data.projects.filter((obj) => obj._id == request.params.id);
-//       console.log(project[0]);
-//       data.analytics.earnings += project[0].budget;
-//       data.analytics.hours += project[0].duration;
-//       data.analytics.jobs += 1;
-//       //🟢data.wallet +=data.project.budget;
-//       return data.save().then((data) => {
-//         response.status(200).json({
-//           msg: "testimonial created",
-//           data: data.testimonials,
-//         });
-//       });
-//     })
-//     .catch((error) => {
-//       next(error);
-//     });
-// };
-
 module.exports.createTestimonialToRecruiter = (request, response, next) => {
   let Recruiter;
   if (request.body.recruiterType == "client") Recruiter = Client;

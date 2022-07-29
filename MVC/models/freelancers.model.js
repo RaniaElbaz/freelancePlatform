@@ -78,7 +78,7 @@ const freelancerSchema = new mongoose.Schema(
     },
     connects: {
       type: Number,
-      default: 0,
+      default: 50,
       min: 0,
       max: 500,
     },
@@ -167,7 +167,7 @@ const freelancerSchema = new mongoose.Schema(
       default: () => ({}),
     },
   },
-  { _id: false }
+  { _id: false, timestamps: true }
 );
 
 //mapping

@@ -41,6 +41,16 @@ const companyAuth = (req, res, next) => {
   }
 };
 
+const teamAuth = (req, res, next) => {
+  if (req.role == "team") {
+    next();
+  } else {
+    let error = new Error("Not Authorized");
+    error.status = 403;
+    next(error);
+  }
+};
+
 /** Combination
  */
 
@@ -83,6 +93,16 @@ const AdminAndCompanyAuth = (req, res, next) => {
   }
 };
 
+const AdminAndTeamAuth = (req, res, next) => {
+  if (["admin", "team"].includes(req.role)) {
+    next();
+  } else {
+    let error = new Error("Not Authorized");
+    error.status = 403;
+    next(error);
+  }
+};
+
 const AdminAndClientAndCompanyAuth = (req, res, next) => {
   if (["admin", "client", "company"].includes(req.role)) {
     next();
@@ -95,6 +115,17 @@ const AdminAndClientAndCompanyAuth = (req, res, next) => {
 
 const AdminAndClientAndFreelancerAuth = (req, res, next) => {
   if (["admin", "client", "freelancer"].includes(req.role)) {
+    next();
+  } else {
+    let error = new Error("Not Authorized");
+    error.status = 403;
+    next(error);
+  }
+};
+
+const AdminAndFreelancerAndTeamAuth = (req, res, next) => {
+  console.log(req.id, req.role);
+  if (["admin", "freelancer", "team"].includes(req.role)) {
     next();
   } else {
     let error = new Error("Not Authorized");
@@ -125,4 +156,7 @@ module.exports = {
   AdminAndClientAuth,
   AdminAndClientAndFreelancerAuth,
   allAuth,
+  teamAuth,
+  AdminAndTeamAuth,
+  AdminAndFreelancerAndTeamAuth,
 };

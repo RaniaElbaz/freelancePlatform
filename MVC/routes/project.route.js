@@ -40,14 +40,13 @@ router
 
 router
   .route("/:id/proposal")
-  // .put(
-  //   AdminAndFreelancerAndTeamAuth,
-  //   // mw.createProposal,
-  //   // validationMW,
-  //   controller.filesUpload,
-  //   controller.createProposal //🟢
-  //   // decreaseConnectionsFromTalent
-  // )
+  .put(
+    allAuth,
+    // mw.createProposal,
+    // validationMW,
+    controller.filesUpload,
+    controller.createProposal
+  )
   .get(AdminAndClientAndCompanyAuth, controller.getProjectProposals)
   .post(
     AdminAndClientAndCompanyAuth,
@@ -92,5 +91,6 @@ router
   )
   .all(mw.getDelete, validationMW)
   .get(allAuth, controller.getProjectById)
-  .delete(AdminAndClientAndCompanyAuth, controller.deleteProject);
+  .delete(controller.deleteProject);
+
 module.exports = router;

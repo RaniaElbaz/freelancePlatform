@@ -2,19 +2,40 @@ const fs = require("fs");
 const multer = require("multer");
 const mongoose = require("mongoose");
 
-require("../models/project.model");
-let Project = mongoose.model("projects");
+let Project = require("../models/project.model");
+let Freelancer = require("../models/freelancers.model");
+let Client = require("../models/client.model");
+let Company = require("../models/company.model");
+let Team = require("../models/team.model");
+const { fileExtRegex } = require("../helpers/regex");
 
-require("../models/client.model");
-let Client = mongoose.model("clients");
+const filesStorage = multer.diskStorage({
+  destination: `public/proposalsFiles`,
+  filename: (request, response, next) => {
+    Freelancer.findById(request.params.id).then((data) => {
+      if (!data) next(new Error("freelncer not found"));
+      else
+        next(
+          null,
+          request.params.id + "_" + request.id + "_" + response.originalname
+        );
+    });
+  },
+});
 
-require("../models/company.model");
-let Company = mongoose.model("company");
-
-require("../models/team.model");
-let Team = mongoose.model("teams");
-
-// const Freelancer = require("./../models/freelancers.model");
+module.exports.filesUpload = multer({
+  storage: filesStorage,
+  limits: {
+    fileSize: 300000000, // 300000000 Bytes = 0.3 GB
+  },
+  fileFilter(request, response, next) {
+    console.log(response);
+    if (!response.originalname.match(fileExtRegex)) {
+      return next(new Error("Please upload a File"));
+    }
+    next(undefined, true);
+  },
+}).array("files", 5);
 
 module.exports.createProject = (request, response, next) => {
   if (request.body.isInternship) {
@@ -181,65 +202,61 @@ module.exports.updateProject = (request, response, next) => {
     });
 };
 
-const filesStorage = multer.diskStorage({
-  destination: `public/projectProposals`,
-  filename: (request, response, next) => {
-    Team.findById(request.params.id).then((data) => {
-      if (!data) next(new Error("Team not found"));
-      else
-        next(
-          null,
-          request.role +
-            request.id +
-            "_" +
-            new Date().getTime() +
-            "_" +
-            response.originalname
-        );
-    });
-  },
-});
-
-module.exports.filesUpload = multer({
-  storage: filesStorage,
-  limits: {
-    fileSize: 300000000, // 300000000 Bytes = 0.3 GB
-  },
-  fileFilter(request, response, next) {
-    console.log(response);
-    if (!response.originalname.match(fileExtRegex)) {
-      return next(new Error("Please upload a File"));
-    }
-    next(undefined, true);
-  },
-}).array("files", 2);
-
 module.exports.createProposal = (request, response, next) => {
-  //🟢
-  Project.findOne({
-    // "proposals.talent": { id: request.id, type: request.role + "s" },
-    _id: request.params.id,
-  })
-    .then((project) => {
-      if (!project) {
-        let object = {};
-        for (let prop in request.body) {
-          object[prop] = request.body[prop];
-        }
-        object.talent = {
-          id: request.id,
-          type: request.role + "s",
-        };
-        project.proposals.push(object);
-        request.connects = project.connects;
-        project.save();
-        next();
-      } else
-        next(
-          new Error(
-            "proposal already exists for this project or project not found"
-          )
+  Project.findOne({ _id: request.params.id })
+    .then((data) => {
+      if (!data) throw new Error("project not found");
+      let object = {};
+      for (let prop in request.body) {
+        object[prop] = request.body[prop];
+      }
+      object.files = [];
+      request.files.map((file) => {
+        object.files.push(
+          `${request.protocol}://${request.hostname}:${
+            process.env.PORT
+          }/${file.path.replaceAll("\\", "/")}`
         );
+      });
+      object.talent = {
+        id: request.id,
+        type: request.role + "s",
+      };
+      data.proposals.forEach((proposal) => {
+        if (
+          proposal.talent.id === request.id &&
+          proposal.talent.type === request.role + "s"
+        ) {
+          throw new Error("proposal already exists for this project");
+        }
+      });
+      //minus connects
+      let User;
+      request.role == "freelancer"
+        ? (User = Freelancer)
+        : request.role == "company"
+        ? (User = Company)
+        : request.role == "client"
+        ? (User = Client)
+        : next(new Error("Invalid User type"));
+      User.findById(request.id).then((talent) => {
+        if (talent.connects > data.connects) {
+          //user used a number of connects
+          talent.connects -= data.connects;
+          //add proposal
+          data.proposals.push(object);
+          //save data
+          return talent.save().then((talent) => {
+            return data.save().then((data) => {
+              response
+                .status(200)
+                .json({ msg: "proposal created", data: data.proposals });
+            });
+          });
+        } else {
+          throw new Error("not enough connects for this project");
+        }
+      });
     })
     .catch((error) => {
       next(error);
@@ -283,26 +300,24 @@ module.exports.selectProposal = (request, response, next) => {
         )
       ) {
         next(new Error("you're not the owner of this project"));
-      } else {
-        for (let proposal of data.proposals) {
-          if (
-            proposal.talent.id == request.body.talent.id &&
-            proposal.talent.type == request.body.talent.type
-          ) {
-            data.proposals = [proposal];
-            break;
-          } else {
-            next(new Error("talent not found "));
-          }
-        }
-        data.talent = request.body.talent;
-        data.status = "ongoing";
-        data.startTime = new Date();
-        return data.save().then((data) => {
-          next();
-          // response.status(201).json({ msg: "Proposal selected", data });
-        });
       }
+      for (let proposal of data.proposals) {
+        if (
+          proposal.talent.id == request.body.talent.id &&
+          proposal.talent.type == request.body.talent.type
+        ) {
+          console.log(proposal);
+          data.proposals = [proposal];
+        }
+      }
+      if (data.proposals.length != 1) next(new Error("talent not found "));
+      data.talent = request.body.talent;
+      data.status = "ongoing";
+      data.startTime = new Date();
+      return data.save().then((data) => {
+        next();
+        // response.status(201).json({ msg: "Proposal selected", data });
+      });
     })
     .catch((error) => {
       next(error);

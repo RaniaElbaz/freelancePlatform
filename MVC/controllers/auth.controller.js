@@ -23,9 +23,7 @@ let signUp = (req, res, next) => {
     ? (User = Company)
     : req.params.userType == "client"
     ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : next(new Error("Invalid User type"));
 
   if (["freelancer", "client", "admin"].includes(req.params.userType)) {
     var { firstName, lastName, email, password } = req.body;
@@ -163,7 +161,7 @@ const userLogin = (req, res, next) => {
     {
       email: req.body.email,
     },
-    { email: 1, password: 1, isBlocked: 1 }
+    { email: 1, password: 1, isBlocked: 1, connects: 1 }
   )
     .then((user) => {
       if (!user) {
@@ -171,7 +169,7 @@ const userLogin = (req, res, next) => {
 
         let error = new Error("Incorrect Username or Password!");
         error.status = 401;
-        throw error;
+        next(error);
       }
       if (user.isBlocked) next(new Error("Login failed!"));
 
@@ -188,14 +186,6 @@ const userLogin = (req, res, next) => {
           process.env.SECRET_KEY,
           { expiresIn: "1h" }
         );
-
-        user
-          .updateOne({ loginToken: token })
-          .then((data) => {
-            res.status(200).json({ data: "loginToken Saved successfully" });
-          })
-          .catch((error) => next(error));
-
         res.status(200).json({ token, message: `${req.params.userType}Login` });
       }
     })

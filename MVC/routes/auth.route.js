@@ -7,28 +7,25 @@ const {
   resetPassword,
 } = require("../controllers/auth.controller");
 const { adminLogin } = require("../controllers/adminLogin.controller");
-
-const { loginVA } = require("../middlewares/login.MW");
+const { loginValidator } = require("../middlewares/login.MW");
 const validationMW = require("../middlewares/validation.MW");
-const { signUpVA } = require("../middlewares/client.MW");
+const { signupValidator } = require("../middlewares/login.MW");
 
 const router = express.Router();
 
-router.post("/signup/:userType", signUpVA, validationMW, signUp);
+router.post("/signup/:userType", signupValidator, validationMW, signUp);
 router.post("/activate-account/:userType", activateAccount);
 
 router.post("/forgot-password/:userType", forgotPassword);
 router.post("/reset-password/:userType", resetPassword);
 
-// router.post("/login/:userType", userLogin);
-
 router //user
   .route("/login/:userType")
-  .post(loginVA, validationMW, userLogin);
+  .post(loginValidator, validationMW, userLogin);
 
 router //admin
   .route("/admin/login")
-  .post(loginVA, validationMW, adminLogin);
+  .post(loginValidator, validationMW, adminLogin);
 
 // router.put("/reset/:userType", userReset);
 

@@ -1,23 +1,21 @@
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-require("../models/freelancers.model")
-require("../models/admins.model")
-const Freelancer = mongoose.model("freelancers");
-const Admin = mongoose.model("admins");
-const Company = require("../models/company.model")
-const Client = require("../models/client.model")
+
+const Freelancer = require("../models/freelancers.model");
+const Admin = require("../models/admins.model");
+const Company = require("../models/company.model");
+const Client = require("../models/client.model");
 
 module.exports.changePassword = (request, response, next) => {
   let User = null;
   request.role === "freelancer"
     ? (User = Freelancer)
     : request.role === "admin"
-      ? (User = Admin)
-      : request.role === "company"
-        ? (User = Company)
-        : request.role === "client"
-          ? (User = Client)
-          : null;
+    ? (User = Admin)
+    : request.role === "company"
+    ? (User = Company)
+    : request.role === "client"
+    ? (User = Client)
+    : next(new Error("invalid user type"));
 
   //already logged in
   User.findOne({ _id: request.id }, { email: 1, password: 1 })
