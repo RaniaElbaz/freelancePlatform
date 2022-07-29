@@ -83,4 +83,4 @@ const projectSchema = new mongoose.Schema(
 );
 
 projectSchema.plugin(AutoIncrement, { id: "projectId" });
-mongoose.model("projects", projectSchema);
+module.exports = mongoose.model("projects", projectSchema);

@@ -1,6 +1,5 @@
 const fs = require("fs");
 const multer = require("multer");
-const mongoose = require("mongoose");
 
 let Project = require("../models/project.model");
 let Freelancer = require("../models/freelancers.model");
@@ -306,8 +305,16 @@ module.exports.selectProposal = (request, response, next) => {
           proposal.talent.id == request.body.talent.id &&
           proposal.talent.type == request.body.talent.type
         ) {
-          console.log(proposal);
           data.proposals = [proposal];
+        } else {
+          proposal.files.map((file) => {
+            fs.unlinkSync(
+              file.replace(
+                `${request.protocol}://${request.hostname}:${process.env.PORT}/`,
+                ""
+              )
+            );
+          });
         }
       }
       if (data.proposals.length != 1) next(new Error("talent not found "));
