@@ -50,9 +50,11 @@ const companyschema = new mongoose.Schema(
     },
     location: {
       type: locationSchema,
+      default: {},
     },
     analytics: {
       type: analyticsSchema,
+      default: {},
     },
     wallet: {
       type: Number,
@@ -69,5 +71,6 @@ const companyschema = new mongoose.Schema(
   },
   { _id: false }
 );
-companyschema.plugin(AutoIncrement,{id:"company_id"});
-module.exports= mongoose.model("company", companyschema);
+
+companyschema.plugin(AutoIncrement, { id: "company_id" });
+module.exports = mongoose.model("company", companyschema);

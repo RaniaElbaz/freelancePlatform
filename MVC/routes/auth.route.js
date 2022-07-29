@@ -14,7 +14,7 @@ const { signupValidator } = require("../middlewares/login.MW");
 const router = express.Router();
 
 router.post("/signup/:userType", signupValidator, validationMW, signUp);
-router.post("/activate-account/:userType/:token", activateAccount);
+router.post("/activate-account/:userType", activateAccount);
 
 router.post("/forgot-password/:userType", forgotPassword);
 router.post("/reset-password/:userType", resetPassword);

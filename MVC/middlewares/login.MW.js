@@ -24,6 +24,7 @@ module.exports.signupValidator = [
     .withMessage("user's lastname should be characters")
     .isLength({ min: 3, max: 14 })
     .withMessage("user lastname lenghth should be > 3"),
+
   //email
   check("email")
     .notEmpty()

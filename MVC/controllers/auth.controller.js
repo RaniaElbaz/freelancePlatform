@@ -38,7 +38,7 @@ let signUp = (req, res, next) => {
 
   User.findOne({ email })
     .then((user) => {
-      if (user) next(new Error("User is already registered!"));
+      if (user) throw new Error("User is already registered!");
 
       // Email Verification
       let token = jwt.sign(payload, process.env.SECRET_KEY, {
@@ -82,7 +82,7 @@ let signUp = (req, res, next) => {
  *    & Activate Email (Email Verification)
  * **************** */
 let activateAccount = (req, res, next) => {
-  const { token } = req.params;
+  const { token } = req.body;
   let User;
 
   req.params.userType == "freelancer"
@@ -112,12 +112,21 @@ let activateAccount = (req, res, next) => {
         if (user) throw new Error("User is already registered!");
 
         bcrypt.hash(password, 10, (error, hash) => {
-          let newUser = new User({
-            firstName,
-            lastName,
-            email,
-            password: hash,
-          });
+          let newUser;
+          if (req.params.userType != "company") {
+            newUser = new User({
+              firstName,
+              lastName,
+              email,
+              password: hash,
+            });
+          } else {
+            newUser = new User({
+              name,
+              email,
+              password: hash,
+            });
+          }
 
           newUser
             .save()
@@ -157,6 +166,7 @@ const userLogin = (req, res, next) => {
     .then((user) => {
       if (!user) {
         // user not found
+
         let error = new Error("Incorrect Username or Password!");
         error.status = 401;
         next(error);
@@ -166,7 +176,7 @@ const userLogin = (req, res, next) => {
       let isMatch = bcrypt.compareSync(req.body.password, user.password);
 
       if (!isMatch) {
-        next(new Error("Incorrect Password"));
+        throw new Error("Incorrect Password");
       } else {
         let token = jwt.sign(
           {

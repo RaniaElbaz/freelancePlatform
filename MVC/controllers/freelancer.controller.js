@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -147,7 +146,9 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
       //array of numbers
       else if (request.params.detail === "skills") {
         data.skills = [...new Set([...request.body.skills])];
-        return data.save();
+        return data.save().then((data) => {
+          next();
+        });
       } else {
         next(new Error("Invalid request"));
       }

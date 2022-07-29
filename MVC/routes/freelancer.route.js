@@ -1,5 +1,5 @@
 const express = require("express");
-const { param, body } = require("express-validator");
+const { param } = require("express-validator");
 
 const freelancerController = require("../controllers/freelancer.controller");
 const authMW = require("../middleWares/auth.MW");
@@ -9,6 +9,7 @@ const {
   freelancerAuth,
   adminAuth,
   AdminAndFreelancerAuth,
+  AdminAndFreelancerAndTeamAuth,
   AdminAndClientAndCompanyAuth,
 } = require("../middlewares/authAccess.MW");
 const {
@@ -121,7 +122,7 @@ freelancerRoute
 
 freelancerRoute
   .route("/update/connects/:userType")
-  .put(authMW, adminAndFreelancerAndTeamAuth, freelancerController.updateConnects);
+  .put(authMW, AdminAndFreelancerAndTeamAuth, freelancerController.updateConnects);
 
 /** for testing */
 freelancerRoute

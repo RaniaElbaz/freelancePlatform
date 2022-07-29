@@ -84,6 +84,16 @@ const AdminAndClientAndFreelancerAuth = (req, res, next) => {
   }
 }
 
+const freelancerAndCompanyAuth = (req, res, next) => {
+  if (["freelancer", "company"].includes(req.role)) {
+    next();
+  } else {
+    let error = new Error("Not Authorized");
+    error.status = 403;
+    next(error)
+  }
+}
+
 const allAuth = (req, res, next) => {
   if (["admin", "client", "freelancer", "company"].includes(req.role)) {
     next();
@@ -103,5 +113,6 @@ module.exports = {
   AdminAndClientAuth,
   AdminAndClientAndCompanyAuth,
   AdminAndClientAndFreelancerAuth,
-  allAuth
+  allAuth,
+  freelancerAndCompanyAuth
 }

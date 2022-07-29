@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "test-init": "npx jasmine init",
     "test": "jasmine",
     "start": "nodemon app.js"
   },
@@ -26,6 +27,8 @@
   "devDependencies": {
     "cors": "^2.8.5",
     "jasmine": "^4.2.1",
-    "morgan": "^1.10.0"
+    "jasmine-spec-reporter": "^7.0.0",
+    "morgan": "^1.10.0",
+    "supertest": "^6.2.4"
   }
 }

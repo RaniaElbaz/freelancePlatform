@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const recruiterSchema = require("./recruiter.model");
 
-const { Schema } = require("mongoose");
+const { Schema, Types } = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const productSchema = new Schema(
@@ -8,27 +9,6 @@ const productSchema = new Schema(
     _id: {
       type: Number,
     },
-      
-    productName: {
-        type: String,
-        required: true,
-    },
-    views: {
-      type: Number,
-    },
-    timesOfDownload: {
-      type: Number,
-    },
-    description: {
-      type: String,
-      required: true,
-      minlength: 100,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    
     ownerId: {
       type: Number,
       required: true,
@@ -39,10 +19,34 @@ const productSchema = new Schema(
       required: true,
       emun: ["freelancers", "teams"],
     },
-    
-    buyerId: {
-      type: [Number],
-      refPath: "buyerModel",
+
+    productName: {
+      type: String,
+      required: true,
+    },
+
+    views: {
+      type: Number,
+    },
+
+    timesOfDownload: {
+      type: Number,
+    },
+    description: {
+      type: String,
+      required: true,
+      minlength: 50,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    buyer: {
+      type: [{ type: recruiterSchema }],
+    },
+    product: {
+      type: String,
+      required: true,
     },
     buyerModel: {
         type: String,
@@ -50,7 +54,7 @@ const productSchema = new Schema(
     },
     
     skills: {
-      type: [Number],
+      type: [{ type: Number }],
       ref: "skills",
     },
   },
