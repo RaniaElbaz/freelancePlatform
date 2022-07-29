@@ -1,10 +1,10 @@
 const express = require("express");
 const { body, param } = require("express-validator");
 
-const questionController = require("../Controllers/questionController");
+const questionController = require("../controllers/questionController");
 
-const validationMW = require("../Middlewares/validationMW");
-const questionValidation = require("../Middlewares/questionValidation");
+const validationMW = require("../middlewares/validationMW");
+const questionValidation = require("../middlewares/questionValidation");
 const questionRoute = express.Router();
 
 questionRoute.route("/questions")

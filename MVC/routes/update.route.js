@@ -1,10 +1,10 @@
 const express = require("express");
 const { body, param } = require("express-validator");
 
-const updateController = require("../Controllers/updateController");
+const updateController = require("../controllers/updateController");
 
-const validationMW = require("../Middlewares/validationMW");
-const updateValidation = require("../Middlewares/updateValidation");
+const validationMW = require("../middlewares/validationMW");
+const updateValidation = require("../middlewares/updateValidation");
 const updateRoute = express.Router();
 
 updateRoute.route("/updates")

@@ -74,6 +74,6 @@ router
     controller.updateTeam
   ) //admin or freelancer & (member of the team)
   .all(mw.getDelete, validationMW)
-  .get(authorization.allAuth, controller.getTeamById) //any user
+  .get(authorization.allAuth, controller.getTeamByIdPrivate) //any user
   .delete(authorization.AdminAndFreelancerAuth, controller.deleteTeam); //freelancer & (member of the team)
 module.exports = router;

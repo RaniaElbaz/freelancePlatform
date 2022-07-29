@@ -5,9 +5,9 @@
 /node_modules
 package-lock.json
 /data
+/public
 
 # misc
-.env
 .u
 
 # Visual Studio Code

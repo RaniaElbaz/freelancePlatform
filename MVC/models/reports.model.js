@@ -35,7 +35,7 @@ const reportSchema = new mongoose.Schema(
     reportedModel: {
       type: String,
       required: true,
-      enum: ["clients", "freelancers", "companies", "teams", "products"],
+      enum: ["clients", "freelancers", "companies", "teams", "products", "projects"],
     },
   },
   { _id: false , timestamps: true }

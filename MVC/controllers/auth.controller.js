@@ -19,12 +19,11 @@ let signUp = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : next(new Error("Invalid User type"));
 
   if (["freelancer", "client", "admin"].includes(req.params.userType)) {
     var { firstName, lastName, email, password } = req.body;
@@ -88,8 +87,9 @@ let activateAccount = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
@@ -142,8 +142,9 @@ const userLogin = (req, res, next) => {
   // ! Ensure from the Collection Names
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : next(new Error("Invalid User type"));
 
@@ -151,21 +152,21 @@ const userLogin = (req, res, next) => {
     {
       email: req.body.email,
     },
-    { email: 1, password: 1, isBlocked: 1 }
+    { email: 1, password: 1, isBlocked: 1, connects: 1 }
   )
     .then((user) => {
       if (!user) {
         // user not found
         let error = new Error("Incorrect Username or Password!");
         error.status = 401;
-        throw error;
+        next(error);
       }
-      if (isBlocked) next(new Error("Login failed!"));
+      if (user.isBlocked) next(new Error("Login failed!"));
 
       let isMatch = bcrypt.compareSync(req.body.password, user.password);
 
       if (!isMatch) {
-        if (error) throw new Error("Incorrect Password");
+        next(new Error("Incorrect Password"));
       } else {
         let token = jwt.sign(
           {
@@ -175,14 +176,6 @@ const userLogin = (req, res, next) => {
           process.env.SECRET_KEY,
           { expiresIn: "1h" }
         );
-
-        user
-          .updateOne({ loginToken: token })
-          .then((data) => {
-            res.status(200).json({ data: "loginToken Saved successfully" });
-          })
-          .catch((error) => next(error));
-
         res.status(200).json({ token, message: `${req.params.userType}Login` });
       }
     })
@@ -198,8 +191,9 @@ let forgotPassword = (req, res, next) => {
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
@@ -264,16 +258,15 @@ let resetPassword = (req, res, next) => {
   let User;
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    :  req.params.userType == "company" ? User = Company :
-    req.params.userType == "client"
+    : req.params.userType == "company"
+    ? (User = Company)
+    : req.params.userType == "client"
     ? (User = Client)
     : req.params.userType == "admin"
     ? (User = Admin)
     : null;
 
   try {
-   
-
     User.findOne({ resetLink }, { password: 1 })
       .then((user) => {
         if (!user) next(new Error("User with this token doesn't exist!"));

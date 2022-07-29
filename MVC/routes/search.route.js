@@ -2,8 +2,8 @@ const express = require("express");
 const { body, param, query } = require("express-validator");
 
 
-const validationMW = require("../Middlewares/validation.MW");
-const authMW = require("../Middlewares/auth.MW");
+const validationMW = require("../middlewares/validation.MW");
+const authMW = require("../middlewares/auth.MW");
 const controller = require("../Controllers/search.controller");
 
 

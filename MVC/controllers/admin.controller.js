@@ -1,6 +1,30 @@
-const mongoose = require("mongoose");
-require("../models/admins.model");
-let Admin = mongoose.model("admins");
+const path = require("path");
+const multer = require("multer");
+
+const { imageExtRegex } = require("../helpers/regex");
+const Admin = require("../models/admins.model");
+
+/** multer */
+const imageStorage = multer.diskStorage({
+  destination: `public/profileImages/admins`,
+  filename: (request, response, next) => {
+    console.log(request.params.id);
+    next(null, request.params.id + path.extname(response.originalname));
+  },
+});
+
+module.exports.imageUpload = multer({
+  storage: imageStorage,
+  limits: {
+    fileSize: 1000000, // 1 MB
+  },
+  fileFilter(request, response, next) {
+    if (!response.originalname.match(imageExtRegex)) {
+      return next(new Error("Please upload an Image"));
+    }
+    next(undefined, true);
+  },
+}).single("image");
 
 /** signup as an admin
  */
@@ -36,7 +60,8 @@ module.exports.updateAdminDetails = (request, response, next) => {
         console.log(key);
         if (key == "email" || key == "password")
           next(new Error("Invalid request"));
-        else if (key == "location") {/*****************location */ 
+        else if (key == "location") {
+          /*****************location */
           for (let locationKey in data[key]) {
             if (request.body.hasOwnProperty(locationKey)) {
               data.location[locationKey] = request.body[locationKey];
@@ -53,12 +78,32 @@ module.exports.updateAdminDetails = (request, response, next) => {
     .catch((error) => next(error));
 };
 
-/** get admin  by id 
+/** update a admin image (update)
+ */
+module.exports.updateAdminImage = (request, response, next) => {
+  if (!request.file) next(new Error("file not found"));
+  Admin.findById(request.id)
+    .then((data) => {
+      if (!data) next(new Error("admin not found"));
+      if (data._id != request.id) next(new Error("admin not found"));
+      data.profileImage = `${request.protocol}://${request.hostname}:${
+        process.env.PORT
+      }/${request.file.path.replaceAll("\\", "/")}`;
+      return data.save().then((data) => {
+        response.status(201).json({ msg: "admin updated", data });
+      });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+/** get admin  by id
  */
 module.exports.getAdminById = (request, response, next) => {
   Admin.findOne(
     { _id: request.params.id },
-    { password: 0 }//
+    { password: 0 } //
   )
     .then((data) => {
       if (data == null) next(new Error("admin not found"));
@@ -96,4 +141,3 @@ module.exports.deleteAdmin = (request, response, next) => {
     })
     .catch((error) => next(error));
 };
-

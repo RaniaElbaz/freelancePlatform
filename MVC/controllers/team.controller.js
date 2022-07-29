@@ -48,7 +48,7 @@ module.exports.getAllTeams = (request, response, next) => {
     });
 };
 
-module.exports.getTeamById = (request, response, next) => {
+module.exports.getTeamByIdPrivate = (request, response, next) => {
   Team.findOne({ _id: request.params.id }, { wallet: 0 })
     .populate({ path: "members", select: "fullName" })
     .populate({ path: "skills", select: "name" })
@@ -58,6 +58,8 @@ module.exports.getTeamById = (request, response, next) => {
         next(new Error("not team member"));
       if (data == null) next(new Error("team not found"));
       else {
+        request.id = data.id;
+        request.role = "team";
         response.status(200).json(data);
       }
     })

@@ -20,16 +20,7 @@ module.exports.post = [
     .optional()
     .withMessage("isInternship should be boolean"),
 
-  check("budget.type")
-    .notEmpty()
-    .withMessage("project budget is required")
-    .isString()
-    .withMessage("project budget should be an string")
-    .isIn(["fixed", "hourlyRate"]).withMessage(`doctor department should be in (
-    "fixed",
-    "hourlyRate")`),
-
-  check("budget.value")
+  check("budget")
     .notEmpty()
     .withMessage("project budget is required")
     .isInt({ min: 10, max: 100 })
@@ -44,14 +35,14 @@ module.exports.post = [
   check("duration")
     .notEmpty()
     .withMessage("project duration is required")
-    .isString()
-    .withMessage("project duration should be string"),
+    .isNumeric()
+    .withMessage("project duration should be a number in hours"),
 
   check("connects")
     .notEmpty()
-    .withMessage("project members is required")
-    .isInt({ min: 3, max: 20 })
-    .withMessage("project members should be array 3:20"),
+    .withMessage("project connects is required")
+    .isInt({ min: 1, max: 20 })
+    .withMessage("project connects should be array 3:20"),
 ];
 
 module.exports.put = [
@@ -115,8 +106,8 @@ module.exports.createProposal = [
     .withMessage("proposal text is required")
     .isString()
     .withMessage("proposal text should be string"),
-  check("files")
-    .optional()
-    .isString()
-    .withMessage("proposal text should be string"),
+  // check("files")
+  //   .optional()
+  //   .isString()
+  //   .withMessage("proposal text should be string"),
 ];

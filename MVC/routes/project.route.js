@@ -41,11 +41,14 @@ router
   )
   .delete(controller.deleteProject);
 
-router.route("/:id/proposal").put(
-  //AdminAndFreelancerAuth
-  mw.createProposal,
-  validationMW,
-  controller.createProposal
-);
+router
+  .route("/:id/proposal")
+  .put(
+    allAuth,
+    // mw.createProposal,
+    // validationMW,
+    controller.filesUpload,
+    controller.createProposal
+  );
 
 module.exports = router;

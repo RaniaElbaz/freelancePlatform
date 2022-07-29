@@ -1,11 +1,8 @@
 const express = require("express");
-const { body, param, query } = require("express-validator");
+const { body, param } = require("express-validator");
 const router = express.Router();
 const Controller = require("../controllers/product.controller");
 let validationMW = require("../middlewares/validation.MW");
-// const productValidtionArray = require("../Models/productvalidtion");
-
-
 
 router
   .route("/product")
@@ -31,12 +28,4 @@ router
     [body("id").isNumeric().withMessage("product id should be object")],
     Controller.deleteProduct
   )
-
-  router.route("product/:id/update/testimonials")
-  .put(
-   /* productValidtionArray.param,*/
-    validationMW,
-    Controller.productUpdateTestimonials
-  );
-
 module.exports = router;

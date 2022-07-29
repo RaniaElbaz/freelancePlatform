@@ -1,23 +1,22 @@
 const express = require("express");
-const { param } = require("express-validator");
+const { param, body } = require("express-validator");
 
 const freelancerController = require("../controllers/freelancer.controller");
-const { signUp } = require("../controllers/auth.controller");
 const authMW = require("../middleWares/auth.MW");
 const validationMW = require("../middlewares/validation.MW");
 const {
   allAuth,
-  AdminAndFreelancerAuth,
+  freelancerAuth,
   adminAuth,
-  clientAndCompanyAuth,
+  AdminAndFreelancerAuth,
+  AdminAndClientAndCompanyAuth,
 } = require("../middlewares/authAccess.MW");
-const { hashPassword } = require("../middlewares/hashPassword.MW");
 const {
-  signupValidator,
   putValidator,
   testimonialValidator,
   putInfoValidator,
 } = require("../middlewares/freelancers.MW");
+const { signupValidator } = require("../middlewares/login.MW");
 
 const freelancerRoute = express.Router();
 
@@ -26,29 +25,18 @@ const freelancerRoute = express.Router();
  */
 freelancerRoute
   .route("/freelancers/")
-  .get(
-    authMW,
-    allAuth,
-    freelancerController.getAllFreelancers);
+  .get(authMW, allAuth, freelancerController.getAllFreelancers);
 
-/**Register route
- */
-freelancerRoute
-  .route("/freelancers/register")
-  .post(signupValidator, validationMW, hashPassword, signUp);
-
-freelancerRoute
-  .route("/freelancers/public/:id")
-  .all(
-    authMW,
-    [param("id").isNumeric().withMessage("Freelancer id wrong")],
-    validationMW
-  )
+freelancerRoute.route("/freelancers/public/:id").get(
+  authMW,
+  allAuth,
+  [param("id").isNumeric().withMessage("Freelancer id wrong")],
+  validationMW,
   //get freelancer by id (show profile)
-  .get(allAuth, freelancerController.getFreelancerPublic);
+  freelancerController.getFreelancerPublic
+);
 
-/** to be moved in another controller
- * update private access info
+/** update private access info
  * (isBlocked, isVerified, analytics, badges, connects, wallet)
  */
 freelancerRoute
@@ -61,15 +49,25 @@ freelancerRoute
     freelancerController.updateFreelancerInfo
   );
 
-/************ might move to projects routes */
+/************ dev purpose only */
 freelancerRoute
   .route("/freelancers/:id/update/testimonials")
   .put(
     authMW,
-    clientAndCompanyAuth,
+    AdminAndClientAndCompanyAuth,
     testimonialValidator,
     validationMW,
     freelancerController.updateFreelancerTestimonials
+  );
+
+/** update profile image */
+freelancerRoute
+  .route("/freelancers/:id/update/image")
+  .put(
+    authMW,
+    freelancerAuth,
+    freelancerController.imageUpload,
+    freelancerController.updateFreelancerImage
   );
 
 /** update profile details
@@ -85,6 +83,7 @@ freelancerRoute
     AdminAndFreelancerAuth,
     putValidator,
     validationMW,
+    freelancerController.filesUpload,
     freelancerController.updateFreelancerDetails
   );
 
@@ -116,8 +115,17 @@ freelancerRoute
     validationMW
   )
   //get freelancer by id (show profile)
-  .get(allAuth, freelancerController.getFreelancerPrivate)
+  .get(AdminAndFreelancerAuth, freelancerController.getFreelancerPrivate)
   //delete freelancer by id (dev purpose only)
   .delete(adminAuth, freelancerController.deleteFreelancer);
+
+freelancerRoute
+  .route("/update/connects/:userType")
+  .put(authMW, adminAndFreelancerAndTeamAuth, freelancerController.updateConnects);
+
+/** for testing */
+freelancerRoute
+  .route("/freelancer/signup")
+  .post(signupValidator, validationMW, freelancerController.freelancerSignup);
 
 module.exports = freelancerRoute;

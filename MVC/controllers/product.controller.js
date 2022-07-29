@@ -44,8 +44,8 @@ module.exports.createProduct = (req, res, next) => {
         description: req.body.description,
         price: req.body.price,
         skills: req.body.skills,
-        ownerId:req.body.ownerId, //sent by frontend
-        ownerModel:req.body.ownerModel  //sent by frontend
+        ownerId:req.id, //sent by frontend
+        ownerModel:req.role+"s" //sent by frontend
       });
 
       productobject
@@ -87,30 +87,6 @@ module.exports.deleteProduct = (req, res, next) => {
       res.status(200).json({
         data: "deleted",
       });
-    })
-    .catch((error) => next(error));
-};
-
-//Testimonials
-
-module.exports.productUpdateTestimonials = (req, res, next) => {
-  product
-    .findById(req.params.id)
-    .then((data) => {
-      if (!data) throw new Error("Product not found!");
-
-      let TestimonialObject = {};
-      console.log(TestimonialObject);
-      for (let key in req.body) {
-        TestimonialObject[key] = req.body[key];
-        console.log(TestimonialObject);
-      }
-      data.testimonials.push(TestimonialObject);
-      data.projects = req.body.project;
-      return data.save();
-    })
-    .then((data) => {
-      res.status(201).json({ data: "updated" });
     })
     .catch((error) => next(error));
 };

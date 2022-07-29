@@ -92,4 +92,4 @@ const teamSchema = new mongoose.Schema({
 
 teamSchema.plugin(AutoIncrement, { id: "teamId" });
 
-mongoose.model("teams", teamSchema);
+module.exports = mongoose.model("teams", teamSchema);

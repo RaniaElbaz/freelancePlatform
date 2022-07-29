@@ -1,43 +1,6 @@
 const { check, param } = require("express-validator");
 const { languages } = require("../helpers/enums");
 
-module.exports.signupValidator = [
-  // numeric auto incremented id
-  check("id")
-    .optional({ checkFalsy: true, nullable: true })
-    .isNumeric()
-    .withMessage("freelancer's id must be a number"),
-
-  /**********signup**********/
-  //name
-  check("firstName")
-    .notEmpty()
-    .withMessage("freelancer's first name reqiured")
-    .isAlpha()
-    .withMessage("freelancer's firstname should be characters")
-    .isLength({ min: 3, max: 14 })
-    .withMessage("freelancer firstname lenghth should be > 3"),
-  check("lastName")
-    .notEmpty()
-    .withMessage("freelancer's last name reqiured")
-    .isAlpha()
-    .withMessage("freelancer's lastname should be characters")
-    .isLength({ min: 3, max: 14 })
-    .withMessage("freelancer lastname lenghth should be > 3"),
-  //email
-  check("email")
-    .notEmpty()
-    .withMessage("freelancer's email reqiured")
-    .isEmail()
-    .withMessage("freelancer's email invalid"),
-  //password
-  check("password")
-    .notEmpty()
-    .withMessage("freelancer's password reqiured")
-    .isLength({ min: 6, max: 15 })
-    .withMessage("freelancer's password should be 6~15"),
-];
-
 module.exports.putValidator = [
   // numeric auto incremented id
   param("id")
@@ -254,7 +217,7 @@ module.exports.putInfoValidator = [
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
     .withMessage("freelancer's connects should be a number")
-    .isLength({ min: 0, max: 1000 })
+    .isLength({ min: 0, max: 500 })
     .withMessage("freelancer's connects must be between 0~1000"),
 
   check("wallet")

@@ -39,7 +39,7 @@ module.exports.signupValidator = [
 
 module.exports.putValidator = [
   // numeric auto incremented id
-  param("id")
+  check("id")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
     .withMessage("admin's id must be a number"),

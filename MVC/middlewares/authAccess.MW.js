@@ -104,7 +104,7 @@
   };
   
   const allAuth = (req, res, next) => {
-    if (["admin", "client", "freelancer", "company"].includes(req.role)) {
+    if (["admin", "client", "freelancer", "company", "team"].includes(req.role)) {
       next();
     } else {
       let error = new Error("Not Authorized");
@@ -124,6 +124,7 @@
     AdminAndFreelancerAuth,
     AdminAndClientAuth,
     AdminAndClientAndFreelancerAuth,
+    AdminAndFreelancerAndTeamAuth,
     allAuth,
   };
   
