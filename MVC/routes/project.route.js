@@ -35,27 +35,19 @@ router
   );
 
 router
-  .route("/:id")
-  .put(
-    AdminAndClientAndCompanyAuth,
-    mw.put,
-    validationMW,
-    controller.updateProject
-  )
-  .all(mw.getDelete, validationMW)
-  .get(allAuth, controller.getProjectById)
-  .delete(AdminAndClientAndCompanyAuth, controller.deleteProject);
+  .route("/:id/private")
+  .get(AdminAndClientAndCompanyAuth, controller.getProjectByIdPrivate);
 
 router
   .route("/:id/proposal")
-  .put(
-    AdminAndFreelancerAndTeamAuth,
-    // mw.createProposal,
-    // validationMW,
-    controller.filesUpload,
-    controller.createProposal //🟢
-    // decreaseConnectionsFromTalent
-  )
+  // .put(
+  //   AdminAndFreelancerAndTeamAuth,
+  //   // mw.createProposal,
+  //   // validationMW,
+  //   controller.filesUpload,
+  //   controller.createProposal //🟢
+  //   // decreaseConnectionsFromTalent
+  // )
   .get(AdminAndClientAndCompanyAuth, controller.getProjectProposals)
   .post(
     AdminAndClientAndCompanyAuth,
@@ -89,4 +81,16 @@ router
     validationMW,
     deleteTestimonialByProjectId
   );
+
+router
+  .route("/:id")
+  .put(
+    AdminAndClientAndCompanyAuth,
+    mw.put,
+    validationMW,
+    controller.updateProject
+  )
+  .all(mw.getDelete, validationMW)
+  .get(allAuth, controller.getProjectById)
+  .delete(AdminAndClientAndCompanyAuth, controller.deleteProject);
 module.exports = router;

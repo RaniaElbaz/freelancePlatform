@@ -14,8 +14,7 @@ let Company = mongoose.model("company");
 require("../models/team.model");
 let Team = mongoose.model("teams");
 
-require("../models/freelancers.model");
-let Freelancer = mongoose.model("freelancers");
+// const Freelancer = require("./../models/freelancers.model");
 
 module.exports.createProject = (request, response, next) => {
   if (request.body.isInternship) {
@@ -62,15 +61,6 @@ module.exports.getAllProjects = (request, response, next) => {
 
     .populate({ path: "skills", select: "name" })
     .populate({ path: "category", select: "name" })
-    .populate({
-      path: "talent",
-      populate: {
-        path: "id",
-        model: ["freelancers", "teams"],
-        select: "firstName",
-      },
-    })
-    // .populate({ path: "proposals.talent" })
     .then((data) => {
       response.status(200).json(data);
     })
@@ -80,25 +70,9 @@ module.exports.getAllProjects = (request, response, next) => {
 };
 
 module.exports.getProjectById = (request, response, next) => {
-  Project.findById(request.params.id)
+  Project.findById(request.params.id, { proposals: 0 })
     .populate({ path: "skills", select: "name" })
     .populate({ path: "category", select: "name" })
-    .populate({
-      path: "talent",
-      populate: [
-        // {
-        //   path: "id",
-        //   model: "teams",
-        //   // select: "name",
-        // },
-        {
-          path: "id",
-          model: ["freelancers", "teams"],
-          // select: "firstName",
-        },
-      ],
-    })
-    .populate({ path: "proposals.talent" })
     .then((data) => {
       if (!data) next(new Error("project not found"));
       else {
@@ -110,11 +84,45 @@ module.exports.getProjectById = (request, response, next) => {
     });
 };
 
+module.exports.getProjectByIdPrivate = (request, response, next) => {
+  let talentType = "";
+  Project.findById(request.params.id, { talent: 1 })
+    .then((data) => {
+      if (!data) next(new Error("project not found"));
+      else if (request.role == "admin") {
+      } else if (
+        !(
+          data.recruiter.id == request.id && data.recruiter.type == request.role
+        )
+      ) {
+        next(new Error("not your project"));
+      } else talentType = data.talent.type;
+
+      Project.findById(request.params.id)
+        .populate({ path: "skills", select: "name" })
+        .populate({ path: "category", select: "name" })
+        .populate({
+          path: "talent",
+          populate: {
+            path: "id",
+            model: talentType,
+          },
+        })
+        .then((data) => {
+          response.status(200).json(data);
+        });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
 module.exports.deleteProject = (request, response, next) => {
   Project.findOne({ _id: request.params.id })
     .then((data) => {
       if (!data) {
         next(new Error("project not found"));
+      } else if (request.role == "admin") {
       } else if (
         !(data.recruiter.id == request.id &&
         (data.recruiter.type == request.role) == "company"
@@ -137,12 +145,16 @@ module.exports.deleteProject = (request, response, next) => {
 module.exports.updateProject = (request, response, next) => {
   Project.findById(request.params.id)
     .then((data) => {
+      console.log(request.id, request.role);
+      console.log(data.recruiter);
       if (!data) next(new Error("project not found"));
-      else if (
-        !(data.recruiter.id == request.id &&
-        (data.recruiter.type == request.role) == "company"
-          ? "company"
-          : request.role + "s")
+      else if (request.role == "admin") {
+      } else if (
+        !(
+          data.recruiter.type ==
+            (request.role == "company" ? request.role : request.role + "s") &&
+          data.recruiter.id == request.id
+        )
       ) {
         next(new Error("you're not the owner of this project"));
       } else if (data.status != "posted") {
@@ -239,7 +251,16 @@ module.exports.getProjectProposals = (request, response, next) => {
     .populate({ path: "proposals.talent" }) //not working
     .then((data) => {
       if (!data) next(new Error("project not found"));
-      else {
+      else if (request.role == "admin") {
+      } else if (
+        !(
+          data.recruiter.type ==
+            (request.role == "company" ? request.role : request.role + "s") &&
+          data.recruiter.id == request.id
+        )
+      ) {
+        next(new Error("you're not the owner of this project"));
+      } else {
         response.status(200).json(data);
       }
     })
@@ -253,7 +274,16 @@ module.exports.selectProposal = (request, response, next) => {
     .populate({ path: "proposals.talent" })
     .then((data) => {
       if (!data) next(new Error("project not found"));
-      else {
+      else if (request.role == "admin") {
+      } else if (
+        !(
+          data.recruiter.type ==
+            (request.role == "company" ? request.role : request.role + "s") &&
+          data.recruiter.id == request.id
+        )
+      ) {
+        next(new Error("you're not the owner of this project"));
+      } else {
         for (let proposal of data.proposals) {
           if (
             proposal.talent.id == request.body.talent.id &&
@@ -283,7 +313,16 @@ module.exports.finishProject = (request, response, next) => {
   Project.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("project not found"));
-      else {
+      else if (request.role == "admin") {
+      } else if (
+        !(
+          data.recruiter.type ==
+            (request.role == "company" ? request.role : request.role + "s") &&
+          data.recruiter.id == request.id
+        )
+      ) {
+        next(new Error("you're not the owner of this project"));
+      } else {
         data.status = "finished";
         return data.save().then((data) => {
           let Talent;

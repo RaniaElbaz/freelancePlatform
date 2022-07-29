@@ -23,7 +23,7 @@ router
 //   .get(controller.getTestimonialByProjectId);
 
 router.route("/:id/create/portfolio").put(
-  authorization.AdminAndFreelancerAuth,
+  authorization.AdminAndTeamAuth,
   // mw.createPortfolio,
   // validationMW,
   controller.filesUpload,
@@ -31,7 +31,7 @@ router.route("/:id/create/portfolio").put(
 );
 
 router.route("/:id/update/portfolio").put(
-  authorization.AdminAndFreelancerAuth,
+  authorization.AdminAndTeamAuth,
   // mw.updatePortfolio,
   // validationMW,
   controller.filesUpload,
@@ -41,16 +41,20 @@ router.route("/:id/update/portfolio").put(
 router
   .route("/:id/delete/portfolio")
   .put(
-    authorization.AdminAndFreelancerAuth,
+    authorization.AdminAndTeamAuth,
     mw.deletePortfolio,
     validationMW,
     controller.deletePortfolio
   );
 
 router
+  .route("/:id/private")
+  .get(authorization.AdminAndFreelancerAuth, controller.getTeamByIdPrivate);
+
+router
   .route("/:id")
   .put(
-    authorization.AdminAndFreelancerAuth,
+    authorization.AdminAndTeamAuth,
     mw.put,
     validationMW,
     controller.imageUpload,
@@ -58,18 +62,6 @@ router
   )
   .all(mw.getDelete, validationMW)
   .get(authorization.allAuth, controller.getTeamByIdPublic)
-  .delete(authorization.AdminAndFreelancerAuth, controller.deleteTeam);
+  .delete(authorization.AdminAndTeamAuth, controller.deleteTeam);
 
-router
-  .route("/:id/private")
-  .get(authorization.freelancerAuth, controller.getTeamByIdPrivate);
-
-// router
-//   .route("/:id/uploadImage")
-//   .post(controller.imageUpload.single("image"), controller.updateImage);
-
-// router
-//   .route("/:id/uploadFiles")
-//   .post(controller.filesUpload.array("files", 2), controller.updateImage);
-//🟢 routes order
 module.exports = router;

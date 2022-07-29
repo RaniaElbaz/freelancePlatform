@@ -65,13 +65,16 @@ module.exports.getTeamByIdPublic = (request, response, next) => {
 };
 
 module.exports.getTeamByIdPrivate = (request, response, next) => {
-  Team.findOne({ _id: request.params.id }, { wallet: 0 })
+  Team.findOne({ _id: request.params.id })
     .populate({ path: "members" })
     .populate({ path: "skills", select: "name" })
     .populate({ path: "projects", select: "name" })
     .then((data) => {
       if (!data) next(new Error("team not found"));
-      else if (!data.members.filter((member) => member._id == request.id)[0])
+      else if (
+        request.role == "freelancer" &&
+        !data.members.filter((member) => member._id == request.id)[0]
+      )
         next(new Error("not team member"));
       else {
         request.id = data.id;
@@ -114,7 +117,7 @@ module.exports.updateTeam = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("team not found"));
-      else if (!data.members.includes(request.id))
+      else if (request.role == "team" && !data.members.includes(request.id))
         throw new Error("not team member");
 
       for (let prop in request.body) {
@@ -178,7 +181,7 @@ module.exports.deleteTeam = (request, response, next) => {
     .then((data) => {
       if (!data) {
         next(new Error("Team not found"));
-      } else if (!data.members.includes(request.id)) {
+      } else if (request.role == "team" && !data.members.includes(request.id)) {
         next(new Error("not team member"));
       } else {
         fs.unlinkSync(
@@ -227,21 +230,20 @@ module.exports.createPortfolio = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
       if (!data) throw new Error("team not found");
-      else if (!data.members.includes(request.id))
+      else if (request.role == "team" && !data.members.includes(request.id))
         next(new Error("not team member"));
 
       let object = {};
       for (let prop in request.body) {
         object[prop] = request.body[prop];
       }
-      object.files = [
-        `${request.protocol}://${request.hostname}:${
-          process.env.PORT
-        }/${request.files[0].path.replaceAll("\\", "/")}`,
-        `${request.protocol}://${request.hostname}:${
-          process.env.PORT
-        }/${request.files[1].path.replaceAll("\\", "/")}`,
-      ];
+      request.files.map((file) => {
+        object.files.push(
+          `${request.protocol}://${request.hostname}:${
+            process.env.PORT
+          }/${file.path.replaceAll("\\", "/")}`
+        );
+      });
       data.portfolios.push(object);
       return data.save().then((data) => {
         response
@@ -290,24 +292,21 @@ module.exports.deletePortfolio = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
       if (!data) throw new Error("team not found");
-      else if (!data.members.includes(request.id))
+      else if (request.role == "team" && !data.members.includes(request.id))
         next(new Error("not team member"));
       console.log(request.body.index);
       console.log(data.portfolios.length);
       if (request.body.index < data.portfolios.length) {
+        data.portfolios[request.body.index].files.map((file) => {
+          fs.unlinkSync(
+            file.replace(
+              `${request.protocol}://${request.hostname}:${process.env.PORT}/`,
+              ""
+            )
+          );
+        });
         data.portfolios.splice(request.body.index, 1);
-        fs.unlinkSync(
-          data.portfolios[request.body.index].files[0].replace(
-            `${request.protocol}://${request.hostname}:${process.env.PORT}/`,
-            ""
-          )
-        );
-        fs.unlinkSync(
-          data.portfolios[request.body.index].files[1].replace(
-            `${request.protocol}://${request.hostname}:${process.env.PORT}/`,
-            ""
-          )
-        );
+
         return data.save().then(() => {
           response.status(200).json({ msg: "portfolio deleted" });
         });
