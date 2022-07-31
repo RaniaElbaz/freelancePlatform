@@ -88,7 +88,7 @@ const deleteClient = (request, response, next) => {
     .then(data => {
       if (data.deletedCount === 0) next(new Error("Client Not Found!"))
       else
-        response.status(200).json({ data: `Client ${request.params.id} Deleted` })
+        response.status(200).json({ msg: `Client ${request.params.id} Deleted` })
     })
     .catch(error => next(error));
 };
@@ -108,7 +108,7 @@ const updatePassword = (request, response, next) => {
         bcrypt.hash(newPassword, 10, (error, hash) => {
           user.updateOne({ password: hash })
             .then(data => {
-              response.status(200).json({ data: "Password Updating done successfully" })
+              response.status(200).json({ msg: "Password Updating done successfully" })
             })
             .catch(error => next(error));
         })
@@ -126,7 +126,7 @@ const blockClient = (request, response, next) => {
 
       user.updateOne({ isBlocked: request.body.isBlocked })
         .then(data => {
-          response.status(200).json({ data: data, message: "Password Resiting done successfully" })
+          response.status(200).json({ data: data, msg: "Password Resiting done successfully" })
         })
         .catch(error => next(error));
     })
@@ -149,7 +149,7 @@ const updateTestimonials = (request, response, next) => {
       return data.save();
     })
     .then((data) => {
-      response.status(201).json({ data: "updated" });
+      response.status(201).json({ msg: "updated" });
     })
     .catch((error) => next(error));
 };

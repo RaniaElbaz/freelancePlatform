@@ -41,7 +41,7 @@ module.exports.changePassword = (request, response, next) => {
           } else {
             data.password = bcrypt.hashSync(request.body.password, 10);
             data.save();
-            response.status(201).json({ data: "password changed" });
+            response.status(201).json({ msg: "password changed" });
           }
         } else {
           next(new Error("username or password incorrect"));

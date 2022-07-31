@@ -80,14 +80,14 @@ app.use(productRouter)
 //3- Not Found MW
 app.use((request, response) => {
   console.log("Not Found MW");
-  response.status(404).json({ message: "Not Found" });
+  response.status(404).json({ msg: "Not Found" });
 });
 
 //4- Error MW
 app.use((error, request, response, next) => {
   console.log("Error MW");
   let errorStatus = error.status || 500;
-  response.status(errorStatus).json({ message: "Internal Error:\n" + error });
+  response.status(errorStatus).json({ msg: `${error}` });
 });
 
 

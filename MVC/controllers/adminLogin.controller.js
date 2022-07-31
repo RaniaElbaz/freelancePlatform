@@ -17,7 +17,7 @@ module.exports.adminLogin = (request, response, next) => {
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
-    response.status(200).json({ token, message: "login" });
+    response.status(200).json({ token, msg: "login" });
   } else {
     Admin.findOne(
       {
@@ -45,7 +45,7 @@ module.exports.adminLogin = (request, response, next) => {
                 process.env.SECRET_KEY,
                 { expiresIn: "1h" }
               );
-              response.status(200).json({ token, message: "login" });
+              response.status(200).json({ token, msg: "login" });
             } else {
               next(new Error("password unmatched"));
             }

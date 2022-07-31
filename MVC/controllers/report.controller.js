@@ -7,7 +7,7 @@ let Report = mongoose.model("reports");
 /** get all Report data
  */
 module.exports.getAllReports = (request, response, next) => {
-  Report.find({}, { createdAt: 1, reporter: 1, reported: 1})
+  Report.find({}, { createdAt: 1, reporter: 1, reported: 1 })
     .sort({ _id: -1 })
     .then((data) => {
       response.status(200).json(data);
@@ -47,7 +47,7 @@ module.exports.createReport = (request, response, next) => {
   });
   ReportObject.save()
     .then((data) => {
-      response.status(201).json({ data: "added" });
+      response.status(201).json({ msg: "added" });
     })
     .catch((error) => next(error));
 };
@@ -62,7 +62,7 @@ module.exports.updateReport = (request, response, next) => {
       return data.save();
     })
     .then((data) => {
-      response.status(201).json({ data: "updated" });
+      response.status(201).json({ msg: "updated" });
     })
     .catch((error) => next(error));
 };
@@ -72,7 +72,7 @@ module.exports.updateReport = (request, response, next) => {
 module.exports.deleteReport = (request, response, next) => {
   Report.deleteOne({ _id: request.params.id })
     .then((data) => {
-      response.status(200).json({ data: "delete " + request.params.id });
+      response.status(200).json({ msg: "delete " + request.params.id });
     })
     .catch((error) => next(error));
 };

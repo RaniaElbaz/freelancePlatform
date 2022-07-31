@@ -21,7 +21,7 @@ module.exports.addAdmin = (request, response, next) => {
       }
     })
     .then((data) => {
-      response.status(201).json({ data: "signup success" });
+      response.status(201).json({ msg: "signup success" });
     })
     .catch((error) => next(error));
 };
@@ -36,7 +36,7 @@ module.exports.updateAdminDetails = (request, response, next) => {
         console.log(key);
         if (key == "email" || key == "password")
           next(new Error("Invalid request"));
-        else if (key == "location") {/*****************location */ 
+        else if (key == "location") {/*****************location */
           for (let locationKey in data[key]) {
             if (request.body.hasOwnProperty(locationKey)) {
               data.location[locationKey] = request.body[locationKey];
@@ -48,7 +48,7 @@ module.exports.updateAdminDetails = (request, response, next) => {
       return data.save();
     })
     .then((data) => {
-      response.status(201).json({ data: "updated" });
+      response.status(201).json({ msg: "updated" });
     })
     .catch((error) => next(error));
 };
@@ -92,7 +92,7 @@ module.exports.getAllAdmins = (request, response, next) => {
 module.exports.deleteAdmin = (request, response, next) => {
   Admin.deleteOne({ _id: request.params.id })
     .then((data) => {
-      response.status(200).json({ data: "delete " + request.params.id });
+      response.status(200).json({ msg: "delete " + request.params.id });
     })
     .catch((error) => next(error));
 };

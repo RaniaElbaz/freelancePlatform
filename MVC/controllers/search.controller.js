@@ -32,7 +32,7 @@ module.exports.getJob = (req, res, next) => {
     }
     res.status(200).json(data);
   });
-  res.status(200).json({ data: "Aho Ya Man🥰" });
+  res.status(200).json({ msg: "Aho Ya Man🥰" });
 }
 
 module.exports.getProfile = (req, res, next) => {

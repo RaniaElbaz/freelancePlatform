@@ -44,14 +44,14 @@ module.exports.createProduct = (req, res, next) => {
         description: req.body.description,
         price: req.body.price,
         skills: req.body.skills,
-        ownerId:req.body.ownerId, //sent by frontend
-        ownerModel:req.body.ownerModel  //sent by frontend
+        ownerId: req.body.ownerId, //sent by frontend
+        ownerModel: req.body.ownerModel  //sent by frontend
       });
 
       productobject
         .save()
         .then((data) => {
-          res.status(201).json({ data: "product created sucessfully" });
+          res.status(201).json({ msg: "product created sucessfully" });
         })
         .catch((error) => next(error));
     }
@@ -110,7 +110,7 @@ module.exports.productUpdateTestimonials = (req, res, next) => {
       return data.save();
     })
     .then((data) => {
-      res.status(201).json({ data: "updated" });
+      res.status(201).json({ msg: "updated" });
     })
     .catch((error) => next(error));
 };

@@ -62,7 +62,7 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
       }
     })
     .then((data) => {
-      response.status(201).json({ data: "updated" });
+      response.status(201).json({ msg: "updated" });
     })
     .catch((error) => next(error));
 };
@@ -81,7 +81,7 @@ module.exports.updateFreelancerTestimonials = (request, response, next) => {
       return data.save();
     })
     .then((data) => {
-      response.status(201).json({ data: "updated" });
+      response.status(201).json({ msg: "updated" });
     })
     .catch((error) => next(error));
 };
@@ -116,7 +116,7 @@ module.exports.updateFreelancerInfo = (request, response, next) => {
       return data.save();
     })
     .then((data) => {
-      response.status(201).json({ data: "updated" });
+      response.status(201).json({ msg: "updated" });
     })
     .catch((error) => next(error));
 };
@@ -141,7 +141,7 @@ module.exports.editData = (request, response, next) => {
       return data.save();
     })
     .then(() => {
-      response.status(201).json({ data: "updated" });
+      response.status(201).json({ msg: "updated" });
     })
     .catch((error) => next(error));
 };
@@ -161,14 +161,14 @@ module.exports.removeData = (request, response, next) => {
       return data.save();
     })
     .then(() => {
-      response.status(201).json({ data: "updated" });
+      response.status(201).json({ msg: "updated" });
     })
     .catch((error) => next(error));
 };
 
 /** get freelancer data  by id (get profile / public view)
  */
-module.exports.getFreelancerPrivate= (request, response, next) => {
+module.exports.getFreelancerPrivate = (request, response, next) => {
   Freelancer.findOne(
     { _id: request.params.id },
     {
@@ -193,17 +193,17 @@ module.exports.getFreelancerPrivate= (request, response, next) => {
  */
 module.exports.getFreelancerPublic = (request, response, next) => {
   if (request.id !== request.params.id) next(new Error("not authorized"))
-    Freelancer.findOne(
-      { _id: request.params.id },
-      { isBlocked: 0, password: 0 }
-    )
-      .then((data) => {
-        if (data == null) next(new Error("Freelancer not found"));
-        response.status(200).json(data);
-      })
-      .catch((error) => {
-        next(error);
-      });
+  Freelancer.findOne(
+    { _id: request.params.id },
+    { isBlocked: 0, password: 0 }
+  )
+    .then((data) => {
+      if (data == null) next(new Error("Freelancer not found"));
+      response.status(200).json(data);
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
 
 /** get all freelancer data
@@ -237,7 +237,7 @@ module.exports.getAllFreelancers = (request, response, next) => {
 module.exports.deleteFreelancer = (request, response, next) => {
   Freelancer.deleteOne({ _id: request.params.id })
     .then((data) => {
-      response.status(200).json({ data: "delete " + request.params.id });
+      response.status(200).json({ msg: "delete " + request.params.id });
     })
     .catch((error) => next(error));
 };

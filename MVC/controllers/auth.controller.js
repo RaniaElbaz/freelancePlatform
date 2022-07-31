@@ -11,9 +11,8 @@ const DOMAIN = process.env.MailgunDOMAIN;
 const api_key = process.env.MAILGUN_API_KEY;
 const mg = mailgun({ apiKey: api_key, domain: DOMAIN });
 
-/**************
- *    & SignUp
- * **************** */
+/** SignUp
+ */
 let signUp = (req, res, next) => {
   let User, payload;
 
@@ -39,12 +38,14 @@ let signUp = (req, res, next) => {
 
   User.findOne({ email })
     .then((user) => {
-      if (user) next(new Error("User is already registered!"));
+      // if (user) next(new Error("User is already registered!"));
+      if (user) throw new Error("User is already registered!");
 
       // Email Verification
       let token = jwt.sign(payload, process.env.SECRET_KEY, {
         expiresIn: "10m",
       });
+
       const data = {
         from: "geoAhmedHamdy1@gmail.com",
         to: email,
@@ -58,7 +59,7 @@ let signUp = (req, res, next) => {
           Thank you for choosing Our Freelancing platform 😍
           Please confirm your email address by clicking the link below..
 
-        <a href="http://localhost:${process.env.PORT}/activate-account/${req.params.userType}/${token}">Verification</a>
+        <a href="http://localhost:${process.env.FR_PORT}/activate-account/${req.params.userType}/${token}">Verification</a>
 
           If you did not sign up, you can simply disregard this mail.
 
@@ -67,24 +68,26 @@ let signUp = (req, res, next) => {
           </pre>
         `,
       };
+
       mg.messages().send(data, function (error, body) {
         if (error) next(error);
 
         // console.log(body);
-        res.status(201).json({
-          data: "Email verification link has been sent, kindly activate your account",
+        return res.status(201).json({
+          msg: "Email verification link has been sent, kindly activate your account",
         });
       });
     })
     .catch((error) => next(error));
 };
 
-/**************
- *    & Activate Email (Email Verification)
- * **************** */
+/** Activate Email (Email Verification)
+*/
 let activateAccount = (req, res, next) => {
   const { token } = req.body;
   let User;
+
+  console.log("====>", token); //! d
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
@@ -122,7 +125,7 @@ let activateAccount = (req, res, next) => {
           newUser
             .save()
             .then((data) => {
-              res.status(200).json({ message: "User SignedUP", data });
+              res.status(200).json({ msg: "User SignedUP", data });
             })
             .catch((error) => next(`SignUp Activation Error: ${error}`));
         });
@@ -133,19 +136,22 @@ let activateAccount = (req, res, next) => {
   }
 };
 
-/**************
- *    & Login
- * **************** */
+/** Login
+ */
 const userLogin = (req, res, next) => {
   let User;
 
-  // ! Ensure from the Collection Names
+  console.log(req.body, "<=====") //!
+
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : req.params.userType == "company" ? User = Company :
-      req.params.userType == "client"
+    : req.params.userType == "company"
+      ? User = Company
+      : req.params.userType == "client"
         ? (User = Client)
-        : next(new Error("Invalid User type"));
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : next(new Error("Invalid User type"));
 
   User.findOne(
     {
@@ -179,19 +185,19 @@ const userLogin = (req, res, next) => {
         user
           .updateOne({ loginToken: token })
           .then((data) => {
-            res.status(200).json({ data: "loginToken Saved successfully" });
+            // res.status(200).json({ msg: "loginToken Saved successfully" });
           })
           .catch((error) => next(error));
 
-        res.status(200).json({ token, message: `${req.params.userType}Login` });
+        res.status(200).json({ token, msg: `${req.params.userType}Login` });
       }
     })
     .catch((error) => next(error));
 };
 
-/**************
- *    & Forgot Password
- * **************** */
+/** Forgot Password
+ */
+
 let forgotPassword = (req, res, next) => {
   const { email } = req.body;
   let User;
@@ -243,7 +249,7 @@ let forgotPassword = (req, res, next) => {
             if (error) next(error);
 
             res.status(200).json({
-              data: "Reset Password link has been sent to your Email, kindly check your mail and follow the instructions",
+              msg: "Reset Password link has been sent to your Email, kindly check your mail and follow the instructions",
             });
             // console.log(body);
           });
@@ -253,9 +259,8 @@ let forgotPassword = (req, res, next) => {
     .catch((error) => next(error));
 };
 
-/**************
- *    & Reset Password
- * **************** */
+/** Reset Password
+*/
 let resetPassword = (req, res, next) => {
   const { resetLink, newPassword } = req.body;
   if (!resetLink) next(new Error("Authentication Error!!"));
@@ -291,7 +296,7 @@ let resetPassword = (req, res, next) => {
               .then((data) => {
                 res
                   .status(200)
-                  .json({ data: "Password Resiting done successfully" });
+                  .json({ msg: "Password Resiting done successfully" });
               })
               .catch((error) => next(error));
           });
