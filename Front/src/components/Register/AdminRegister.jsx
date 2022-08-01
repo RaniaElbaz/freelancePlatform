@@ -24,8 +24,6 @@ function AdminRegister() {
     registerError: "",
   });
 
-  const [userType, setUserType] = useState("client");
-
   const [isPasswordShown, setIsPasswordShown] = useState(false);
 
   // 2- Handling methods:
@@ -51,10 +49,17 @@ function AdminRegister() {
     );
 
     switch (field) {
-      case "firstName" || "lastName":
+      case "firstName":
         setErrors({
           ...errors,
           firstNameError:
+            value.length < 3 ? "Name must me more than 2 characters" : "",
+        });
+        break;
+      case "lastName":
+        setErrors({
+          ...errors,
+          lastNameError:
             value.length < 3 ? "Name must me more than 2 characters" : "",
         });
         break;
@@ -72,14 +77,6 @@ function AdminRegister() {
           });
         }
         break;
-      // case "username":
-      //   setErrors({
-      //     ...errors,
-      //     lastNameError: value.includes(" ")
-      //       ? "Username must contains no spaces!"
-      //       : "",
-      //   });
-      //   break;
       case "password":
         if (!regexPass.test(value)) {
           setErrors({
@@ -111,21 +108,16 @@ function AdminRegister() {
     console.log(user);
 
     try {
-      const data = JSON.stringify(
-        userType === "company"
-          ? {
-              name: user.lastName,
-              email: user.email,
-              password: user.password,
-            }
-          : { ...user }
-      );
+      const token = localStorage.getItem("token");
+
+      const data = JSON.stringify({ ...user });
 
       const config = {
         method: "post",
-        url: `/signup/${userType}`,
+        url: `/admin/register`,
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         accept: "application/json, text/plain, */*",
         // withCredentials: true,
@@ -150,14 +142,14 @@ function AdminRegister() {
       }
     } catch (error) {
       console.log(error);
-      console.log(error.response.status);
-      console.log(error.response.data.msg);
+      // console.log(error.response.status);
+      // console.log(error.response.data.msg);
 
       /** Handle Errors
        */
       setErrors({
         ...errors,
-        registerError: `${error.response.data.msg}`,
+        registerError: error.response.data.msg,
       });
     }
   };
@@ -165,11 +157,6 @@ function AdminRegister() {
   const togglePasswordIcon = (e) => {
     setIsPasswordShown(!isPasswordShown);
     console.log(isPasswordShown);
-  };
-
-  const selectUserType = (e) => {
-    console.log(e.target.id, e.target.value);
-    setUserType(e.target.value);
   };
 
   return (
@@ -185,54 +172,34 @@ function AdminRegister() {
           )}
 
           <div className="mb-3">
-            <label htmlFor="#userType" className="form-label">
-              Select User Type
+            <label htmlFor="firstName" className="form-label">
+              First Name
             </label>
-            <select
-              id="userType"
-              className="form-select"
-              aria-label="Default select"
-              onChange={selectUserType}
-            >
-              <option value="client">Client</option>
-              <option value="freelancer">Freelancer</option>
-              <option value="company">Company</option>
-            </select>
-          </div>
-
-          {userType === "company" ? (
-            ""
-          ) : (
-            <div className="mb-3">
-              <label htmlFor="firstName" className="form-label">
-                First Name
-              </label>
-              <input
-                type="text"
-                className={`form-control ${
-                  errors.firstNameError ? "border-danger" : ""
-                }`}
-                id="firstName"
-                aria-describedby="nameHelp"
-                value={user.name}
-                onChange={handleChange}
-              />
-              <div id="nameHelp" className="form-text text-danger">
-                {errors.firstNameError}
-              </div>
+            <input
+              type="text"
+              className={`form-control ${
+                errors.firstNameError ? "border-danger" : ""
+              }`}
+              id="firstName"
+              aria-describedby="nameHelp"
+              value={user.name}
+              onChange={handleChange}
+            />
+            <div id="nameHelp" className="form-text text-danger">
+              {errors.firstNameError}
             </div>
-          )}
+          </div>
 
           <div className="mb-3">
             <label htmlFor="lastName" className="form-label">
-              {userType === "company" ? "Company Name" : "Last Name"}
+              Last Name
             </label>
             <input
               type="text"
               className={`form-control ${
                 errors.lastNameError ? "border-danger" : ""
               }`}
-              id={userType === "company" ? "name" : "lastName"}
+              id="lastName"
               aria-describedby="usernameHelp"
               value={user.username}
               onChange={handleChange}

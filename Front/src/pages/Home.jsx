@@ -15,11 +15,22 @@ function Home() {
       </h1>
 
       <Link to="/login" className="btn btn-warning my-4  moveDetailBtn">
-        logIn
+        login
+      </Link>
+      <br />
+      <Link to="/admin/login" className="btn btn-warning my-4  moveDetailBtn">
+        Admin login
       </Link>
       <br />
       <Link to="/register" className="btn btn-warning my-4  moveDetailBtn">
-        SingUp
+        SignUP
+      </Link>
+      <br />
+      <Link
+        to="/admin/register"
+        className="btn btn-warning my-4  moveDetailBtn"
+      >
+        Admin SignUP
       </Link>
       <br />
       <Link

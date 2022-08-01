@@ -22,8 +22,6 @@ function AdminLogin() {
     resetError: "",
   });
 
-  const [userType, setUserType] = useState("client");
-
   /** Flag States
    */
   const [isPasswordShown, setIsPasswordShown] = useState(false);
@@ -79,7 +77,7 @@ function AdminLogin() {
 
       const config = {
         method: "post",
-        url: `/login/${userType}`,
+        url: `/admin/login`,
         headers: {
           "Content-Type": "application/json",
         },
@@ -115,7 +113,7 @@ function AdminLogin() {
 
       setErrors({
         ...errors,
-        submitError: "Something Wrong!",
+        submitError: error.response.data.msg,
       });
     }
   };
@@ -123,11 +121,6 @@ function AdminLogin() {
   const togglePasswordIcon = (e) => {
     setIsPasswordShown(!isPasswordShown);
     console.log(isPasswordShown);
-  };
-
-  const selectUserType = (e) => {
-    console.log(e.target.id, e.target.value);
-    setUserType(e.target.value);
   };
 
   const sendResetLink = async () => {
@@ -138,7 +131,7 @@ function AdminLogin() {
 
       const config = {
         method: "post",
-        url: `/forgot-password/${userType}`,
+        url: `/forgot-password/admin`,
         headers: {
           "Content-Type": "application/json",
         },
@@ -164,14 +157,14 @@ function AdminLogin() {
       }
     } catch (error) {
       console.log(error);
-      console.log(error.response.status);
-      console.log(error.response.data.msg);
+      // console.log(error.response.status);
+      // console.log(error.response.data.msg);
 
       /** Handle Errors
        */
       setErrors({
         ...errors,
-        resetError: "Enter New Password",
+        resetError: error.response.data.msg,
       });
     }
   };
@@ -235,25 +228,17 @@ function AdminLogin() {
             </div>
           </div>
 
-          <div className="mb-3">
-            <label htmlFor="#userType" className="form-label">
-              Select User Type
-            </label>
-            <select
-              id="userType"
-              className="form-select"
-              aria-label="Default select"
-              onChange={selectUserType}
-            >
-              <option value="client">Client</option>
-              <option value="freelancer">Freelancer</option>
-              <option value="company">Company</option>
-            </select>
-          </div>
-
           <button type="submit" className="btn btn-primary mb-3">
             Login
           </button>
+
+          {errors.resetError !== "" ? (
+            <div className="alert alert-danger" role="alert">
+              {`${errors.resetError}`}
+            </div>
+          ) : (
+            ""
+          )}
         </form>
 
         <p

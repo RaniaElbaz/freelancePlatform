@@ -65,6 +65,8 @@ const adminLogin = (request, response, next) => {
 /** signup as an admin
  */
 const addAdmin = (request, response, next) => {
+  console.log(request.body, "<=====");
+
   Admin.find({ email: request.body.email }, { _id: 0, email: 1 })
     .then((data) => {
       if (data.length) {

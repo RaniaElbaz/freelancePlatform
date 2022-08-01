@@ -7,6 +7,7 @@ import Register from "./components/Register/Register";
 import ActivateMail from "./components/Register/ActivateMail";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
 import AdminLogin from "./components/login/AdminLogin";
+import AdminRegister from './components/Register/AdminRegister';
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
           <Route path="/login" exact component={Login} />
           <Route path="/register" exact component={Register} />
           <Route path="/admin/login" exact component={AdminLogin} />
-          <Route path="/admin/register" exact component={Register} />
+          <Route path="/admin/register" exact component={AdminRegister} />
           <Route
             path="/activate-account/:userType?/:vToken?"
             exact

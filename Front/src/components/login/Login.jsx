@@ -164,14 +164,14 @@ function Login() {
       }
     } catch (error) {
       console.log(error);
-      console.log(error.response.status);
-      console.log(error.response.data.msg);
+      // console.log(error.response.status);
+      // console.log(error.response.data.msg);
 
       /** Handle Errors
        */
       setErrors({
         ...errors,
-        resetError: "Enter New Password",
+        resetError: error.response.data.msg,
       });
     }
   };
@@ -254,6 +254,14 @@ function Login() {
           <button type="submit" className="btn btn-primary mb-3">
             Login
           </button>
+
+          {errors.resetError !== "" ? (
+            <div className="alert alert-danger" role="alert">
+              {`${errors.resetError}`}
+            </div>
+          ) : (
+            ""
+          )}
         </form>
 
         <p
