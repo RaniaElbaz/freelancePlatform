@@ -1,0 +1,10 @@
+.bgGray {
+  background-color: #282c34;
+  color: white;
+}
+
+.passwordWrapper .eyeIcon {
+  right: 20px;
+  top: 6px;
+  color: #8e8787;
+}
