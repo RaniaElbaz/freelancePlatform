@@ -138,7 +138,7 @@ function AdminRegister() {
       let statusCode = response.status;
 
       if (statusCode === 201) {
-        window.location = "/activate-account"; //! handle with useNavigate() react router dom
+        window.location = "/admin/login"; //! handle with useNavigate() react router dom
       }
     } catch (error) {
       console.log(error);

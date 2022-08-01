@@ -106,7 +106,7 @@ function AdminLogin() {
 
       if (statusCode === 200) {
         localStorage.setItem("token", token);
-        window.location = "/projects"; //! handle with useNavigate() react router dom
+        window.location = "/admin-dashboard"; //! handle with useNavigate() react router dom
       }
     } catch (error) {
       console.log(error);
