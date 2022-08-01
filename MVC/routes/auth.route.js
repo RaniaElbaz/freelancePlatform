@@ -6,7 +6,6 @@ const {
   forgotPassword,
   resetPassword,
 } = require("../controllers/auth.controller");
-const { adminLogin } = require("../controllers/adminLogin.controller");
 
 const { loginVA } = require("../middlewares/login.MW");
 const validationMW = require("../middlewares/validation.MW");
@@ -20,16 +19,10 @@ router.post("/activate-account/:userType", activateAccount);
 router.post("/forgot-password/:userType", forgotPassword);
 router.post("/reset-password/:userType", resetPassword);
 
-// router.post("/login/:userType", userLogin);
 
-router //user
+router // user generic login (admin & client & Freelancer & company )
   .route("/login/:userType")
   .post(loginVA, validationMW, userLogin);
 
-router //admin
-  .route("/admin/login")
-  .post(loginVA, validationMW, adminLogin);
-
-// router.put("/reset/:userType", userReset);
 
 module.exports = router;

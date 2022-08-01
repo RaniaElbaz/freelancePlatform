@@ -2,9 +2,69 @@ const mongoose = require("mongoose");
 require("../models/admins.model");
 let Admin = mongoose.model("admins");
 
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
+
+
+/** Admin login for static Admin
+ */
+
+const adminLogin = (request, response, next) => {
+  if (
+    request.body.email === process.env.ADMIN_EMAIL &&
+    request.body.password === process.env.ADMIN_PASS
+  ) {
+    let token = jwt.sign(
+      {
+        id: process.env.ADMIN_ID,
+        role: "admin",
+      },
+      process.env.SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+    response.status(200).json({ token, msg: "login" });
+  } else {
+    Admin.findOne(
+      {
+        email: request.body.email,
+      },
+      { email: 1, password: 1 }
+    )
+      .then((data) => {
+        if (!data) {
+          //email not found
+          let error = new Error("username or password incorrect");
+          error.status = 401;
+          next(error);
+        }
+        bcrypt
+          .compare(request.body.password, data.password)
+          .then((result) => {
+            if (result) {
+              //password is correct
+              let token = jwt.sign(
+                {
+                  id: data._id,
+                  role: "admin",
+                },
+                process.env.SECRET_KEY,
+                { expiresIn: "1h" }
+              );
+              response.status(200).json({ token, msg: "login" });
+            } else {
+              next(new Error("password unmatched"));
+            }
+          })
+          .catch((error) => next(error));
+      })
+      .catch((error) => next(error));
+  }
+};
+
 /** signup as an admin
  */
-module.exports.addAdmin = (request, response, next) => {
+const addAdmin = (request, response, next) => {
   Admin.find({ email: request.body.email }, { _id: 0, email: 1 })
     .then((data) => {
       if (data.length) {
@@ -28,7 +88,7 @@ module.exports.addAdmin = (request, response, next) => {
 
 /** update an admin data (update profile)
  */
-module.exports.updateAdminDetails = (request, response, next) => {
+const updateAdminDetails = (request, response, next) => {
   Admin.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("admin not found"));
@@ -55,7 +115,7 @@ module.exports.updateAdminDetails = (request, response, next) => {
 
 /** get admin  by id 
  */
-module.exports.getAdminById = (request, response, next) => {
+const getAdminById = (request, response, next) => {
   Admin.findOne(
     { _id: request.params.id },
     { password: 0 }//
@@ -71,7 +131,7 @@ module.exports.getAdminById = (request, response, next) => {
 
 /** get all admins
  */
-module.exports.getAllAdmins = (request, response, next) => {
+const getAllAdmins = (request, response, next) => {
   Admin.find(
     {},
     {
@@ -89,7 +149,7 @@ module.exports.getAllAdmins = (request, response, next) => {
 /**delete an admin
  * admin only
  */
-module.exports.deleteAdmin = (request, response, next) => {
+const deleteAdmin = (request, response, next) => {
   Admin.deleteOne({ _id: request.params.id })
     .then((data) => {
       response.status(200).json({ msg: "delete " + request.params.id });
@@ -97,3 +157,11 @@ module.exports.deleteAdmin = (request, response, next) => {
     .catch((error) => next(error));
 };
 
+module.exports = {
+  adminLogin,
+  addAdmin,
+  updateAdminDetails,
+  getAdminById,
+  getAllAdmins,
+  deleteAdmin
+}

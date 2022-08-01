@@ -12,7 +12,6 @@ const teamRoutes = require("./MVC/routes/team.route");
 const skillRoutes = require("./MVC/routes/skill.route");
 const categoryRoutes = require("./MVC/routes/category.route");
 const projectRoutes = require("./MVC/routes/project.route");
-const adminRoute = require("./MVC/routes/admin.route");
 const freelancerRoute = require("./MVC/routes/freelancer.route");
 const reportRoute = require("./MVC/routes/report.route");
 const testRoute = require("./MVC/routes/test.route");
@@ -20,7 +19,8 @@ const authRoute = require("./MVC/routes/auth.route");
 const clintRoute = require("./MVC/routes/client.route");
 const searchRoute = require("./MVC/routes/search.route");
 const changePasswordRoute = require("./MVC/routes/changePassword.route");
-// const loginRoute = require("./MVC/routes/login.route");
+const adminRoute = require("./MVC/routes/admin.route");
+
 
 paypal.configure({
   mode: "sandbox", //sandbox or live

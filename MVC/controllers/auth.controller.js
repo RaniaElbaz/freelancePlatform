@@ -136,7 +136,7 @@ let activateAccount = (req, res, next) => {
   }
 };
 
-/** Login
+/** User Generic Login (admin & client & Freelancer & company )
  */
 const userLogin = (req, res, next) => {
   let User;
@@ -230,7 +230,7 @@ let forgotPassword = (req, res, next) => {
           
           Please click on the given link to reset password..
 
-        <a href="http://localhost:${process.env.PORT}/authentication/reset-password/${token}">Reset Password</a>
+        <a href="http://localhost:${process.env.FR_PORT}/forgot-password/${req.params.userType}/${token}">Reset Password</a>
 
           If you did not forget password, Change your password now 👀.
 
@@ -264,7 +264,7 @@ let forgotPassword = (req, res, next) => {
 let resetPassword = (req, res, next) => {
   const { resetLink, newPassword } = req.body;
   if (!resetLink) next(new Error("Authentication Error!!"));
-  let token = resetLink;
+
 
   let User;
   req.params.userType == "freelancer"
