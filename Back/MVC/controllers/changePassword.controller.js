@@ -19,33 +19,24 @@ module.exports.changePassword = (request, response, next) => {
           ? (User = Client)
           : null;
 
-  //already logged in
+  // Already logged in
   User.findOne({ _id: request.id }, { email: 1, password: 1 })
     .then((data) => {
-      if (!data) {
-        //user not found
-        let error = new Error("invalid request");
+      if (!data) { // User not found
+        let error = new Error("Invalid Request");
         error.status = 400;
-        next(error);
+        throw error;
+      } else if (
+        !bcrypt.compareSync(request.body.oldPassword, data.password)
+      ) { // If the Old Password is Incorrect
+        throw new Error("Incorrect old Password.");
+      } else if (bcrypt.compareSync(request.body.password, data.password)) {
+        // if New password = Old password
+        throw new Error("The New password is must be different than the Old password.");
       } else {
-        //user found
-        if (data.email !== request.body.email) {
-          next("username or password incorrect!");
-        } else if (
-          bcrypt.compareSync(request.body.oldPassword, data.password)
-        ) {
-          //old password = true
-          if (bcrypt.compareSync(request.body.password, data.password)) {
-            // new password = old password
-            next(new Error("new password cant be the same old password")); //error
-          } else {
-            data.password = bcrypt.hashSync(request.body.password, 10);
-            data.save();
-            response.status(201).json({ msg: "password changed" });
-          }
-        } else {
-          next(new Error("username or password incorrect"));
-        }
+        data.password = bcrypt.hashSync(request.body.password, 10);
+        data.save();
+        response.status(201).json({ msg: "Password Changed" });
       }
     })
     .catch((error) => next(error));

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import axiosInstance from "../../api/axios";
+import jwtDecode from "jwt-decode";
 
 import Style from "./Login.module.css";
 
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
-
 function AdminLogin() {
   /** States
    */
@@ -25,6 +25,8 @@ function AdminLogin() {
   /** Flag States
    */
   const [isPasswordShown, setIsPasswordShown] = useState(false);
+
+  const history = useHistory();
 
   /** Handling methods:
    */
@@ -104,9 +106,14 @@ function AdminLogin() {
       let token = response.data.token;
       let statusCode = response.status;
 
+      let decodedToken = jwtDecode(token);
+      // console.log(decodedToken);
+
       if (statusCode === 200) {
         localStorage.setItem("token", token);
-        window.location = "/admin-dashboard"; //! handle with useNavigate() react router dom
+        localStorage.setItem("id", decodedToken.id);
+        localStorage.setItem("role", decodedToken.role);
+        history.push("/admin-dashboard");
       }
     } catch (error) {
       console.log(error);
@@ -123,51 +130,51 @@ function AdminLogin() {
     console.log(isPasswordShown);
   };
 
-  const sendResetLink = async () => {
-    try {
-      const data = JSON.stringify({
-        email: user.email,
-      });
+  // const sendResetLink = async () => {
+  //   try {
+  //     const data = JSON.stringify({
+  //       email: user.email,
+  //     });
 
-      const config = {
-        method: "post",
-        url: `/forgot-password/admin`,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        accept: "application/json, text/plain, */*",
-        // withCredentials: true,
-        data: data,
-      };
+  //     const config = {
+  //       method: "post",
+  //       url: `/forgot-password/admin`,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       accept: "application/json, text/plain, */*",
+  //       // withCredentials: true,
+  //       data: data,
+  //     };
 
-      const response = await axiosInstance(config);
+  //     const response = await axiosInstance(config);
 
-      if (!response) {
-        setErrors({
-          ...errors,
-          resetError: "No Server Respond",
-        });
-      }
+  //     if (!response) {
+  //       setErrors({
+  //         ...errors,
+  //         resetError: "No Server Respond",
+  //       });
+  //     }
 
-      console.log(response, "<===");
-      let statusCode = response.status;
+  //     console.log(response, "<===");
+  //     let statusCode = response.status;
 
-      if (statusCode === 200) {
-        window.location = "/forgot-password"; //! handle with useNavigate() react router dom
-      }
-    } catch (error) {
-      console.log(error);
-      // console.log(error.response.status);
-      // console.log(error.response.data.msg);
+  //     if (statusCode === 200) {
+  //       history.push("/forgot-password");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     // console.log(error.response.status);
+  //     // console.log(error.response.data.msg);
 
-      /** Handle Errors
-       */
-      setErrors({
-        ...errors,
-        resetError: error.response.data.msg,
-      });
-    }
-  };
+  //     /** Handle Errors
+  //      */
+  //     setErrors({
+  //       ...errors,
+  //       resetError: error.response.data.msg,
+  //     });
+  //   }
+  // };
 
   return (
     <div className="row justify-content-center align-items-center vh-100">
@@ -241,12 +248,12 @@ function AdminLogin() {
           )}
         </form>
 
-        <p
+        {/* <p
           style={{ color: "white", textDecoration: "none", cursor: "pointer" }}
           onClick={sendResetLink}
         >
           Forgot password?
-        </p>
+        </p> */}
       </div>
     </div>
   );

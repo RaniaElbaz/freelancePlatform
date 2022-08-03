@@ -1,34 +1,34 @@
 import React, { useState } from "react";
-import Style from "./Register.module.css";
-import axiosInstance from "../../api/axios";
 import { useHistory } from "react-router-dom";
+import axiosInstance from "../../api/axios";
+
+import Style from "./ChangePassword.module.css";
 
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 
-function AdminRegister() {
-  // 1- States
+function ChangePassword({ setToken }) {
+  /** States
+   */
   const [user, setUser] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
+    oldPassword: "",
     password: "",
-    passwordConfirm: "",
   });
 
   const [errors, setErrors] = useState({
-    firstNameError: "",
-    emailError: "",
-    lastNameError: "",
+    oldPasswordError: "",
     passwordError: "",
-    passwordConfirmError: "",
-    registerError: "",
+    resetError: "",
   });
 
+  /** Flag States
+   */
   const [isPasswordShown, setIsPasswordShown] = useState(false);
+
   const history = useHistory();
 
-  // 2- Handling methods:
+  /** Handling methods:
+   */
   const handleChange = (event) => {
     setUser({
       ...user,
@@ -51,34 +51,6 @@ function AdminRegister() {
     );
 
     switch (field) {
-      case "firstName":
-        setErrors({
-          ...errors,
-          firstNameError:
-            value.length < 3 ? "Name must me more than 2 characters" : "",
-        });
-        break;
-      case "lastName":
-        setErrors({
-          ...errors,
-          lastNameError:
-            value.length < 3 ? "Name must me more than 2 characters" : "",
-        });
-        break;
-      case "email":
-        if (!regexMail.test(value)) {
-          console.log(regexMail.test(value));
-          setErrors({
-            ...errors,
-            emailError: "Valid Email is required!",
-          });
-        } else {
-          setErrors({
-            ...errors,
-            emailError: "",
-          });
-        }
-        break;
       case "password":
         if (!regexPass.test(value)) {
           setErrors({
@@ -89,16 +61,12 @@ function AdminRegister() {
         } else {
           setErrors({
             ...errors,
-            passwordError: "",
+            passwordError:
+              value === user.oldPassword
+                ? "The New password is must be different than the Old password!"
+                : "Ok, Passwords are't the same.",
           });
         }
-        break;
-      case "passwordConfirm":
-        setErrors({
-          ...errors,
-          passwordConfirmError:
-            value !== user.password ? "Passwords must be identical" : "Matched",
-        });
         break;
       default:
         setErrors({ ...errors });
@@ -107,16 +75,15 @@ function AdminRegister() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user);
+    // console.log(user); // !
 
     try {
       const token = localStorage.getItem("token");
-
       const data = JSON.stringify({ ...user });
 
       const config = {
         method: "post",
-        url: `/admin/register`,
+        url: `/changePassword`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -136,22 +103,23 @@ function AdminRegister() {
         return;
       }
 
-      console.log(response, "<===");
-      let statusCode = response.status;
-
-      if (statusCode === 201) {
-        history.push("/admin/login");
-      }
-    } catch (error) {
-      console.log(error);
-      // console.log(error.response.status);
-      // console.log(error.response.data.msg);
+      // console.log(response, "<===");
 
       /** Handle Errors
        */
+
+      let statusCode = response.status;
+
+      if (statusCode === 201) {
+        history.push("/projects");
+    
+      }
+    } catch (error) {
+      console.log(error);
+
       setErrors({
         ...errors,
-        registerError: error.response.data.msg,
+        resetError: error.response.data.msg,
       });
     }
   };
@@ -165,74 +133,41 @@ function AdminRegister() {
     <div className="row justify-content-center align-items-center vh-100">
       <div className={`${Style.bgGray} col-11 col-md-8 col-lg-6 p-5 rounded`}>
         <form onSubmit={handleSubmit}>
-          {errors.registerError !== "" ? (
+          {errors.resetError !== "" ? (
             <div className="alert alert-danger" role="alert">
-              {`${errors.registerError}`}
+              {`${errors.resetError}`}
             </div>
           ) : (
             ""
           )}
 
-          <div className="mb-3">
-            <label htmlFor="firstName" className="form-label">
-              First Name
+          <div className="mb-3 position-relative">
+            <label htmlFor="password" className="form-label">
+              Old Password
             </label>
-            <input
-              type="text"
-              className={`form-control ${
-                errors.firstNameError ? "border-danger" : ""
-              }`}
-              id="firstName"
-              aria-describedby="nameHelp"
-              value={user.name}
-              onChange={handleChange}
-            />
-            <div id="nameHelp" className="form-text text-danger">
-              {errors.firstNameError}
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="lastName" className="form-label">
-              Last Name
-            </label>
-            <input
-              type="text"
-              className={`form-control ${
-                errors.lastNameError ? "border-danger" : ""
-              }`}
-              id="lastName"
-              aria-describedby="usernameHelp"
-              value={user.username}
-              onChange={handleChange}
-            />
-            <div id="usernameHelp" className="form-text text-danger">
-              {errors.lastNameError}
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email Address
-            </label>
-            <input
-              type="text"
-              className={`form-control ${
-                errors.emailError ? "border-danger" : ""
-              }`}
-              id="email"
-              aria-describedby="emailHelp"
-              value={user.email}
-              onChange={handleChange}
-            />
-            <div id="emailHelp" className="form-text text-danger">
-              {errors.emailError}
+            <div className={`${Style.passwordWrapper} position-relative`}>
+              <input
+                type={isPasswordShown ? "text" : "password"}
+                className={`form-control ${
+                  errors.passwordError ? "border-danger" : ""
+                }`}
+                id="oldPassword"
+                aria-describedby="passwordHelp"
+                value={user.oldPassword}
+                onChange={handleChange}
+              />
+              <i
+                className={`${Style.eyeIcon}  position-absolute`}
+                onClick={togglePasswordIcon}
+              >
+                {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
+              </i>
             </div>
           </div>
 
           <div className="mb-3 position-relative">
             <label htmlFor="password" className="form-label">
-              Password
+              New Password
             </label>
             <div className={`${Style.passwordWrapper} position-relative`}>
               <input
@@ -246,35 +181,7 @@ function AdminRegister() {
                 onChange={handleChange}
               />
               <i
-                className={`${Style.eyeIcon} position-absolute`}
-                onClick={togglePasswordIcon}
-              >
-                {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
-              </i>
-            </div>
-
-            <div id="passwordHelp" className="form-text text-danger">
-              {errors.passwordError}
-            </div>
-          </div>
-
-          <div className="mb-3 position-relative">
-            <label htmlFor="passwordConfirm" className="form-label">
-              Confirm Password
-            </label>
-            <div className={`${Style.passwordWrapper} position-relative`}>
-              <input
-                type={isPasswordShown ? "text" : "password"}
-                className={`form-control ${
-                  errors.passwordError ? "border-danger" : ""
-                }`}
-                id="passwordConfirm"
-                aria-describedby="passwordConfirmHelp"
-                value={user.passwordConfirm}
-                onChange={handleChange}
-              />
-              <i
-                className={`${Style.eyeIcon} position-absolute`}
+                className={`${Style.eyeIcon}  position-absolute`}
                 onClick={togglePasswordIcon}
               >
                 {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
@@ -282,19 +189,19 @@ function AdminRegister() {
             </div>
 
             <div
-              id="passwordConfirmHelp"
+              id="passwordHelp"
               className={`form-text ${
-                errors.passwordConfirmError === "Matched"
+                errors.passwordError === "Ok, Passwords are't the same."
                   ? "text-success"
                   : "text-danger"
               }`}
             >
-              {errors.passwordConfirmError}
+              {errors.passwordError}
             </div>
           </div>
 
-          <button type="submit" className="btn btn-success">
-            Register
+          <button type="submit" className="btn btn-danger mb-3">
+            Reset
           </button>
         </form>
       </div>
@@ -302,7 +209,5 @@ function AdminRegister() {
   );
 }
 
-export default AdminRegister;
-
-//test password: Ahmed!9934
-//test password: Ahmed!99345
+export default ChangePassword;
+// /change-password/:userType?/:rToken?

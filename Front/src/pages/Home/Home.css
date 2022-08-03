@@ -1,0 +1,118 @@
+/** Start Landing */
+
+img {
+  max-width: 100%;
+}
+
+.landing {
+  background: var(--lightBlue);
+}
+
+
+.coverImg {
+  background: url('../../../public/assets//img/p-2.jpg');
+  background-size: cover;
+}
+
+.landingHead h5 {
+  color: var(--beige);
+  font-weight: bolder;
+  font-size: 1.2em;
+}
+
+.landingHead h2 {
+  font-weight: bolder;
+  font-size: 2.5em;
+}
+
+.landingHead h2 span {
+  color: var(--blue);
+}
+
+.landingHead h4 {
+  font-weight: bolder;
+  font-size: 1.5em;
+  color: var(--gray);
+}
+
+.imgContainer {
+  display: block;
+  overflow-x: hidden;
+
+}
+
+.imgContainer img {
+  width: 80px;
+  margin-top: -50px;
+  position: absolute;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
+
+.imgContainer img:nth-child(1) {
+  left: 0px;
+}
+
+.imgContainer img:nth-child(2) {
+  left: 50px;
+}
+
+.imgContainer img:nth-child(3) {
+  left: 100px;
+}
+
+.imgContainer img:nth-child(4) {
+  left: 150px;
+}
+
+.imgContainer img:nth-child(5) {
+  left: 200px;
+}
+
+.imgContainer img:nth-child(6) {
+  left: 250px;
+}
+
+.imgContainer img:nth-child(7) {
+  left: 300px;
+}
+
+.landingHead button {
+  background: var(--blue);
+  border: none;
+}
+
+.landingHead button:hover {
+  background: var(--gray);
+
+}
+
+.landingHead li {
+  list-style: none;
+  font-size: 1.2em;
+  color: var(--gray);
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.landingHead li::before {
+  position: absolute;
+  content: '*';
+  color: wheat;
+  left: -30px;
+  font-weight: 800;
+  background: var(--blue);
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}

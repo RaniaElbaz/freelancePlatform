@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useHistory } from "react-router-dom";
 import axiosInstance from "./../../api/axios";
 
 import Style from "./ForgotPassword.module.css";
@@ -24,6 +24,8 @@ function ForgotPassword() {
   /** Flag States
    */
   const [isPasswordShown, setIsPasswordShown] = useState(false);
+
+  const history = useHistory();
 
   /** Handling methods:
    */
@@ -103,11 +105,11 @@ function ForgotPassword() {
         });
       }
 
-      console.log(response, "<===");
+      // console.log(response, "<===");
       let statusCode = response.status;
 
       if (statusCode === 200) {
-        window.location = "/login"; //! handle with useNavigate() react router dom
+        history.push("/login");
       }
     } catch (error) {
       console.log(error);
@@ -118,7 +120,7 @@ function ForgotPassword() {
        */
       setErrors({
         ...errors,
-        resetError: "Enter New Password",
+        resetError: error.response.data.msg,
       });
     }
   };

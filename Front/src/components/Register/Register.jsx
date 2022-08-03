@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Style from "./Register.module.css";
 import axiosInstance from "./../../api/axios";
+import { useHistory } from "react-router-dom";
 
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
@@ -25,6 +26,7 @@ function Register() {
   });
 
   const [userType, setUserType] = useState("client");
+  const history = useHistory();
 
   const [isPasswordShown, setIsPasswordShown] = useState(false);
 
@@ -146,7 +148,7 @@ function Register() {
       let statusCode = response.status;
 
       if (statusCode === 201) {
-        window.location = "/activate-account"; //! handle with useNavigate() react router dom
+        history.push("/activate-account");
       }
     } catch (error) {
       console.log(error);

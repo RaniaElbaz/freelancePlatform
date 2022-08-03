@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import axiosInstance from "./../../api/axios";
 
 function ActivateMail() {
   const params = useParams();
+  const history = useHistory();
   const [error, setError] = useState("");
 
   // console.log(params.userType);
@@ -36,7 +37,7 @@ function ActivateMail() {
       let statusCode = response.status;
 
       if (statusCode === 200) {
-        window.location = "/login"; //! handle with useNavigate() react router dom
+        history.push("/login");
       }
     } catch (error) {
       console.log(error);

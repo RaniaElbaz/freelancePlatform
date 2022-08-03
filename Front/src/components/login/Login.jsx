@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import axiosInstance from "./../../api/axios";
+import jwtDecode from "jwt-decode";
 
 import Style from "./Login.module.css";
 
@@ -23,6 +24,8 @@ function Login() {
   });
 
   const [userType, setUserType] = useState("client");
+
+  const history = useHistory();
 
   /** Flag States
    */
@@ -72,7 +75,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user); // !
+    // console.log(user); // !
 
     try {
       const data = JSON.stringify({ ...user });
@@ -87,7 +90,6 @@ function Login() {
         // withCredentials: true,
         data: data,
       };
-
       const response = await axiosInstance(config);
 
       if (!response) {
@@ -98,24 +100,30 @@ function Login() {
         return;
       }
 
-      console.log(response, "<===");
-      console.log(response.data.token);
+      // console.log(response, "<===");
+      // console.log(response.data.token);
 
       /** Handle Errors
        */
       let token = response.data.token;
       let statusCode = response.status;
 
+      let decodedToken = jwtDecode(token);
+      // console.log(decodedToken);
+
       if (statusCode === 200) {
         localStorage.setItem("token", token);
-        window.location = "/projects"; //! handle with useNavigate() react router dom
+        localStorage.setItem("id", decodedToken.id);
+        localStorage.setItem("role", decodedToken.role);
+
+        history.push("/projects");
       }
     } catch (error) {
       console.log(error);
 
       setErrors({
         ...errors,
-        submitError: "Something Wrong!",
+        submitError: error.response.data.msg,
       });
     }
   };
@@ -160,7 +168,7 @@ function Login() {
       let statusCode = response.status;
 
       if (statusCode === 200) {
-        window.location = "/forgot-password"; //! handle with useNavigate() react router dom
+        history.push("/forgot-password");
       }
     } catch (error) {
       console.log(error);
