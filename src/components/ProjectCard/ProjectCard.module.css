@@ -94,3 +94,68 @@
 .cardText {
   font-size: 15px;
 }
+.projectsBtn {
+  border-radius: 20px;
+  /* background-color: var(--beige); */
+  color: var(--beige);
+  border: 2px solid var(--beige);
+  /* margin: 10px 0; */
+}
+
+.projectsBtn:hover {
+  border-radius: 20px;
+  background-color: var(--beige);
+  color: var(--white);
+  border: 2px solid var(--beige);
+}
+.projectsBtn:focus {
+  border-radius: 20px;
+  background-color: var(--beige);
+  color: var(--white);
+  border: 2px solid var(--beige);
+}
+.projectsBtnActive {
+  border-radius: 20px;
+  background-color: var(--beige);
+  color: var(--white);
+  border: 2px solid var(--beige);
+}
+.projectsBtnActive:hover {
+  border-radius: 20px;
+  background-color: var(--beige);
+  color: var(--white);
+  border: 2px solid var(--beige);
+}
+.updateBtn {
+  width: 100px;
+  border-radius: 20px;
+  /* background-color: var(--beige); */
+  color: var(--blue);
+  border: 2px solid var(--blue);
+  /* margin: 10px 0; */
+}
+.updateBtn:hover {
+  border-radius: 20px;
+  background-color: var(--blue);
+  color: var(--white);
+  border: 2px solid var(--blue);
+}
+
+.deleteBtn {
+  width: 100px;
+  border-radius: 20px;
+  /* background-color: var(--beige); */
+  color: var(--bs-danger);
+  border: 2px solid var(--bs-danger);
+  /* margin: 10px 0; */
+}
+.deleteBtn:hover {
+  border-radius: 20px;
+  background-color: var(--bs-danger);
+  color: var(--white);
+  border: 2px solid var(--bs-danger);
+}
+
+.favourite:hover {
+  cursor: pointer;
+}

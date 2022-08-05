@@ -13,7 +13,11 @@
   margin: 0;
   box-sizing: border-box;
 }
-
+a {
+  color: inherit;
+  text-decoration: none;
+  margin: auto 0;
+}
 body {
   font-family: "Open Sans", sans-serif;
 }

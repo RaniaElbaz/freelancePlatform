@@ -1,6 +1,16 @@
 import classes from "./SideSearch.module.css";
+import { useState } from "react";
 
-export default function SideSearch() {
+export default function SideSearch(props) {
+  const { setSearchKey } = props;
+  const [filterKey, setFilterKey] = useState({
+    searchKey: "",
+  });
+  const searchHandler = (e) => {
+    setFilterKey({ ...filterKey, searchKey: e.target.value });
+    setSearchKey(e.target.value);
+  };
+  // console.log(filterKey.searchKey);
   return (
     <aside className={`card col-lg-3 mb-2 ${classes.card}`}>
       <div className={`card-body`}>
@@ -15,7 +25,9 @@ export default function SideSearch() {
           type="search"
           placeholder="Search"
           aria-label="Search"
-        ></input>
+          value={filterKey.searchKey}
+          onChange={searchHandler}
+        />
         <hr />
         <div>
           <h5 className={`card-title ${classes.cardTitle}`}>Location</h5>

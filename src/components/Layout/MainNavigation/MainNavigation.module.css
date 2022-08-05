@@ -1,12 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+
 .nav {
   background-color: var(--blue) !important;
   color: aliceblue;
+  box-shadow: 2px 2px 5px gray, -2px -2px 5px gray;
 }
 
 .logo {
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: white;
-  font-weight: bold;
+  /* font-weight: bold; */
+  text-decoration: none;
+  font-family: "Pacifico", cursive;
 }
 .logo:hover {
   color: white;
@@ -25,16 +30,25 @@
   color: var(--white) !important;
 }
 .profileImage {
-  width: 50px;
-  height: 50px;
-  border: 1px solid var(--lightBlue);
+  width: 40px;
+  height: 40px;
+  /* border: 1px solid var(--lightBlue); */
   border-radius: 50%;
+  margin: auto 0;
 }
-.logout {
+.signIn {
   background-color: var(--lightBlue);
   /* height: 40px; */
 }
-.logout:hover {
+.signIn:hover {
   color: var(--lightBlue);
   border-color: var(--lightBlue);
+}
+.dropdown {
+  font-size: 2rem;
+}
+
+.username {
+  color: var(--white);
+  text-decoration: none !important;
 }

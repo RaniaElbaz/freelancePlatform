@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import ProjectCard from "../components/ProjectCard/ProjectCard";
+import classes from "../components/ProjectCard/ProjectCard.module.css";
 
-let token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNsaWVudCIsImlhdCI6MTY1OTQ0MTU0NiwiZXhwIjoxNjU5NDQ1MTQ2fQ.BsRtkXi3e2haj6pUEaya4mePXlLfqByvWhHkHosot4A" ||
-  localStorage.getItem("token");
+let token = localStorage.getItem("token");
 
 export default function Project() {
   const [project, setProject] = useState({});
@@ -29,7 +28,24 @@ export default function Project() {
       });
   }, []);
   return (
-    <main className="offset-lg-3 col-lg-6">
+    <main className=" col-lg-6 m-auto">
+      {project.recruiter ? (
+        String(project.recruiter.id._id) === localStorage.getItem("id") &&
+        (project.recruiter.type === localStorage.getItem("role") + "s" ||
+          localStorage.getItem("role") === project.recruiter.type) ? (
+          <div className={`text-center`}>
+            <Link to={`/project/${project._id}/private`}>
+              <button className={`btn ${classes.projectsBtn} mb-3`}>
+                view your project in private view
+              </button>
+            </Link>
+          </div>
+        ) : (
+          ""
+        )
+      ) : (
+        ""
+      )}
       <ProjectCard project={project} details="true" />
     </main>
   );
