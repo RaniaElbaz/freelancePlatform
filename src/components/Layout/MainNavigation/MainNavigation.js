@@ -72,7 +72,7 @@ export default function MainNavigator() {
                 </div>
               </Link>
               <div
-                className={`d-inline-block ${classes.dropdown}`}
+                className={`d-inline-block dropdown ${classes.dropdown}`}
                 data-bs-toggle="dropdown"
               >
                 <RiArrowDropDownLine />

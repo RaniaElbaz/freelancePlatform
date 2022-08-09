@@ -23,17 +23,6 @@
   color: var(--blue);
   text-decoration: underline;
 }
-
-.btnPropose {
-  background-color: var(--beige);
-  border-color: var(--beige);
-  color: var(--white);
-}
-.btnPropose:hover {
-  background-color: var(--beige);
-  border-color: var(--beige);
-  color: var(--white);
-}
 .lightText {
   color: var(--beige);
 }

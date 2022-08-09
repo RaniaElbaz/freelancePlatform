@@ -4,6 +4,7 @@ import { Link, useHistory, useParams } from "react-router-dom";
 
 import ProjectCard from "../components/ProjectCard/ProjectCard";
 import classes from "../components/ProjectCard/ProjectCard.module.css";
+import ProjectProposals from "../components/ProjectProposals/ProjectProposals";
 
 let token = localStorage.getItem("token");
 
@@ -47,7 +48,8 @@ export default function ProjectPrivate() {
   }, []);
   return (
     <>
-      <main className="offset-lg-3 col-lg-6">
+      <ProjectProposals project={project._id} />
+      <main className="col-lg-6 mt-3 px-3">
         <div className={`text-center`}>
           <Link to={`/project/${project._id}`}>
             <button className={`btn ${classes.projectsBtn} mb-3`}>

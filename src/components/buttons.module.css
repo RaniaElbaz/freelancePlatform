@@ -1,0 +1,10 @@
+.regularBeige {
+  background-color: var(--beige);
+  border-color: var(--beige);
+  color: var(--white);
+}
+.regularBeige:hover {
+  background-color: var(--white);
+  border-color: var(--beige);
+  color: var(--beige);
+}

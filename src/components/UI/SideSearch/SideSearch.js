@@ -1,16 +1,107 @@
 import classes from "./SideSearch.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
+let token = localStorage.getItem("token");
 export default function SideSearch(props) {
-  const { setSearchKey } = props;
-  const [filterKey, setFilterKey] = useState({
-    searchKey: "",
+  const { setSearchKey, setCategoryFilterKey, setSkillFilterKey } = props;
+  const [filterKey, setFilterKey] = useState({});
+  const [categories, setCategories] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [checkedCategories, setCheckedCategories] = useState([]);
+  const [skills, setSkills] = useState([]);
+  const [filteredSkills, setFilteredSkills] = useState([]);
+  const [checkedSkills, setCheckedSkills] = useState([]);
+
+  const categoriesApi = axios({
+    url: `http://localhost:8080/category`,
+    method: "GET",
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
   });
+  const skillsApi = axios({
+    url: `http://localhost:8080/skill`,
+    method: "GET",
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+
   const searchHandler = (e) => {
     setFilterKey({ ...filterKey, searchKey: e.target.value });
     setSearchKey(e.target.value);
   };
-  // console.log(filterKey.searchKey);
+  const filterHandler = (e) => {
+    if (e.target.id === "categoryFilter") {
+      for (let el of e.target.parentElement.children) {
+        if (
+          !(
+            el === e.target.parentElement.children[0] ||
+            el === e.target.parentElement.children[1]
+          )
+        )
+          console.log(el.children[0]);
+      }
+      setFilterKey({ ...filterKey, categoryKey: e.target.value });
+      // setCategoryFilterKey([])
+    } else if (e.target.id === "skillFilter") {
+      setFilterKey({ ...filterKey, skillKey: e.target.value });
+      // setSkillFilterKey([])
+    }
+  };
+
+  // const checkHandler = (e) => {
+  //   console.log(checkedCategories);
+  //   console.log(checkedSkills);
+  //   if (e.target.parentElement.id === "categories")
+  //     if (e.target.checked)
+  //       setCheckedCategories([...checkedCategories, e.target.value]);
+  //     else
+  //       setCheckedCategories([
+  //         ...checkedCategories.filter(
+  //           (category) => category !== e.target.value
+  //         ),
+  //       ]);
+  //   else if (e.target.parentElement.id === "skills")
+  //     if (e.target.checked)
+  //       setCheckedSkills([...checkedSkills, e.target.value]);
+  //     else
+  //       setCheckedSkills([
+  //         ...checkedSkills.filter((skill) => skill !== e.target.value),
+  //       ]);
+  // };
+
+  useEffect(() => {
+    categoriesApi
+      .then((res) => {
+        setCategories(res.data);
+        setFilteredCategories(res.data);
+        skillsApi.then((res) => {
+          setSkills(res.data);
+          setFilteredSkills(res.data);
+        });
+      })
+      .catch((error) => {
+        console.log(error.code, error.message, error.response.data);
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log(filterKey);
+    console.log(checkedCategories);
+    console.log(checkedSkills);
+    setFilteredCategories(
+      categories.filter((category) =>
+        category.name.includes(filterKey.categoryKey)
+      )
+    );
+    setFilteredSkills(
+      skills.filter((skill) => skill.name.includes(filterKey.skillKey))
+    );
+    setCategoryFilterKey([checkedCategories]);
+    setSkillFilterKey([checkedSkills]);
+  }, [filterKey, checkedCategories, checkedSkills]);
   return (
     <aside className={`card col-lg-3 mb-2 ${classes.card}`}>
       <div className={`card-body`}>
@@ -30,31 +121,32 @@ export default function SideSearch(props) {
         />
         <hr />
         <div>
-          <h5 className={`card-title ${classes.cardTitle}`}>Location</h5>
+          <h5 className={`card-title ${classes.cardTitle}`}>Category</h5>
           <input
             className={`form-control my-2 ${classes.input}`}
             type="search"
-            placeholder="country"
+            placeholder="filter"
             aria-label="Search"
+            id="categoryFilter"
+            onChange={filterHandler}
           />
-          <div className={`form-check ${classes.formCheck}`}>
-            <input className="form-check-input" type="checkbox" value="" />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
-              Egypt
-            </label>
-          </div>
-          <div className={`form-check ${classes.formCheck}`}>
-            <input className="form-check-input" type="checkbox" value="" />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
-              USA
-            </label>
-          </div>
-          <div className={`form-check ${classes.formCheck}`}>
-            <input className="form-check-input" type="checkbox" value="" />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
-              Germany
-            </label>
-          </div>
+          {filteredCategories.map((category, index) => (
+            <div
+              className={`form-check ${classes.formCheck}`}
+              key={index}
+              id="categories"
+            >
+              <input
+                className="form-check-input"
+                type="checkbox"
+                value={category._id}
+                // onChange={checkHandler}
+              />
+              <label className="form-check-label" htmlFor="flexCheckDefault">
+                {category.name}
+              </label>
+            </div>
+          ))}
         </div>
         <hr />
         <div>
@@ -62,27 +154,28 @@ export default function SideSearch(props) {
           <input
             className={`form-control my-2 ${classes.input}`}
             type="search"
-            placeholder="skill"
+            placeholder="filter"
             aria-label="Search"
+            id="skillFilter"
+            onChange={filterHandler}
           />
-          <div className={`form-check ${classes.formCheck}`}>
-            <input className="form-check-input" type="checkbox" value="" />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
-              HTML
-            </label>
-          </div>
-          <div className={`form-check ${classes.formCheck}`}>
-            <input className="form-check-input" type="checkbox" value="" />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
-              CSS
-            </label>
-          </div>
-          <div className={`form-check ${classes.formCheck}`}>
-            <input className="form-check-input" type="checkbox" value="" />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
-              Javascript
-            </label>
-          </div>
+          {filteredSkills.map((skill, index) => (
+            <div
+              className={`form-check ${classes.formCheck}`}
+              key={index}
+              id="skills"
+            >
+              <input
+                className="form-check-input"
+                type="checkbox"
+                value={skill._id}
+                // onChange={checkHandler}
+              />
+              <label className="form-check-label" htmlFor="flexCheckDefault">
+                {skill.name}
+              </label>
+            </div>
+          ))}
         </div>
         <hr />
         <div>

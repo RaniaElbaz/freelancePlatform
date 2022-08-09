@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import classes from "./ProjectCard.module.css";
+import buttons from "../buttons.module.css";
 import {
   FaRegHeart,
   FaHeart,
@@ -8,6 +9,7 @@ import {
   FaMoneyBillWaveAlt,
 } from "react-icons/fa";
 import { IoLocationSharp } from "react-icons/io5";
+import { AiOutlineFundProjectionScreen } from "react-icons/ai";
 import { toggleSavedProjects } from "../../store/actions/savedProjects";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -26,18 +28,18 @@ export default function ProjectCard(props) {
 
   const { project, details, privateView } = props;
 
-  // const [savedProjects, setSavedProjects] = useState([]);
+  const [savedProject, setSavedProject] = useState([]);
+  const savedProjects = useSelector(
+    (state) => state.savedProjectsReducer.savedProjects
+  );
   const dispatch = useDispatch();
   const favoriteHandler = () => {
     dispatch(toggleSavedProjects(project));
   };
-  const savedProjects = useSelector(
-    (state) => state.savedProjects.savedProjects
-  );
 
-  // useEffect(() => {
-  //   console.log(savedProjects);
-  // }, [savedProjects]);
+  useEffect(() => {
+    setSavedProject(savedProjects);
+  }, [savedProjects]);
 
   return (
     <>
@@ -55,42 +57,41 @@ export default function ProjectCard(props) {
             </div>
 
             <div className="">
-              {(localStorage.getItem("role") === "freelancer" ||
-                localStorage.getItem("role") === "team") && (
-                <span>
-                  <span className={classes.favourite} onClick={favoriteHandler}>
-                    {/* {savedProjects.some((e) => e._id === project._id) ? ( */}
+              <span>
+                <span className={classes.favourite} onClick={favoriteHandler}>
+                  {savedProject.some((e) => e._id === project._id) ? (
                     <FaHeart />
-                    {/* ) : ( */}
-                    {/* <FaRegHeart /> */}
-                    {/* )} */}
-                  </span>
-                  <Link to="/project/proposal">
-                    <button className={`btn ms-3 ${classes.btnPropose}`}>
+                  ) : (
+                    <FaRegHeart />
+                  )}
+                </span>
+                {(localStorage.getItem("role") === "freelancer" ||
+                  localStorage.getItem("role") === "team") && (
+                  <Link to={`/project/${project._id}/proposal`}>
+                    <button className={`btn ms-3 ${buttons.regularBeige}`}>
                       propose
                     </button>
                   </Link>
-                </span>
-              )}
+                )}
+              </span>
               <div className="d-inline-block ps-3" data-bs-toggle="dropdown">
                 <FaEllipsisV />
                 <ul className="dropdown-menu  text-small shadow">
-                  <li>
-                    <a className="dropdown-item" href="s">
-                      add to favourites
-                    </a>
-                  </li>
                   {(localStorage.getItem("role") === "freelancer" ||
                     localStorage.getItem("role") === "team") && (
-                    <li>
-                      <a className="dropdown-item" href="s">
-                        propose
-                      </a>
-                    </li>
+                    <>
+                      <Link
+                        to={`/project/${project._id}/proposal`}
+                        className="dropdown-item"
+                      >
+                        <li>propose</li>
+                      </Link>
+
+                      <li>
+                        <hr className="dropdown-divider" />
+                      </li>
+                    </>
                   )}
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
                   <li>
                     <a className="dropdown-item" href="s">
                       report
@@ -107,6 +108,9 @@ export default function ProjectCard(props) {
           </h6>
           <p className="p-0">
             <b> {project.isInternship ? "internship" : "$" + project.budget}</b>
+            <span className="ms-2">
+              {project.duration} <b>hr</b>
+            </span>
           </p>
           <p className={`card-text p-0 ${classes.cardText}`}>
             {project.description}
@@ -146,6 +150,7 @@ export default function ProjectCard(props) {
               />
             </div>
             <span className="mx-2">{`${project.recruiter.id.firstName} ${project.recruiter.id.lastName}`}</span>
+
             <span>
               <FaMoneyBillWaveAlt />
               <b> ${project.recruiter.id.analytics.spent}</b>
@@ -154,12 +159,16 @@ export default function ProjectCard(props) {
               <IoLocationSharp />
               {project.recruiter.id.location.city}
             </span>
+            <span className="ms-2">
+              <AiOutlineFundProjectionScreen />
+              {project.recruiter.id.projects.length} projects
+            </span>
           </div>
         )}
       </div>
-      {privateView && project.recruiter && project.proposals.length > 0 && (
+      {/* {privateView && project.recruiter && project.proposals.length > 0 && (
         <p>proposals</p>
-      )}
+      )} */}
       {privateView &&
         project.recruiter &&
         project.proposals.length > 0 &&
