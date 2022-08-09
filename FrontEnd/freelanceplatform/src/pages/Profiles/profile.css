@@ -1,0 +1,19 @@
+.profile{
+    border: 1px solid var(--grey);
+}
+.subTitle{
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    color: var(--white);
+    background-color: var(--transparentBlue);
+    padding: 0.2em 1em;
+    font-size: 12px;
+}
+
+.bg-blue{
+    background-color: var(--blue);
+}
+
+.bg-beige{
+    background-color: var(--beige);
+}

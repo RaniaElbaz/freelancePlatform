@@ -1,0 +1,12 @@
+.input {
+  border: none;
+  border-bottom: 2px solid var(--blue);
+  border-left: 2px solid var(--blue);
+  padding: 5px 10px;
+  border-radius: 25px;
+  background-color: var(--lightBlue);
+}
+
+.fixedHeight{
+  height: 55px !important;
+}

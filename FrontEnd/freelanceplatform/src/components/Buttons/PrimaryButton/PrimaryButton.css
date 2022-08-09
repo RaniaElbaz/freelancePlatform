@@ -1,0 +1,7 @@
+.PrimaryButton{
+    border: none;
+    border-radius: 25px;
+    background-color: var(--blue);
+    color: var(--white);
+    padding: 5px 10px;
+}
