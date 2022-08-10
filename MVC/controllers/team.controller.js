@@ -87,6 +87,22 @@ module.exports.getTeamByIdPrivate = (request, response, next) => {
     });
 };
 
+module.exports.getTeamByMember = (request, response, next) => {
+  Team.findOne({ members: request.id }, { name: 1, logo: 1 })
+    .then((data) => {
+      if (!data) next(new Error("freelancer is not a member in any team"));
+      else {
+        request.id = data.id;
+        console.log(request.id);
+        request.role = "team";
+        response.status(200).json(data);
+      }
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
 const imageStorage = multer.diskStorage({
   destination: "public/profileImages/teams",
   filename: (request, response, next) => {
@@ -154,9 +170,7 @@ module.exports.updateTeam = (request, response, next) => {
         else data[prop] = request.body[prop] || data[prop];
       }
       if (request.file) {
-        data.logo = `${request.protocol}://${request.hostname}:${
-          process.env.PORT
-        }/${request.file.path.replaceAll("\\", "/")}`;
+        data.logo = `./${request.file.path.replaceAll("\\", "/")}`;
       }
       Team.findOne({ members: data.members, name: { $ne: data.name } }).then(
         (team) => {
