@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+/* font-family: 'Lobster', cursive; */
+
+@import url('https://fonts.googleapis.com/css2?family=Courgette&display=swap');
+
+/* font-family: 'Courgette', cursive; */
+
 :root {
   --blue: #116466;
   --white: #ffffff;
@@ -7,3 +14,7 @@
   --lightBlue: #d1e8e6;
 }
 
+
+* {
+  scroll-behavior: smooth;
+}

@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { useParams, Link, useHistory } from "react-router-dom";
 import axiosInstance from "./../../api/axios";
 
-import Style from "./ForgotPassword.module.css";
-
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 
@@ -126,77 +124,108 @@ function ForgotPassword() {
   };
 
   return (
-    <div className=" row justify-content-center align-content-center vh-100 ">
-      <div className="col-11 col-md-8 col-lg-6 p-5 rounded bg-dark text-light text-center">
-        {params.rToken ? (
-          <>
-            <form>
-              {errors.resetError !== "" ? (
-                <div className="alert alert-danger" role="alert">
-                  {`${errors.resetError}`}
-                </div>
-              ) : (
-                ""
-              )}
+    <div className="loginContainer">
+      <div className="row justify-content-center align-content-center vh-100 ">
+        <div className="col-11 col-md-8 col-lg-6 p-5 rounded  text-center">
+          {params.rToken ? (
+            <>
+              <form>
+                {errors.resetError !== "" ? (
+                  <div className="alert alert-danger" role="alert">
+                    {`${errors.resetError}`}
+                  </div>
+                ) : (
+                  ""
+                )}
 
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Email Address
-                </label>
-                <input
-                  type="text"
-                  className={`form-control ${
-                    errors.emailError ? "border-danger" : ""
-                  }`}
-                  id="email"
-                  aria-describedby="emailHelp"
-                  value={user.email}
-                  onChange={handleChange}
-                />
-                <div id="emailHelp" className="form-text text-danger">
-                  {errors.emailError}
-                </div>
-              </div>
-
-              <div className="mb-3 position-relative">
-                <label htmlFor="password" className="form-label">
-                  New Password
-                </label>
-                <div className={`${Style.passwordWrapper} position-relative`}>
+                <div className="mb-3">
+                  <label
+                    htmlFor="email"
+                    className="form-label"
+                    style={{
+                      color: `var(--blue)`,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Email Address
+                  </label>
                   <input
-                    type={isPasswordShown ? "text" : "password"}
+                    type="text"
                     className={`form-control ${
-                      errors.passwordError ? "border-danger" : ""
+                      errors.emailError ? "border-danger" : ""
                     }`}
-                    id="password"
-                    aria-describedby="passwordHelp"
-                    value={user.password}
+                    id="email"
+                    aria-describedby="emailHelp"
+                    value={user.email}
                     onChange={handleChange}
                   />
-                  <i
-                    className={`${Style.eyeIcon}  position-absolute`}
-                    onClick={togglePasswordIcon}
+                  <div id="emailHelp" className="form-text text-danger">
+                    {errors.emailError}
+                  </div>
+                </div>
+
+                <div className="mb-3 position-relative">
+                  <label
+                    htmlFor="password"
+                    className="form-label"
+                    style={{
+                      color: `var(--blue)`,
+                      fontWeight: 500,
+                    }}
                   >
-                    {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
-                  </i>
-                </div>
+                    New Password
+                  </label>
+                  <div className={`passwordWrapper position-relative`}>
+                    <input
+                      type={isPasswordShown ? "text" : "password"}
+                      className={`form-control ${
+                        errors.passwordError ? "border-danger" : ""
+                      }`}
+                      id="password"
+                      aria-describedby="passwordHelp"
+                      value={user.password}
+                      onChange={handleChange}
+                    />
+                    <i
+                      className={`eyeIcon  position-absolute`}
+                      onClick={togglePasswordIcon}
+                    >
+                      {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
+                    </i>
+                  </div>
 
-                <div id="passwordHelp" className="form-text text-danger">
-                  {errors.passwordError}
+                  <div id="passwordHelp" className="form-text text-danger">
+                    {errors.passwordError}
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
 
-            <button className="btn btn-success mt-4" onClick={ResetEmail}>
-              Reset password
-            </button>
-          </>
-        ) : (
-          <p>
-            Reset Password link has been sent to your Email, kindly check your
-            mail and follow the instructions.
-          </p>
-        )}
+              <button
+                style={{
+                  background: `var(--beige)`,
+                  border: "none",
+                }}
+                className="btn btn-success mt-4"
+                onClick={ResetEmail}
+              >
+                Reset password
+              </button>
+            </>
+          ) : (
+            <p
+              style={{
+                color: `var(--blue)`,
+                fontWeight: "bolder",
+                fontSize: "1.3em",
+                fontFamily: "Courgette",
+                lineHeight: 2,
+              }}
+            >
+              Reset Password link has been sent to your Email, kindly check your
+              mail and follow the instructions.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

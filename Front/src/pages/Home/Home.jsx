@@ -1,13 +1,73 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Core/Navbar/Navbar";
+import Feature from "../../components/Feature/Feature";
 import "./Home.css";
+import {
+  FaCode,
+  FaFacebook,
+  FaPalette,
+  FaShieldVirus,
+  FaInstagram,
+  FaLinkedin,
+  FaApple,
+  FaPinterest,
+  FaBehance,
+  FaArrowUp,
+} from "react-icons/fa";
+import VideoCard from "../../components/VideoCard/VideoCard";
 
 function Home() {
+  const featureData = [
+    {
+      icon: <FaCode />,
+      title: "Web Development",
+    },
+    {
+      icon: <FaPalette />,
+      title: "UX/UI Design",
+    },
+    {
+      icon: <FaApple />,
+      title: "Mobile & Desktop Apps",
+    },
+    {
+      icon: <FaShieldVirus />,
+      title: "Cyber Security",
+    },
+  ];
+
+  const learnDetails = [
+    {
+      title: "How to Start",
+      imgPath: `http://localhost:3000/assets/img/p-1.jpg`,
+    },
+    {
+      title: "Build Your Profile",
+      imgPath: `http://localhost:3000/assets/img/p-3.png`,
+    },
+    {
+      title: "Earn Mony",
+      imgPath: `http://localhost:3000/assets/img/p-4.jpg`,
+    },
+    {
+      title: "First Proposal",
+      imgPath: `http://localhost:3000/assets/img/p-5.png`,
+    },
+    {
+      title: "How to Start",
+      imgPath: `http://localhost:3000/assets/img/p-6.png`,
+    },
+    {
+      title: "How to Start",
+      imgPath: `http://localhost:3000/assets/img/p-7.jpg`,
+    },
+  ];
+
   return (
     <div>
       <Navbar />
-      <section>
+      <section id="home">
         <section className={`landing py-5`}>
           <div className="container-fluid">
             <div className="row">
@@ -23,6 +83,7 @@ function Home() {
                   <h4 className="py-5">
                     Join a global talent pool of expert freelancers!
                   </h4>
+                  <br />
                   <div className="imgContainer position-relative py-5">
                     <img
                       src="https://ureed.com/assets/images/profile_image_61837_1620171606893.jpg"
@@ -92,18 +153,197 @@ function Home() {
             </div>
           </div>
         </section>
+
         <section className="features py-5">
           <div className="container-fluid">
             <div className="row">
-              <div className="col-12 col-md-12 col-4 ">
-                <h2>Your desk, your rules.</h2>
-                <p>
-                  Learn how you can use Ureed.com as a launchpad for your
-                  freelancing career
+              <div className="col-12 col-md-12 col-lg-4 ">
+                <h2 className="featuresTitle py-5 h1 fw-bolder">
+                  Our Features...
+                </h2>
+                <p className="featureDesc mb-5 mb-lg-0">
+                  Freelancico provide a package fo Specializations in the
+                  Software Industry..
+                  <span> Everywhere, We with you.</span>
                 </p>
+                <div className="dotedBG d-none d-lg-block"></div>
               </div>
-              <div className="col-12 col-md-6 col-4 "></div>
-              <div className="col-12 col-md-6 col-4 "></div>
+              <div className="col-12 col-md-6 col-lg-4">
+                <Feature data={featureData[0]} />
+                <Feature data={featureData[1]} />
+              </div>
+              <div className="col-12 col-md-6 col-lg-4">
+                <Feature data={featureData[2]} />
+                <Feature data={featureData[3]} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="customer container py-5">
+          <h3 className="text-center py-4">
+            TRUSTED BY OVER 8,000 COMPANIES AROUND THE WORLD
+          </h3>
+          <div className="d-flex flex-wrap  justify-content-center align-content-center">
+            <img src="./assets/img/brands/amazon.webp" alt="" />
+            <img src="./assets/img/brands/noon.webp" alt="" />
+            <img src="./assets/img/brands/axa.webp" alt="" />
+            <img src="./assets/img/brands/mbrcgi.webp" alt="" />
+            <img src="./assets/img/brands/ef.webp" alt="" />
+          </div>
+        </section>
+
+        <section className="container hero py-5">
+          <div className="row">
+            <div className="col-12 col-lg-4">
+              <div className="card my-5 my-lg-0">
+                <img
+                  src="./assets/img/4.jpg"
+                  className="card-img-top heroCover"
+                  alt=".."
+                />
+
+                <div className="card-body position-relative">
+                  <div className="card-title position-absolute hourRate">
+                    Starting $50 USD / hr
+                  </div>
+                  <div className="imgP position-relative">
+                    <img
+                      className="card-img-top heroImg position-absolute"
+                      src="./assets/img/p-8.jpg"
+                      alt=""
+                    />
+                  </div>
+                  <p className="card-text pt-5 fw-bolder fs-4">
+                    Looking for a senior software developer to build our website
+                  </p>
+
+                  <hr />
+                  <div className="skills py-3">
+                    <p> Expert In:</p>
+                    <span className="me-2 py-1 px-3 mb-1 rounded-4">
+                      JavaScript
+                    </span>
+                    <span className="me-2 py-1 px-3 mb-1 rounded-4">React</span>
+                    <span className="me-2 py-1 px-3 mb-1 rounded-4">
+                      NodeJS
+                    </span>
+                    <br />
+                    <span className="me-2 py-1 px-3 mb-1 rounded-4">
+                      TailWindCSS
+                    </span>
+                    <span className="me-2 py-1 px-3 mb-1 rounded-4">
+                      Webpack
+                    </span>
+                  </div>
+                </div>
+
+                <div className="card-footer">
+                  <button className="btn btn-secondary w-100">
+                    Submit a Pitch
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 col-lg-8 heroText px-lg-5">
+              <h2 className="fw-bolder" style={{ color: `var(--blue)` }}>
+                Find Work
+              </h2>
+              <h2 className="fw-bolder mb-5">That you enjoy 🎉</h2>
+              <p>
+                Access thousands of opportunities every week posted by employers
+                from across the region
+              </p>
+              <p>
+                Can’t find what you’re looking for? Reach out to our
+                <span> customer success team</span> and let us know what we’re
+                missing.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="learn py-5">
+          <div className="container">
+            <h5
+              className="text-center "
+              style={{ color: `var(--blue)`, fontWeight: "bolder" }}
+            >
+              Learn More!
+            </h5>
+            <h1 className="text-center py-3">
+              Everything you need to get started on Frelancico.com today
+            </h1>
+            <div className="row  row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+              {learnDetails.map((item, i) => (
+                <div className="col" key={`a-${i}`}>
+                  <VideoCard data={item} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="footer py-5">
+          <div className="container position-relative">
+            <a
+              href="#home"
+              className="rounded-circle position-absolute arrowToUp"
+            >
+              <FaArrowUp />
+            </a>
+
+            <div className="row ">
+              <div className="col-12 col-md-6 col-lg-6 mb-3 text-center text-lg-start">
+                <h2 className="logo py-3 text-center text-lg-start">
+                  Freelancico
+                </h2>
+                <div className="aboutUs">
+                  <p>
+                    Freelancico.com is an online marketplace connecting
+                    employers from around the world with vetted and certified
+                    freelance talents across all professional programming fields
+                    with maximum value and high return guaranteed.
+                  </p>
+                </div>
+              </div>
+              <div className="col-12 col-md-6 col-lg-3 mb-3">
+                <h4 className="py-3 text-center text-lg-start">More Links</h4>
+                <ul>
+                  <li>
+                    <a href="#home">Home</a>
+                  </li>
+                  <li>
+                    <a href="#Home">Find Work</a>
+                  </li>
+                  <li>
+                    <a href="#Store">Store</a>
+                  </li>
+                  <li>
+                    <a href="#Store">About US</a>
+                  </li>
+                </ul>
+              </div>
+              <div className="col-12 col-md-12 col-lg-3 text-center">
+                <h4 className="py-3">Contact US</h4>
+                <div className="social d-flex justify-content-center">
+                  <span>
+                    <FaFacebook />
+                  </span>
+                  <span>
+                    <FaInstagram />
+                  </span>
+                  <span>
+                    <FaLinkedin />
+                  </span>
+                  <span>
+                    <FaPinterest />
+                  </span>
+                  <span>
+                    <FaBehance />
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </section>

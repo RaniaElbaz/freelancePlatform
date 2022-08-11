@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import axiosInstance from "../../api/axios";
 import jwtDecode from "jwt-decode";
 
-import Style from "./Login.module.css";
+import "./Login.css";
 
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
@@ -177,83 +177,121 @@ function AdminLogin() {
   // };
 
   return (
-    <div className="row justify-content-center align-items-center vh-100">
-      <div className={`${Style.bgGray} col-11 col-md-8 col-lg-6 p-5 rounded`}>
-        <form onSubmit={handleSubmit}>
-          {errors.submitError !== "" ? (
-            <div className="alert alert-danger" role="alert">
-              {`${errors.submitError}`}
-            </div>
-          ) : (
-            ""
-          )}
+    <div class="container-fluid loginContainer">
+      <div className="row justify-content-center align-items-center vh-100">
+        <div className={`bgGray col-11 col-md-8 col-lg-6 p-5 rounded`}>
+          <form onSubmit={handleSubmit}>
+            {errors.submitError !== "" ? (
+              <div className="alert alert-danger" role="alert">
+                {`${errors.submitError}`}
+              </div>
+            ) : (
+              ""
+            )}
 
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email Address
-            </label>
-            <input
-              type="text"
-              className={`form-control ${
-                errors.emailError ? "border-danger" : ""
-              }`}
-              id="email"
-              aria-describedby="emailHelp"
-              value={user.email}
-              onChange={handleChange}
-            />
-            <div id="emailHelp" className="form-text text-danger">
-              {errors.emailError}
-            </div>
-          </div>
-
-          <div className="mb-3 position-relative">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <div className={`${Style.passwordWrapper} position-relative`}>
+            <div className="mb-3">
+              <label
+                htmlFor="email"
+                className="form-label"
+                style={{
+                  color: `var(--blue)`,
+                  fontWeight: 500,
+                }}
+              >
+                Email Address
+              </label>
               <input
-                type={isPasswordShown ? "text" : "password"}
+                type="text"
                 className={`form-control ${
-                  errors.passwordError ? "border-danger" : ""
+                  errors.emailError ? "border-danger" : ""
                 }`}
-                id="password"
-                aria-describedby="passwordHelp"
-                value={user.password}
+                id="email"
+                aria-describedby="emailHelp"
+                value={user.email}
                 onChange={handleChange}
               />
-              <i
-                className={`${Style.eyeIcon}  position-absolute`}
-                onClick={togglePasswordIcon}
+              <div id="emailHelp" className="form-text text-danger">
+                {errors.emailError}
+              </div>
+            </div>
+
+            <div className="mb-3 position-relative">
+              <label
+                htmlFor="password"
+                className="form-label"
+                style={{
+                  color: `var(--blue)`,
+                  fontWeight: 500,
+                }}
               >
-                {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
-              </i>
+                Password
+              </label>
+              <div className={`passwordWrapper position-relative`}>
+                <input
+                  type={isPasswordShown ? "text" : "password"}
+                  className={`form-control ${
+                    errors.passwordError ? "border-danger" : ""
+                  }`}
+                  id="password"
+                  aria-describedby="passwordHelp"
+                  value={user.password}
+                  onChange={handleChange}
+                />
+                <i
+                  className={`eyeIcon position-absolute`}
+                  onClick={togglePasswordIcon}
+                >
+                  {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
+                </i>
+              </div>
+
+              <div id="passwordHelp" className="form-text text-danger">
+                {errors.passwordError}
+              </div>
             </div>
 
-            <div id="passwordHelp" className="form-text text-danger">
-              {errors.passwordError}
-            </div>
-          </div>
+            <button
+              style={{
+                background: `var(--beige)`,
+                border: "none",
+              }}
+              type="submit"
+              className="btn btn-primary mb-3"
+            >
+              Login
+            </button>
 
-          <button type="submit" className="btn btn-primary mb-3">
-            Login
-          </button>
+            {errors.resetError !== "" ? (
+              <div className="alert alert-danger" role="alert">
+                {`${errors.resetError}`}
+              </div>
+            ) : (
+              ""
+            )}
+          </form>
 
-          {errors.resetError !== "" ? (
-            <div className="alert alert-danger" role="alert">
-              {`${errors.resetError}`}
-            </div>
-          ) : (
-            ""
-          )}
-        </form>
-
-        {/* <p
+          {/* <p
           style={{ color: "white", textDecoration: "none", cursor: "pointer" }}
           onClick={sendResetLink}
         >
           Forgot password?
         </p> */}
+        </div>
+        <div className="d-none d-lg-flex col-lg-6 infoArea h-100">
+          <div className="rotatedDiv ">
+            <div className="loginGreeting d-flex flex-column justify-content-center align-items-center">
+              <h1 className="py-5">Freelancico</h1>
+              <p>
+                🎁 While you were away, we've made some changes to Ureed.com
+              </p>
+              <p>Follow us @FreelancicoArabia to learn more</p>
+              <p>
+                Join Freelancico.com today, the region's largest freelancers
+                marketplace
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

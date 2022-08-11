@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import Style from "./Register.module.css";
 import axiosInstance from "../../api/axios";
 import { useHistory } from "react-router-dom";
 
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
+// import "../login/login.css";
 
 function AdminRegister() {
   // 1- States
@@ -162,141 +162,200 @@ function AdminRegister() {
   };
 
   return (
-    <div className="row justify-content-center align-items-center vh-100">
-      <div className={`${Style.bgGray} col-11 col-md-8 col-lg-6 p-5 rounded`}>
-        <form onSubmit={handleSubmit}>
-          {errors.registerError !== "" ? (
-            <div className="alert alert-danger" role="alert">
-              {`${errors.registerError}`}
-            </div>
-          ) : (
-            ""
-          )}
+    <div class="container-fluid loginContainer">
+      <div className="row justify-content-center align-items-center vh-100">
+        <div className={`bgGray col-11 col-md-8 col-lg-6 p-5 rounded`}>
+          <form onSubmit={handleSubmit}>
+            {errors.registerError !== "" ? (
+              <div className="alert alert-danger" role="alert">
+                {`${errors.registerError}`}
+              </div>
+            ) : (
+              ""
+            )}
 
-          <div className="mb-3">
-            <label htmlFor="firstName" className="form-label">
-              First Name
-            </label>
-            <input
-              type="text"
-              className={`form-control ${
-                errors.firstNameError ? "border-danger" : ""
-              }`}
-              id="firstName"
-              aria-describedby="nameHelp"
-              value={user.name}
-              onChange={handleChange}
-            />
-            <div id="nameHelp" className="form-text text-danger">
-              {errors.firstNameError}
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="lastName" className="form-label">
-              Last Name
-            </label>
-            <input
-              type="text"
-              className={`form-control ${
-                errors.lastNameError ? "border-danger" : ""
-              }`}
-              id="lastName"
-              aria-describedby="usernameHelp"
-              value={user.username}
-              onChange={handleChange}
-            />
-            <div id="usernameHelp" className="form-text text-danger">
-              {errors.lastNameError}
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email Address
-            </label>
-            <input
-              type="text"
-              className={`form-control ${
-                errors.emailError ? "border-danger" : ""
-              }`}
-              id="email"
-              aria-describedby="emailHelp"
-              value={user.email}
-              onChange={handleChange}
-            />
-            <div id="emailHelp" className="form-text text-danger">
-              {errors.emailError}
-            </div>
-          </div>
-
-          <div className="mb-3 position-relative">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <div className={`${Style.passwordWrapper} position-relative`}>
+            <div className="mb-3">
+              <label
+                htmlFor="firstName"
+                className="form-label"
+                style={{
+                  color: `var(--blue)`,
+                  fontWeight: 500,
+                }}
+              >
+                First Name
+              </label>
               <input
-                type={isPasswordShown ? "text" : "password"}
+                type="text"
                 className={`form-control ${
-                  errors.passwordError ? "border-danger" : ""
+                  errors.firstNameError ? "border-danger" : ""
                 }`}
-                id="password"
-                aria-describedby="passwordHelp"
-                value={user.password}
+                id="firstName"
+                aria-describedby="nameHelp"
+                value={user.name}
                 onChange={handleChange}
               />
-              <i
-                className={`${Style.eyeIcon} position-absolute`}
-                onClick={togglePasswordIcon}
+              <div id="nameHelp" className="form-text text-danger">
+                {errors.firstNameError}
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label
+                htmlFor="lastName"
+                className="form-label"
+                style={{
+                  color: `var(--blue)`,
+                  fontWeight: 500,
+                }}
               >
-                {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
-              </i>
-            </div>
-
-            <div id="passwordHelp" className="form-text text-danger">
-              {errors.passwordError}
-            </div>
-          </div>
-
-          <div className="mb-3 position-relative">
-            <label htmlFor="passwordConfirm" className="form-label">
-              Confirm Password
-            </label>
-            <div className={`${Style.passwordWrapper} position-relative`}>
+                Last Name
+              </label>
               <input
-                type={isPasswordShown ? "text" : "password"}
+                type="text"
                 className={`form-control ${
-                  errors.passwordError ? "border-danger" : ""
+                  errors.lastNameError ? "border-danger" : ""
                 }`}
-                id="passwordConfirm"
-                aria-describedby="passwordConfirmHelp"
-                value={user.passwordConfirm}
+                id="lastName"
+                aria-describedby="usernameHelp"
+                value={user.username}
                 onChange={handleChange}
               />
-              <i
-                className={`${Style.eyeIcon} position-absolute`}
-                onClick={togglePasswordIcon}
-              >
-                {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
-              </i>
+              <div id="usernameHelp" className="form-text text-danger">
+                {errors.lastNameError}
+              </div>
             </div>
 
-            <div
-              id="passwordConfirmHelp"
-              className={`form-text ${
-                errors.passwordConfirmError === "Matched"
-                  ? "text-success"
-                  : "text-danger"
-              }`}
+            <div className="mb-3">
+              <label
+                htmlFor="email"
+                className="form-label"
+                style={{
+                  color: `var(--blue)`,
+                  fontWeight: 500,
+                }}
+              >
+                Email Address
+              </label>
+              <input
+                type="text"
+                className={`form-control ${
+                  errors.emailError ? "border-danger" : ""
+                }`}
+                id="email"
+                aria-describedby="emailHelp"
+                value={user.email}
+                onChange={handleChange}
+              />
+              <div id="emailHelp" className="form-text text-danger">
+                {errors.emailError}
+              </div>
+            </div>
+
+            <div className="mb-3 position-relative">
+              <label
+                htmlFor="password"
+                className="form-label"
+                style={{
+                  color: `var(--blue)`,
+                  fontWeight: 500,
+                }}
+              >
+                Password
+              </label>
+              <div className={`passwordWrapper position-relative`}>
+                <input
+                  type={isPasswordShown ? "text" : "password"}
+                  className={`form-control ${
+                    errors.passwordError ? "border-danger" : ""
+                  }`}
+                  id="password"
+                  aria-describedby="passwordHelp"
+                  value={user.password}
+                  onChange={handleChange}
+                />
+                <i
+                  className={`eyeIcon position-absolute`}
+                  onClick={togglePasswordIcon}
+                >
+                  {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
+                </i>
+              </div>
+
+              <div id="passwordHelp" className="form-text text-danger">
+                {errors.passwordError}
+              </div>
+            </div>
+
+            <div className="mb-3 position-relative">
+              <label
+                htmlFor="passwordConfirm"
+                className="form-label"
+                style={{
+                  color: `var(--blue)`,
+                  fontWeight: 500,
+                }}
+              >
+                Confirm Password
+              </label>
+              <div className={`passwordWrapper position-relative`}>
+                <input
+                  type={isPasswordShown ? "text" : "password"}
+                  className={`form-control ${
+                    errors.passwordError ? "border-danger" : ""
+                  }`}
+                  id="passwordConfirm"
+                  aria-describedby="passwordConfirmHelp"
+                  value={user.passwordConfirm}
+                  onChange={handleChange}
+                />
+                <i
+                  className={`eyeIcon position-absolute`}
+                  onClick={togglePasswordIcon}
+                >
+                  {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
+                </i>
+              </div>
+
+              <div
+                id="passwordConfirmHelp"
+                className={`form-text ${
+                  errors.passwordConfirmError === "Matched"
+                    ? "text-success"
+                    : "text-danger"
+                }`}
+              >
+                {errors.passwordConfirmError}
+              </div>
+            </div>
+
+            <button
+              style={{
+                background: `var(--beige)`,
+                border: "none",
+              }}
+              type="submit"
+              className="btn btn-success"
             >
-              {errors.passwordConfirmError}
+              Register
+            </button>
+          </form>
+        </div>
+        <div className="d-none d-lg-flex col-lg-6 infoArea h-100">
+          <div className="rotatedDiv ">
+            <div className="loginGreeting d-flex flex-column justify-content-center align-items-center">
+              <h1 className="py-5">Freelancico</h1>
+              <p>
+                🎁 While you were away, we've made some changes to Ureed.com
+              </p>
+              <p>Follow us @FreelancicoArabia to learn more</p>
+              <p>
+                Join Freelancico.com today, the region's largest freelancers
+                marketplace
+              </p>
             </div>
           </div>
-
-          <button type="submit" className="btn btn-success">
-            Register
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );

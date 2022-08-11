@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import axiosInstance from "../../api/axios";
 
-import Style from "./ChangePassword.module.css";
-
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 
@@ -112,7 +110,6 @@ function ChangePassword({ setToken }) {
 
       if (statusCode === 201) {
         history.push("/projects");
-    
       }
     } catch (error) {
       console.log(error);
@@ -130,80 +127,118 @@ function ChangePassword({ setToken }) {
   };
 
   return (
-    <div className="row justify-content-center align-items-center vh-100">
-      <div className={`${Style.bgGray} col-11 col-md-8 col-lg-6 p-5 rounded`}>
-        <form onSubmit={handleSubmit}>
-          {errors.resetError !== "" ? (
-            <div className="alert alert-danger" role="alert">
-              {`${errors.resetError}`}
-            </div>
-          ) : (
-            ""
-          )}
+    <div class="container-fluid loginContainer">
+      <div className="row justify-content-center align-items-center vh-100">
+        <div className={`bgGray col-11 col-md-8 col-lg-6 p-5 rounded`}>
+          <form onSubmit={handleSubmit}>
+            {errors.resetError !== "" ? (
+              <div className="alert alert-danger" role="alert">
+                {`${errors.resetError}`}
+              </div>
+            ) : (
+              ""
+            )}
 
-          <div className="mb-3 position-relative">
-            <label htmlFor="password" className="form-label">
-              Old Password
-            </label>
-            <div className={`${Style.passwordWrapper} position-relative`}>
-              <input
-                type={isPasswordShown ? "text" : "password"}
-                className={`form-control ${
-                  errors.passwordError ? "border-danger" : ""
-                }`}
-                id="oldPassword"
-                aria-describedby="passwordHelp"
-                value={user.oldPassword}
-                onChange={handleChange}
-              />
-              <i
-                className={`${Style.eyeIcon}  position-absolute`}
-                onClick={togglePasswordIcon}
+            <div className="mb-3 position-relative">
+              <label
+                htmlFor="password"
+                className="form-label"
+                style={{
+                  color: `var(--blue)`,
+                  fontWeight: 500,
+                }}
               >
-                {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
-              </i>
+                Old Password
+              </label>
+              <div className={`passwordWrapper position-relative`}>
+                <input
+                  type={isPasswordShown ? "text" : "password"}
+                  className={`form-control ${
+                    errors.passwordError ? "border-danger" : ""
+                  }`}
+                  id="oldPassword"
+                  aria-describedby="passwordHelp"
+                  value={user.oldPassword}
+                  onChange={handleChange}
+                />
+                <i
+                  className={`eyeIcon  position-absolute`}
+                  onClick={togglePasswordIcon}
+                >
+                  {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
+                </i>
+              </div>
             </div>
-          </div>
 
-          <div className="mb-3 position-relative">
-            <label htmlFor="password" className="form-label">
-              New Password
-            </label>
-            <div className={`${Style.passwordWrapper} position-relative`}>
-              <input
-                type={isPasswordShown ? "text" : "password"}
-                className={`form-control ${
-                  errors.passwordError ? "border-danger" : ""
-                }`}
-                id="password"
-                aria-describedby="passwordHelp"
-                value={user.password}
-                onChange={handleChange}
-              />
-              <i
-                className={`${Style.eyeIcon}  position-absolute`}
-                onClick={togglePasswordIcon}
+            <div className="mb-3 position-relative">
+              <label
+                htmlFor="password"
+                className="form-label"
+                style={{
+                  color: `var(--blue)`,
+                  fontWeight: 500,
+                }}
               >
-                {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
-              </i>
+                New Password
+              </label>
+              <div className={`passwordWrapper position-relative`}>
+                <input
+                  type={isPasswordShown ? "text" : "password"}
+                  className={`form-control ${
+                    errors.passwordError ? "border-danger" : ""
+                  }`}
+                  id="password"
+                  aria-describedby="passwordHelp"
+                  value={user.password}
+                  onChange={handleChange}
+                />
+                <i
+                  className={`eyeIcon  position-absolute`}
+                  onClick={togglePasswordIcon}
+                >
+                  {isPasswordShown ? <FaEye /> : <FaEyeSlash />}
+                </i>
+              </div>
+
+              <div
+                id="passwordHelp"
+                className={`form-text ${
+                  errors.passwordError === "Ok, Passwords are't the same."
+                    ? "text-success"
+                    : "text-danger"
+                }`}
+              >
+                {errors.passwordError}
+              </div>
             </div>
 
-            <div
-              id="passwordHelp"
-              className={`form-text ${
-                errors.passwordError === "Ok, Passwords are't the same."
-                  ? "text-success"
-                  : "text-danger"
-              }`}
+            <button
+              style={{
+                background: `var(--beige)`,
+                border: "none",
+              }}
+              type="submit"
+              className="btn btn-danger mb-3"
             >
-              {errors.passwordError}
+              Reset
+            </button>
+          </form>
+        </div>
+        <div className="d-none d-lg-flex col-lg-6 infoArea h-100">
+          <div className="rotatedDiv ">
+            <div className="loginGreeting d-flex flex-column justify-content-center align-items-center">
+              <h1 className="py-5">Freelancico</h1>
+              <p>
+                🎁 While you were away, we've made some changes to Ureed.com
+              </p>
+              <p>Follow us @FreelancicoArabia to learn more</p>
+              <p>
+                Join Freelancico.com today, the region's largest freelancers
+                marketplace
+              </p>
             </div>
           </div>
-
-          <button type="submit" className="btn btn-danger mb-3">
-            Reset
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );
