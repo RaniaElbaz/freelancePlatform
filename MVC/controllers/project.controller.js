@@ -241,11 +241,7 @@ module.exports.createProposal = (request, response, next) => {
       console.log(request.files);
       object.files = [];
       request.files.map((file) => {
-        object.files.push(
-          `${request.protocol}://${request.hostname}:${
-            process.env.PORT
-          }/${file.path.replaceAll("\\", "/")}`
-        );
+        object.files.push(`./${file.path.replaceAll("\\", "/")}`);
       });
       object.talent = {
         id: request.id,
@@ -263,16 +259,20 @@ module.exports.createProposal = (request, response, next) => {
       let User;
       request.role == "freelancer"
         ? (User = Freelancer)
-        : request.role == "company"
-        ? (User = Company)
-        : request.role == "client"
-        ? (User = Client)
+        : request.role == "team"
+        ? (User = Team)
         : next(new Error("Invalid User type"));
       User.findById(request.id).then((talent) => {
         if (talent.connects > data.connects) {
           //user used a number of connects
           talent.connects -= data.connects;
           //add proposal
+          if (request.role == "freelancer") {
+            object.name = `${talent.firstName} ${talent.lastName}`;
+          } else {
+            object.name = talent.name;
+          }
+
           data.proposals.push(object);
           //save data
           return talent.save().then((talent) => {
@@ -293,7 +293,7 @@ module.exports.createProposal = (request, response, next) => {
 };
 
 module.exports.getProjectProposals = (request, response, next) => {
-  Project.findById(request.params.id, { proposals: 1, recruiter: 1 })
+  Project.findById(request.params.id, { proposals: 1, recruiter: 1, status: 1 })
     .populate("proposals.talent") //not working
     .then((data) => {
       if (!data) next(new Error("project not found"));
@@ -316,7 +316,7 @@ module.exports.getProjectProposals = (request, response, next) => {
 };
 
 module.exports.selectProposal = (request, response, next) => {
-  Project.findById(request.params.id, { proposals: 1 })
+  Project.findById(request.params.id, { proposals: 1, recruiter: 1 })
     .populate({ path: "proposals.talent" })
     .then((data) => {
       if (!data) next(new Error("project not found"));
@@ -347,7 +347,7 @@ module.exports.selectProposal = (request, response, next) => {
           });
         }
       }
-      if (data.proposals.length != 1) next(new Error("talent not found "));
+      // if (data.proposals.length != 1) next(new Error("talent not found "));
       data.talent = request.body.talent;
       data.status = "ongoing";
       data.startTime = new Date();
