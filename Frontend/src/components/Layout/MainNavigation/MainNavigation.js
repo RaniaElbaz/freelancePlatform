@@ -28,7 +28,7 @@ export default function MainNavigator() {
       teamApi
         .then((res) => {
           console.log(res);
-          setTeam(true);
+          setTeam(res.data._id);
         })
         .catch((error) => {
           console.log(error.code, error.message, error.response.data);
@@ -131,19 +131,9 @@ export default function MainNavigator() {
                     <li>
                       <button
                         className="dropdown-item"
-                        onClick={() => history.push("/team/private")}
+                        onClick={() => history.push(`/team/${team}`)}
                       >
                         switch to team account
-                      </button>
-                    </li>
-                  )}
-                  {role === "team" && (
-                    <li>
-                      <button
-                        className="dropdown-item"
-                        onClick={() => history.push("/team/private")}
-                      >
-                        switch to personal account
                       </button>
                     </li>
                   )}

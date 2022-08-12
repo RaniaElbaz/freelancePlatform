@@ -13,12 +13,12 @@ import TestimonialForm from "./components/FindProjects/TestimonialForm/Testimoni
 function App() {
   localStorage.setItem(
     "token",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImZyZWVsYW5jZXIiLCJpYXQiOjE2NjAyOTQ0MjIsImV4cCI6MTY2MDI5ODAyMn0.fcANvMgqJITSxnyxJz18_gz5poiihnc8-KQgufPd90M"
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwicm9sZSI6ImZyZWVsYW5jZXIiLCJpYXQiOjE2NjAzMDEyNjgsImV4cCI6MTY2MDMwNDg2OH0.z6uBzM-Cn139mUx6thWKVMi_Vk2JveJPWMNFzCsOa54"
   );
-  localStorage.setItem("username", "Samaa Hamdi");
+  localStorage.setItem("username", "Salma Hamdi");
   localStorage.setItem("image", "");
-  localStorage.setItem("id", "1");
-  localStorage.setItem("role", "freelancer");
+  localStorage.setItem("id", "2");
+  localStorage.setItem("role", "team");
   return (
     <Layout>
       <Switch>
