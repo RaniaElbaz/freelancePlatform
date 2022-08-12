@@ -21,7 +21,7 @@ export default function TeamProfile() {
   const [profileDetails, setProfileDetails] = useState({});
 
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNvbXBhbnkiLCJpYXQiOjE2NjAyOTUxODUsImV4cCI6MTY2MDI5ODc4NX0.JpbPjlsZn528JzRfxU2nvK2Zhw0U0iE9gnYawsQ9DXE";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNvbXBhbnkiLCJpYXQiOjE2NjAzMjY5MjUsImV4cCI6MTY2MDMzMDUyNX0.smXKUhcCAVpRPB110B4oF6B2l6ebyS-6vuMdYap5qoo";
 
   const params = useParams();
   const dispatch = useDispatch();
@@ -119,8 +119,12 @@ export default function TeamProfile() {
         isPublic={isPublic}
         userDetails={isUser ? teamDetails : profileDetails}
       />
-      {(teamDetails.testimonials || profileDetails.testimonials) &&
-        teamDetails.testimonials && <ProfileTestimonial isPublic={isPublic} />}
+      {(teamDetails.testimonials || profileDetails.testimonials) && (
+        <ProfileTestimonial
+          isPublic={isPublic}
+          userDetails={isUser ? teamDetails : profileDetails}
+        />
+      )}
       {teamDetails.projects || profileDetails.projects ? (
         <ProfileProjects
           isPublic={isPublic}

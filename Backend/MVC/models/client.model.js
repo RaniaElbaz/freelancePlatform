@@ -1,5 +1,5 @@
 let mongoose = require("mongoose");
-const AutoIncrement = require("mongoose-sequence")(mongoose);
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 let analyticsSchema = require("./analytics.model");
 let locationSchema = require("./locations.model");
@@ -13,13 +13,6 @@ const {
 
 const { languages } = require("../helpers/enums");
 const { checkDuplicated } = require("../helpers/functions");
-
-// A ) Create Schema Object
-
-const imageSchema = new mongoose.Schema({
-  name: String,
-  imgPath: String,
-});
 
 const schema = new mongoose.Schema(
   {
@@ -94,7 +87,4 @@ const schema = new mongoose.Schema(
 );
 
 schema.plugin(AutoIncrement, { inc_field: "_id" });
-
-// B) Mapping: connecting between the related schema and Collection
-// Setter Schema
 module.exports = mongoose.model("clients", schema);

@@ -8,9 +8,9 @@ const multer = require("multer");
 const path = require("path");
 
 const productStorage = multer.diskStorage({
-  // Destination to store image
+  // Destination to store product
   destination: (re, file, cb) => {
-    cb(null, "./public/uploads/product");
+    cb(null, "./public/productFiles");
   },
   filename: (req, file, cb) => {
     cb(
@@ -20,13 +20,13 @@ const productStorage = multer.diskStorage({
   },
 });
 
-module.exports.imageUpload = multer({
+module.exports.productUpload = multer({
   storage: productStorage,
   limits: {
     fileSize: 1000000000,
   },
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(zip)$/)) {
+    if (!file.originalname.match(/\.(zip|jpg|png)$/)) {
       return cb(new Error("Please upload a product"));
     }
     cb(undefined, true);
@@ -39,7 +39,7 @@ module.exports.getAllProduct = (req, res, next) => {
   product
     .find({})
     .populate("ownerId")
-    // .populate({ path: "ownerId", select: "name" })
+    .populate({ path: "skills", select: "name" })
     .then((data) => {
       res.status(200).json(data);
     })
@@ -55,6 +55,7 @@ module.exports.getProductById = (req, res, next) => {
       _id: req.params.id,
     })
     .populate("ownerId")
+    .populate({ path: "skills", select: "name" })
     .then((data) => {
       if (data == null) next(new Error("product not found"));
       data.views += 1;
@@ -68,57 +69,80 @@ module.exports.getProductById = (req, res, next) => {
 
 //create product
 module.exports.createProduct = (req, res, next) => {
-  product.findOne({ name: req.body.name }).then((data) => {
-    console.log(data);
-    if (data.length) {
-      next(new Error("name already exist"));
-    } else {
-      let productPath = "";
-      if (req.file) {
-        productPath = req.file.path;
+  product.find({ productName: req.body.productName }, { _id: 0, productName: 1 })
+    .then((data) => {
+      if (data.length) {
+        next(new Error("Product Name Duplicated "));
       } else {
-        next(new Error("product file reuired"));
+  let productPath = "";
+  let imagePath = "";
+
+  if (req.files) {
+    for (file of req.files) {
+      // console.log(file)
+      if (file.path.match(/\.(zip)$/)) {
+        productPath = file.path;
+      } else if (file.path.match(/\.(jpg|png)$/)) {
+        imagePath = file.path;
       }
-
-      let productobject = new product({
-        productName: req.body.productName,
-        description: req.body.description,
-        price: req.body.price,
-        skills: req.body.skills,
-        product: productPath,
-        ownerId: req.body.teamId ? req.body.teamId : req.id,
-        ownerModel: req.body.teamId ? "teams" : req.role + "s",
-      });
-
-      productobject
-        .save()
-        .then((data) => {
-          res.status(201).json({ data /*: "product created sucessfully"*/ });
-        })
-        .catch((error) => next(error));
     }
+    if (!productPath) next(new Error("product file is required"));
+    if (!imagePath) next(new Error("product  image is required"));
+  } else {
+    next(new Error("product file and image are required"));
+  }
+
+  let productobject = new product({
+    productName: req.body.productName,
+    description: req.body.description,
+    price: req.body.price,
+    skills: JSON.parse(req.body.skills),
+    product: productPath,
+    ownerId: req.body.teamId ? req.body.teamId : req.id,
+    ownerModel: req.body.teamId ? "teams" : req.role + "s",
+    image: imagePath,
   });
+
+  productobject
+    .save()
+    .then((data) => {
+      res.status(201).json({ data /*: "product created sucessfully"*/ });
+    })
+    .catch((error) => next(error));
+
+}})
 };
 
 //get update  property product
 module.exports.updateProduct = (req, res, next) => {
+  let productPath = "";
+  let imagePath = "";
   product
     .findOne({
       _id: req.params.id,
     })
     .then((data) => {
-      for (let item in req.body) {
-        if ((data[item] = data["buyerId"])) {
-          continue;
+      if (req.files) {
+        for (file of req.files) {
+          if (file.path.match(/\.(zip)$/)) {
+            productPath = file.path;
+          } else if (file.path.match(/\.(jpg|png)$/)) {
+            imagePath = file.path;
+          }
         }
-        data[item] = req.body[item];
       }
-      res.status(200).json({ data });
-      return data.save();
-    })
+        data.productName= req.body.productName || data.productName,
+        data.description= req.body.description || data.description,
+        data.price= req.body.price || data.price,
+        data.skills= JSON.parse(req.body.skills) || data.skills,
+        data.product= productPath || data.product,
+        data.image= imagePath || data.image,
 
-    .catch((error) => {
-      next(error);
+     data.save()
+        .then((data) => {
+          res.status(201).json({ data /*: "product created sucessfully"*/ });
+        })
+        .catch((error) => next(error));
     });
 };
 
@@ -132,6 +156,7 @@ module.exports.updateBuyerId = (req, res, next) => {
 
     data.buyer.push(object);
     res.status(200).json({ buyers: data.buyer });
+    data.save();
   });
 };
 

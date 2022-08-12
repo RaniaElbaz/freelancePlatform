@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const certificateSchema = new mongoose.Schema(
   {
@@ -12,7 +12,12 @@ const certificateSchema = new mongoose.Schema(
       type: Date,
     },
     endDate: {
-      type: Date,
+      required: true,
+      type: String,
+    },
+    title: {
+      required: true,
+      type: String,
     },
     description: {
       type: String,

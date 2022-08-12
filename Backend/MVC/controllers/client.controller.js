@@ -67,7 +67,6 @@ const uploadImage = (request, response, next) => {
   // if (!request.file) throw new Error("There is no image uploaded");
 
   const file = request.file;
-  const host = request.host;
   const imgPath = `${request.protocol}://${request.hostname}:${
     process.env.PORT
   }/${request.file.path.replaceAll("\\", "/")}`;

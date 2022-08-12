@@ -116,6 +116,7 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
             data.languages = [...new Set([...request.body.languages])];
           } else data[key] = request.body[key] || data[key];
         }
+
         data.save().then((data) => {
           response.status(201).json({ data: "updated" });
         });
@@ -150,8 +151,8 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
       else if (request.params.detail === "skills") {
         data.skills = [...new Set([...request.body.skills])];
         data.save().then((data) => {
-          response.status(201).json({ data: "updated" });
-          // next();
+          // response.status(201).json({ data: "updated" });
+          next();
         });
       } else {
         next(new Error("Invalid request"));

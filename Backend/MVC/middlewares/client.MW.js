@@ -17,13 +17,19 @@ const updateVA = [
     .isLength({ min: 3, max: 10 })
     .withMessage("Clint's lastName length should be > 3 and < 10"),
 
-  /** address
+  body("picture")
+    .optional()
+    .isString()
+    .withMessage("You should be select a valid Image formate"), // ! Multer Handling
+
+  /** Location
    */
   body("address.postalCode")
     .optional()
     .isNumeric()
     .isLength({ min: 5, max: 5 })
     .withMessage("You entered invalid postalCode"),
+
 
   body("address.city")
     .optional()

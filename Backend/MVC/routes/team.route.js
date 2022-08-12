@@ -20,10 +20,14 @@ router
     controller.createTeam
   );
 
+router
+  .route("/member")
+  .get(authorization.AdminAndFreelancerAuth, controller.getTeamByMember);
+
 //   .get(controller.getTestimonialByProjectId);
 
 router.route("/:id/create/portfolio").put(
-  // authorization.AdminAndTeamAuth,
+  authorization.AdminAndTeamAuth,
   // mw.createPortfolio,
   // validationMW,
   controller.filesUpload,
@@ -38,20 +42,16 @@ router.route("/:id/update/portfolio").put(
   controller.updatePortfolio
 );
 
-router
-  .route("/:id/delete/portfolio")
-  .put(
-    // authorization.AdminAndTeamAuth,
-    mw.deletePortfolio,
-    validationMW,
-    controller.deletePortfolio
-  );
+router.route("/:id/delete/portfolio").put(
+  // authorization.AdminAndTeamAuth,
+  mw.deletePortfolio,
+  validationMW,
+  controller.deletePortfolio
+);
 
 router
   .route("/:id/private")
-  .get(
-    authorization.AdminAndFreelancerAuth,
-    controller.getTeamByIdPrivate);
+  .get(authorization.AdminAndFreelancerAuth, controller.getTeamByIdPrivate);
 
 router
   .route("/:id")
@@ -65,9 +65,11 @@ router
   .all(mw.getDelete, validationMW)
   .get(
     // authorization.allAuth,
-    controller.getTeamByIdPublic)
+    controller.getTeamByIdPublic
+  )
   .delete(
     // authorization.AdminAndTeamAuth,
-    controller.deleteTeam);
+    controller.deleteTeam
+  );
 
 module.exports = router;

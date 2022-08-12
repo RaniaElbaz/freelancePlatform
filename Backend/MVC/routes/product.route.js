@@ -3,10 +3,12 @@ const router = express.Router();
 const Controller = require("../controllers/product.controller");
 let validationMW = require("../middlewares/validation.MW");
 const product = require("../middlewares/product.MW");
+
 const {
   AdminAndFreelancerAuth,
   adminAuth,
   allAuth,
+  AdminAndClientAndCompanyAuth
 } = require("../middlewares/authAccess.MW");
 const authMW = require("../middlewares/auth.MW");
 
@@ -21,7 +23,7 @@ router
   .post(
     authMW,
     AdminAndFreelancerAuth,
-    Controller.imageUpload.single("product"),
+    Controller.productUpload.array("product", 2),
     product.postValidator,
     validationMW,
     Controller.createProduct
@@ -36,6 +38,7 @@ router
   .put(
     authMW,
     AdminAndFreelancerAuth,
+    Controller.productUpload.array("product", 2),   
     product.paramValidator,
     product.putValidator,
     validationMW,
@@ -48,6 +51,7 @@ router
   .put(
     authMW,
     allAuth,
+    AdminAndClientAndCompanyAuth,
     product.paramValidator,
     product.putValidator,
     validationMW,

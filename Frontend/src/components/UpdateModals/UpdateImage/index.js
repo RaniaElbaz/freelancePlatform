@@ -10,7 +10,7 @@ import { updateUserDetails } from "../../../store/actions/userDetails";
 export default function UpdateImage({ id, show, onHide, userType }) {
   let data;
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNvbXBhbnkiLCJpYXQiOjE2NjAyOTUxODUsImV4cCI6MTY2MDI5ODc4NX0.JpbPjlsZn528JzRfxU2nvK2Zhw0U0iE9gnYawsQ9DXE";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNvbXBhbnkiLCJpYXQiOjE2NjAzMjY5MjUsImV4cCI6MTY2MDMzMDUyNX0.smXKUhcCAVpRPB110B4oF6B2l6ebyS-6vuMdYap5qoo";
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");

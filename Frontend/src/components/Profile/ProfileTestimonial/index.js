@@ -35,7 +35,7 @@ export default function ProfileTestimonial({ isPublic, userDetails, isUser }) {
                   )
                 }
                 title={testimonial.project.title}
-                subtitle={testimonial.project.category.name}
+                subtitle={testimonial.project.category? testimonial.project.category.name: ""}
                 showDate={true}
                 startDate={testimonial.project.startTime}
                 endDate={testimonial.project.endTime}

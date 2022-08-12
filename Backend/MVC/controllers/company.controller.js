@@ -1,4 +1,5 @@
 let company = require("../models/company.model");
+
 const { imageExtRegex } = require("../helpers/regex");
 /**************multer****** */
 const multer = require("multer");
@@ -44,15 +45,6 @@ module.exports.getCampanyByIdPuplic = (req, res, next) => {
       },
       { password: 0, wallet: 0, isBlocked: 0 }
     )
-    .populate({
-      path: "projects",
-      select: "-proposals",
-      populate: { path: "category" },
-    })
-    .populate({
-      path: "testimonials",
-      populate: { path: "project", populate: { path: "category" } },
-    })
     .then((data) => {
       if (data == null) next(new Error("company not found"));
       res.status(200).json(data);
@@ -63,6 +55,7 @@ module.exports.getCampanyByIdPuplic = (req, res, next) => {
 };
 
 //get one privte check id
+
 module.exports.getCampanyByIdPrivate = (req, res, next) => {
   company
     .findOne(
@@ -71,15 +64,6 @@ module.exports.getCampanyByIdPrivate = (req, res, next) => {
       },
       { password: 0, isBlocked: 0 }
     )
-    .populate({
-      path: "projects",
-      select: "-proposals",
-      populate: { path: "category" },
-    })
-    .populate({
-      path: "testimonials",
-      populate: { path: "project", populate: { path: "category" } },
-    })
     .then((data) => {
       if (data == null) next(new Error("company not found"));
       res.status(200).json(data);
@@ -97,23 +81,22 @@ module.exports.updateCompanyDetails = (req, res, next) => {
       _id: req.params.id,
     })
     .then((data) => {
-      console.log(req.body);
-
-      for (let item in req.body) {
+       for (let item in req.body) {
         if (["postalCode", "city", "address", "state"].includes(item)) {
           data["address"][item] = req.body[item];
         } else data[item] = req.body[item] || data[item];
-      }
+       }
+      let logoPath = "";
       if (req.file) {
-        data.logo = `${req.protocol}://${req.hostname}:${
-          process.env.PORT
-        }/${req.file.path.replaceAll("\\", "/")}`;
+        logoPath = req.file.path;
+      } else {
+        logoPath = "./public/uploads/default.jpg"; //image
       }
+      data.logo = logoPath;
       data.save();
-      res.status(201).json({ data: data.logo });
+      res.status(200).json({ data });
       return data;
     })
-
     .catch((error) => {
       next(error);
     });
@@ -158,6 +141,7 @@ module.exports.deleteCompany = (req, res, next) => {
 };
 
 //Testimonials
+
 module.exports.CompanyupdateTestimonials = (req, res, next) => {
   company
     .findById(req.params.id)

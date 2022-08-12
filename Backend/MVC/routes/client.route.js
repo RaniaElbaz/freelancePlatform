@@ -45,7 +45,9 @@ const {
   blockClientVA,
   testimonialVA,
 } = require("../middlewares/client.MW");
+
 const { putValidator } = require("../middlewares/freelancers.MW");
+
 const {
   adminAuth,
   clientAuth,

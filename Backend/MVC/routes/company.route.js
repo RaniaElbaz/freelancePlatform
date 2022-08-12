@@ -1,14 +1,18 @@
 const express = require("express");
+const { body, param, query } = require("express-validator");
 const companyRoute = express.Router();
 const controller = require("../controllers/company.controller");
 
 let validationMW = require("../middlewares/validation.MW");
 const authMW = require("../middlewares/auth.MW");
+
 const {
   AdminAndCompanyAuth,
   companyAuth,
 } = require("../middlewares/authAccess.MW");
+
 const { putInfoValidator } = require("../middlewares/freelancers.MW");
+
 const companyValidtion = require("../middlewares/company.MW");
 
 companyRoute
@@ -71,6 +75,18 @@ companyRoute
     companyValidtion.paramValidator,
     validationMW,
     controller.deleteCompany
+  );
+
+//testimonials
+companyRoute
+  .route("company/:id/update/testimonials")
+  .put(
+    authMW,
+    AdminAndCompanyAuth,
+    companyValidtion.paramValidator,
+    companyValidtion.testimonialValidator,
+    validationMW,
+    controller.CompanyupdateTestimonials
   );
 
 module.exports = companyRoute;

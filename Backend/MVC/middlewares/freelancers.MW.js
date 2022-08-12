@@ -79,6 +79,11 @@ module.exports.putValidator = [
     .optional({ checkFalsy: true, nullable: true })
     .isLength({ min: 100, max: 500 })
     .withMessage("freelancer's description is invalid"),
+  //image
+  check("profileImage")
+    .optional({ checkFalsy: true, nullable: true })
+    .isLength({ min: 5 })
+    .withMessage("freelancer's image is invalid"),
 
   //languages
   check("languages")
@@ -94,6 +99,15 @@ module.exports.putValidator = [
     .withMessage("freelancer's certificateOrganization is required")
     .isLength({ min: 2, max: 30 })
     .withMessage("freelancer's certificate organization must be 2~30"),
+  //YYYY-MM-DD
+  check("issued")
+    .optional({ checkFalsy: true, nullable: true })
+    .notEmpty()
+    .withMessage("freelancer's certificateOrganization is required")
+    .isDate()
+    .withMessage(
+      "freelancer's certificate issued date date must be in 'YYYY-MM-DD' format"
+    ),
   //url
   check("url")
     .optional({ checkFalsy: true, nullable: true })
@@ -104,6 +118,12 @@ module.exports.putValidator = [
     .optional({ checkFalsy: true, nullable: true })
     .isString()
     .withMessage("freelancer's certificateId is invalid"),
+  
+  //expiration date
+  check("expirationDate")
+    .optional({ checkFalsy: true, nullable: true })
+    .isDate()
+    .withMessage("freelancer's expiration date must be in 'YYYY-MM-DD' format"),
 
   //education
   check("degree")
@@ -119,6 +139,7 @@ module.exports.putValidator = [
     .withMessage("freelancer's degree is required")
     .isLength({ min: 2, max: 30 })
     .withMessage("freelancer's degree must be 2~30"),
+  
   //start date
   check("startDate")
     .optional({ checkFalsy: true, nullable: true })
@@ -215,22 +236,26 @@ module.exports.putInfoValidator = [
     .isNumeric()
     .withMessage("user's skills is invalid"),
 
+
   //analytics
   //earnings
   check("earnings")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
     .withMessage("user's earnings should be a number"),
+
   //jobs
   check("jobs")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
     .withMessage("user's earnings should be a number"),
+
   //hours
   check("hours")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
     .withMessage("user's hours should be a number"),
+
   //views
   check("views")
     .optional({ checkFalsy: true, nullable: true })

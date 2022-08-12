@@ -8,6 +8,7 @@ module.exports.emailRegex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
  * at least one lowercase letter
  * at least one special character
  */
+
 module.exports.passwordRegex = new RegExp(
   "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
 );
@@ -23,3 +24,4 @@ module.exports.imageExtRegex = new RegExp(".(png|jpg)");
  * valid file format
  */
 module.exports.fileExtRegex = new RegExp(".(pdf|png|jpg|jpeg)$");
+
