@@ -194,12 +194,19 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 
 
 
+<br />
+
+---
+
+<br />
+
+
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []()
-* []()
-* []()
+* This is a Graduation project for Full Stack Web Development (MEA\RN) track Supported by Information Technology Institute (ITI).
+
+<!-- * []() -->
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
