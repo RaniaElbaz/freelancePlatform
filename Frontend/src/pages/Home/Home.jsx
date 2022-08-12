@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/Core/Navbar/Navbar";
-import Feature from "../../components/Feature/Feature";
+// import Navbar from "../../components/Home/h/h";
+// !handling
+
+import Feature from "../../components/Home/Feature/Feature";
 import "./Home.css";
 import {
   FaCode,
@@ -15,7 +17,7 @@ import {
   FaBehance,
   FaArrowUp,
 } from "react-icons/fa";
-import VideoCard from "../../components/VideoCard/VideoCard";
+import VideoCard from "../../components/Home/VideoCard/VideoCard";
 
 function Home() {
   const featureData = [
@@ -66,7 +68,7 @@ function Home() {
 
   return (
     <div>
-      <Navbar />
+      {/* <Navbar /> */}
       <section id="home">
         <section className={`landing py-5`}>
           <div className="container-fluid">
@@ -162,8 +164,8 @@ function Home() {
                   Our Features...
                 </h2>
                 <p className="featureDesc mb-5 mb-lg-0">
-                  Freelancico provide a package fo Specializations in the
-                  Software Industry..
+                  Devolenco provide a package fo Specializations in the Software
+                  Industry..
                   <span> Everywhere, We with you.</span>
                 </p>
                 <div className="dotedBG d-none d-lg-block"></div>
@@ -296,14 +298,14 @@ function Home() {
             <div className="row ">
               <div className="col-12 col-md-6 col-lg-6 mb-3 text-center text-lg-start">
                 <h2 className="logo py-3 text-center text-lg-start">
-                  Freelancico
+                  Devolenco
                 </h2>
                 <div className="aboutUs">
                   <p>
-                    Freelancico.com is an online marketplace connecting
-                    employers from around the world with vetted and certified
-                    freelance talents across all professional programming fields
-                    with maximum value and high return guaranteed.
+                    Devolenco.com is an online marketplace connecting employers
+                    from around the world with vetted and certified freelance
+                    talents across all professional programming fields with
+                    maximum value and high return guaranteed.
                   </p>
                 </div>
               </div>
@@ -314,13 +316,13 @@ function Home() {
                     <a href="#home">Home</a>
                   </li>
                   <li>
-                    <a href="#Home">Find Work</a>
+                    <Link to="/project">Find Projects</Link>
                   </li>
                   <li>
-                    <a href="#Store">Store</a>
+                    <Link to="/product">Store</Link>
                   </li>
                   <li>
-                    <a href="#Store">About US</a>
+                    <Link to="/education">Eduction</Link>
                   </li>
                 </ul>
               </div>

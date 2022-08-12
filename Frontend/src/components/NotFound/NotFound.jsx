@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Colors } from "./Colors.module";
+import { Colors } from "../Colors.module";
 function NotFound({ setToken }) {
   return (
     <div className="container d-flex  vh-100">

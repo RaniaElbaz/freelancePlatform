@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import axiosInstance from "./../../api/axios";
+import axiosInstance from "./../../../api/axios";
 import { useHistory } from "react-router-dom";
 
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 // import "../login/login.css";
 
-function Register() {
+function AdminRegister() {
   // 1- States
   const [user, setUser] = useState({
     firstName: "",
@@ -25,10 +25,8 @@ function Register() {
     registerError: "",
   });
 
-  const [userType, setUserType] = useState("client");
-  const history = useHistory();
-
   const [isPasswordShown, setIsPasswordShown] = useState(false);
+  const history = useHistory();
 
   // 2- Handling methods:
   const handleChange = (event) => {
@@ -53,10 +51,17 @@ function Register() {
     );
 
     switch (field) {
-      case "firstName" || "lastName":
+      case "firstName":
         setErrors({
           ...errors,
           firstNameError:
+            value.length < 3 ? "Name must me more than 2 characters" : "",
+        });
+        break;
+      case "lastName":
+        setErrors({
+          ...errors,
+          lastNameError:
             value.length < 3 ? "Name must me more than 2 characters" : "",
         });
         break;
@@ -74,14 +79,6 @@ function Register() {
           });
         }
         break;
-      // case "username":
-      //   setErrors({
-      //     ...errors,
-      //     lastNameError: value.includes(" ")
-      //       ? "Username must contains no spaces!"
-      //       : "",
-      //   });
-      //   break;
       case "password":
         if (!regexPass.test(value)) {
           setErrors({
@@ -113,21 +110,16 @@ function Register() {
     console.log(user);
 
     try {
-      const data = JSON.stringify(
-        userType === "company"
-          ? {
-              name: user.lastName,
-              email: user.email,
-              password: user.password,
-            }
-          : { ...user }
-      );
+      const token = localStorage.getItem("token");
+
+      const data = JSON.stringify({ ...user });
 
       const config = {
         method: "post",
-        url: `/signup/${userType}`,
+        url: `/admin/register`,
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         accept: "application/json, text/plain, */*",
         // withCredentials: true,
@@ -148,18 +140,18 @@ function Register() {
       let statusCode = response.status;
 
       if (statusCode === 201) {
-        history.push("/activate-account");
+        history.push("/admin/login");
       }
     } catch (error) {
       console.log(error);
-      console.log(error.response.status);
-      console.log(error.response.data.msg);
+      // console.log(error.response.status);
+      // console.log(error.response.data.msg);
 
       /** Handle Errors
        */
       setErrors({
         ...errors,
-        registerError: `${error.response.data.msg}`,
+        registerError: error.response.data.msg,
       });
     }
   };
@@ -167,11 +159,6 @@ function Register() {
   const togglePasswordIcon = (e) => {
     setIsPasswordShown(!isPasswordShown);
     console.log(isPasswordShown);
-  };
-
-  const selectUserType = (e) => {
-    console.log(e.target.id, e.target.value);
-    setUserType(e.target.value);
   };
 
   return (
@@ -189,56 +176,29 @@ function Register() {
 
             <div className="mb-3">
               <label
-                htmlFor="#userType"
+                htmlFor="firstName"
                 className="form-label"
                 style={{
                   color: `var(--blue)`,
                   fontWeight: 500,
                 }}
               >
-                Select User Type
+                First Name
               </label>
-              <select
-                id="userType"
-                className="form-select"
-                aria-label="Default select"
-                onChange={selectUserType}
-              >
-                <option value="client">Client</option>
-                <option value="freelancer">Freelancer</option>
-                <option value="company">Company</option>
-              </select>
-            </div>
-
-            {userType === "company" ? (
-              ""
-            ) : (
-              <div className="mb-3">
-                <label
-                  htmlFor="firstName"
-                  className="form-label"
-                  style={{
-                    color: `var(--blue)`,
-                    fontWeight: 500,
-                  }}
-                >
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  className={`form-control ${
-                    errors.firstNameError ? "border-danger" : ""
-                  }`}
-                  id="firstName"
-                  aria-describedby="nameHelp"
-                  value={user.name}
-                  onChange={handleChange}
-                />
-                <div id="nameHelp" className="form-text text-danger">
-                  {errors.firstNameError}
-                </div>
+              <input
+                type="text"
+                className={`form-control ${
+                  errors.firstNameError ? "border-danger" : ""
+                }`}
+                id="firstName"
+                aria-describedby="nameHelp"
+                value={user.name}
+                onChange={handleChange}
+              />
+              <div id="nameHelp" className="form-text text-danger">
+                {errors.firstNameError}
               </div>
-            )}
+            </div>
 
             <div className="mb-3">
               <label
@@ -249,14 +209,14 @@ function Register() {
                   fontWeight: 500,
                 }}
               >
-                {userType === "company" ? "Company Name" : "Last Name"}
+                Last Name
               </label>
               <input
                 type="text"
                 className={`form-control ${
                   errors.lastNameError ? "border-danger" : ""
                 }`}
-                id={userType === "company" ? "name" : "lastName"}
+                id="lastName"
                 aria-describedby="usernameHelp"
                 value={user.username}
                 onChange={handleChange}
@@ -384,13 +344,13 @@ function Register() {
         <div className="d-none d-lg-flex col-lg-6 infoArea h-100">
           <div className="rotatedDiv ">
             <div className="loginGreeting d-flex flex-column justify-content-center align-items-center">
-              <h1 className="py-5">Freelancico</h1>
+              <h1 className="py-5">Devolenco</h1>
               <p>
                 🎁 While you were away, we've made some changes to Ureed.com
               </p>
-              <p>Follow us @FreelancicoArabia to learn more</p>
+              <p>Follow us @DevolencoArabia to learn more</p>
               <p>
-                Join Freelancico.com today, the region's largest freelancers
+                Join Devolenco.com today, the region's largest freelancers
                 marketplace
               </p>
             </div>
@@ -401,7 +361,7 @@ function Register() {
   );
 }
 
-export default Register;
+export default AdminRegister;
 
 //test password: Ahmed!9934
 //test password: Ahmed!99345

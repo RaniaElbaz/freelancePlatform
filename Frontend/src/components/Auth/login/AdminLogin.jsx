@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import axiosInstance from "../../api/axios";
+import axiosInstance from "./../../../api/axios";
 import jwtDecode from "jwt-decode";
 
 import "./Login.css";
@@ -280,13 +280,13 @@ function AdminLogin() {
         <div className="d-none d-lg-flex col-lg-6 infoArea h-100">
           <div className="rotatedDiv ">
             <div className="loginGreeting d-flex flex-column justify-content-center align-items-center">
-              <h1 className="py-5">Freelancico</h1>
+              <h1 className="py-5">Devolenco</h1>
               <p>
                 🎁 While you were away, we've made some changes to Ureed.com
               </p>
-              <p>Follow us @FreelancicoArabia to learn more</p>
+              <p>Follow us @DevolencoArabia to learn more</p>
               <p>
-                Join Freelancico.com today, the region's largest freelancers
+                Join Devolenco.com today, the region's largest freelancers
                 marketplace
               </p>
             </div>

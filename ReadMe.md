@@ -3,7 +3,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="./Front/public/assets/ReadmeImgs/logo.png" alt="Logo" width="120" height="60">
+    <img src="./Frontend/public/assets/ReadmeImgs/logo.png" alt="Logo" width="120" height="60">
   </a>
 <h3 align="center">Freelancing Platform</h3>
 </div>
@@ -50,7 +50,7 @@
 ## About The Project
 
 
-**Freelancico** is a Freelancing Platform aims to produce an integrated Programming Services for both **Clients** and **Freelancers**, make it easier, and ensure to communicate and meet the requirements of the labor
+**Devolenco** is a Freelancing Platform aims to produce an integrated Programming Services for both **Clients** and **Freelancers**, make it easier, and ensure to communicate and meet the requirements of the labor
 market.
 
 We target clients who need ***specialists in programming*** to develop and design
@@ -133,9 +133,9 @@ To get start with the project you need to follow the instructions:
 To use the platform first you need to go to the home page, click signUp and Register to the website using your mail.. a verification link will sent to your mail, activate your mail and follow the instructions.. then login then you will directed to the find work pages.. navigate between the pages..
 
 <div>
-    <img src="./Front/public/assets/ReadmeImgs/login.png" alt="Logo" >
+    <img src="./Frontend/public/assets/ReadmeImgs/login.png" alt="Logo" >
     <br />
-    <img src="./Front/public/assets/ReadmeImgs/home-1.png" alt="Logo" >
+    <img src="./Frontend/public/assets/ReadmeImgs/home-1.png" alt="Logo" >
 </div>
 
 

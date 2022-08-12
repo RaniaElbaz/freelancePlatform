@@ -12,19 +12,8 @@ function Navbar() {
         login
       </Link>
 
-      <Link to="/admin/login" className="btn btn-warning my-4  moveDetailBtn">
-        Admin login
-      </Link>
-
       <Link to="/register" className="btn btn-warning my-4  moveDetailBtn">
         SignUP
-      </Link>
-
-      <Link
-        to="/admin/register"
-        className="btn btn-warning my-4  moveDetailBtn"
-      >
-        Admin SignUP
       </Link>
 
       <Link
@@ -34,7 +23,7 @@ function Navbar() {
       >
         Logout
       </Link>
-      
+
       <Link
         to="/change-password"
         className="btn btn-warning my-4  moveDetailBtn"

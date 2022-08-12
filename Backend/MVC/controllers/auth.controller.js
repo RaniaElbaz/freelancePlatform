@@ -2,9 +2,9 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const Client = require("../models/client.model");
-const Freelancer = require("./../models/freelancers.model");
-const Admin = require("./../models/admins.model");
-const Company = require("./../models/company.model");
+const Freelancer = require("../models/freelancers.model");
+const Admin = require("../models/admins.model");
+const Company = require("../models/company.model");
 
 const mailgun = require("mailgun-js");
 const DOMAIN = process.env.MailgunDOMAIN;
@@ -64,7 +64,7 @@ let signUp = (req, res, next) => {
           If you did not sign up, you can simply disregard this mail.
 
           Happy Emailing!
-            Freelancico Team.
+            Devolenco Team.
           </pre>
         `,
       };
@@ -235,7 +235,7 @@ let forgotPassword = (req, res, next) => {
           If you did not forget password, Change your password now 👀.
 
           Happy Emailing!
-            Freelancico Team.
+            Devolenco Team.
           </pre>
         `,
       };

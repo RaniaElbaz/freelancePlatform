@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import axiosInstance from "./../../api/axios";
+import axiosInstance from "./../../../api/axios";
 
 function ActivateMail() {
   const params = useParams();

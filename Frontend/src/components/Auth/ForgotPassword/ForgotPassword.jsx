@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, Link, useHistory } from "react-router-dom";
-import axiosInstance from "./../../api/axios";
+import axiosInstance from "../../../api/axios";
 
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
