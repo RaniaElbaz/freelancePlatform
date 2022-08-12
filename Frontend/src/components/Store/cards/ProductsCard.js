@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Uploadproject from "../../../pages/Store/UpdateProduct";
-import { useEffect } from "react";
 import { createBrowserHistory } from "history";
+import buttons from "../../FindProjects/buttons.module.css"
 
 const history = createBrowserHistory();
 
@@ -81,8 +81,8 @@ const ProductsCard = (res) => {
               {
                 (res.product.ownerId._id==id && role==="freelancer" ) && (
                   <Link to={`/product/update/${res.product._id}`}>
-                    <button
-                      style={{ borderRadius: "0.375rem" }}
+                    <button className={`${buttons.regularBeige} btn`}
+                      // style={{ borderRadius: "0.375rem",  }}
                       onClick={(sendId) => {
                         <Uploadproject id={sendId} />;
                       }}
@@ -96,7 +96,7 @@ const ProductsCard = (res) => {
               {(role === "admin" || id == res.product.ownerId._id) && (
                 <Link to="/product">
                   <button
-                    style={{ borderRadius: "0.375rem" }}
+                   className={`${buttons.regularBeige} btn`}
                     onClick={() => deleteProduct()}
                   >
                     Delete

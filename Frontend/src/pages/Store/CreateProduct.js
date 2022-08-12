@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Input from "../../components/Store/Input/Input";
 import axios from "axios";
 import Multiselect from "multiselect-react-dropdown";
-import { Link } from "react-router-dom";
+import buttons from "../../components/FindProjects/buttons.module.css"
 // import { useNavigate } from "react-router-dom";
 
 // import { Link } from "react-router-dom";
@@ -287,7 +287,7 @@ function CreateProduct() {
             {productErrors.skillsErr}
           </div>
         </div>
-        <button style={{ borderRadius: "0.375rem" }} type="submit">
+        <button className={`${buttons.regularBeige} btn`} type="submit">
           Publish
         </button>
       </form>

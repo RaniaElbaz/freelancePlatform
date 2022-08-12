@@ -31,7 +31,7 @@ const projectSchema = new mongoose.Schema(
     },
     budget: {
       type: Number,
-      required: true,
+
       min: 5,
     },
     recruiter: { type: recruiterSchema, required: true },

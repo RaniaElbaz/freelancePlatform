@@ -11,7 +11,8 @@ const { fileExtRegex } = require("../helpers/regex");
 const filesStorage = multer.diskStorage({
   destination: `public/proposalsFiles`,
   filename: (request, response, next) => {
-    Freelancer.findById(request.params.id).then((data) => {
+
+    Freelancer.findById(request.id).then((data) => {
       if (!data) next(new Error("freelncer not found"));
       else
         next(
@@ -28,7 +29,7 @@ module.exports.filesUpload = multer({
     fileSize: 300000000, // 300000000 Bytes = 0.3 GB
   },
   fileFilter(request, response, next) {
-    console.log(response);
+
     if (!response.originalname.match(fileExtRegex)) {
       return next(new Error("Please upload a File"));
     }
@@ -68,7 +69,9 @@ module.exports.createProject = (request, response, next) => {
         return recruiter.save().then((recruiter) => {
           response.status(200).json({
             msg: "project added to recruiter",
+
             recruiter: recruiter.projects,
+
           });
         });
       });
@@ -90,14 +93,32 @@ module.exports.getAllProjects = (request, response, next) => {
 };
 
 module.exports.getProjectById = (request, response, next) => {
-  Project.findById(request.params.id, { proposals: 0 })
-    .populate({ path: "skills", select: "name" })
-    .populate({ path: "category", select: "name" })
+
+  let recruiterType = "";
+  Project.findById(request.params.id, { talent: 1, recruiter: 1 })
     .then((data) => {
       if (!data) next(new Error("project not found"));
       else {
-        response.status(200).json(data);
+        recruiterType = data.recruiter.type;
       }
+
+      Project.findById(request.params.id, { proposals: 0 })
+        .populate({ path: "skills", select: "name" })
+        .populate({ path: "category", select: "name" })
+        .populate({
+          path: "recruiter.id",
+          // populate: {
+          //   path: "id",
+          model: recruiterType,
+          // },
+        })
+        .then((data) => {
+          if (!data) next(new Error("project not found"));
+          else {
+            response.status(200).json(data);
+          }
+        });
+
     })
     .catch((error) => {
       next(error);
@@ -106,27 +127,44 @@ module.exports.getProjectById = (request, response, next) => {
 
 module.exports.getProjectByIdPrivate = (request, response, next) => {
   let talentType = "";
-  Project.findById(request.params.id, { talent: 1 })
+
+  let recruiterType = "";
+  Project.findById(request.params.id, { talent: 1, recruiter: 1 })
     .then((data) => {
-      if (!data) next(new Error("project not found"));
+      if (!data) throw Error("project not found");
       else if (request.role == "admin") {
       } else if (
         !(
-          data.recruiter.id == request.id && data.recruiter.type == request.role
+          data.recruiter.id == request.id &&
+          (request.role == "company" ? request.role : request.role + "s") ==
+            data.recruiter.type
         )
       ) {
-        next(new Error("not your project"));
-      } else talentType = data.talent.type;
+        throw Error("not your project");
+      }
+      if (data.talent) {
+        talentType = data.talent.type;
+      }
+      recruiterType = data.recruiter.type;
+
 
       Project.findById(request.params.id)
         .populate({ path: "skills", select: "name" })
         .populate({ path: "category", select: "name" })
         .populate({
-          path: "talent",
-          populate: {
-            path: "id",
-            model: talentType,
-          },
+
+          path: "talent.id",
+          // populate: {
+          //   path: "id",
+          model: talentType,
+          // },
+        })
+        .populate({
+          path: "recruiter.id",
+          // populate: {
+          //   path: "id",
+          model: recruiterType,
+          // },
         })
         .then((data) => {
           response.status(200).json(data);
@@ -193,7 +231,8 @@ module.exports.updateProject = (request, response, next) => {
         } else data[prop] = request.body[prop] || data[prop];
       }
       return data.save().then((data) => {
-        response.status(201).json({ msg: "Project updated", data });
+
+        response.status(201).json({ msg: "Project updated", data: data._id });
       });
     })
     .catch((error) => {
@@ -209,12 +248,12 @@ module.exports.createProposal = (request, response, next) => {
       for (let prop in request.body) {
         object[prop] = request.body[prop];
       }
+
+      console.log(request.files);
       object.files = [];
       request.files.map((file) => {
         object.files.push(
-          `${request.protocol}://${request.hostname}:${
-            process.env.PORT
-          }/${file.path.replaceAll("\\", "/")}`
+          `http://localhost:8080/${file.path.replaceAll("\\", "/")}`
         );
       });
       object.talent = {
@@ -233,16 +272,22 @@ module.exports.createProposal = (request, response, next) => {
       let User;
       request.role == "freelancer"
         ? (User = Freelancer)
-        : request.role == "company"
-        ? (User = Company)
-        : request.role == "client"
-        ? (User = Client)
+
+        : request.role == "team"
+        ? (User = Team)
         : next(new Error("Invalid User type"));
       User.findById(request.id).then((talent) => {
         if (talent.connects > data.connects) {
           //user used a number of connects
           talent.connects -= data.connects;
           //add proposal
+
+          if (request.role == "freelancer") {
+            object.name = `${talent.firstName} ${talent.lastName}`;
+          } else {
+            object.name = talent.name;
+          }
+
           data.proposals.push(object);
           //save data
           return talent.save().then((talent) => {
@@ -253,7 +298,8 @@ module.exports.createProposal = (request, response, next) => {
             });
           });
         } else {
-          throw new Error("not enough connects for this project");
+
+          next(new Error("not enough connects for this project"));
         }
       });
     })
@@ -263,8 +309,9 @@ module.exports.createProposal = (request, response, next) => {
 };
 
 module.exports.getProjectProposals = (request, response, next) => {
-  Project.findById(request.params.id, { proposals: 1 })
-    .populate({ path: "proposals.talent" }) //not working
+
+  Project.findById(request.params.id, { proposals: 1, recruiter: 1, status: 1 })
+    .populate("proposals.talent") //not working
     .then((data) => {
       if (!data) next(new Error("project not found"));
       else if (request.role == "admin") {
@@ -286,7 +333,8 @@ module.exports.getProjectProposals = (request, response, next) => {
 };
 
 module.exports.selectProposal = (request, response, next) => {
-  Project.findById(request.params.id, { proposals: 1 })
+
+  Project.findById(request.params.id, { proposals: 1, recruiter: 1 })
     .populate({ path: "proposals.talent" })
     .then((data) => {
       if (!data) next(new Error("project not found"));
@@ -317,13 +365,13 @@ module.exports.selectProposal = (request, response, next) => {
           });
         }
       }
-      if (data.proposals.length != 1) next(new Error("talent not found "));
+
+
       data.talent = request.body.talent;
       data.status = "ongoing";
       data.startTime = new Date();
       return data.save().then((data) => {
         next();
-        // response.status(201).json({ msg: "Proposal selected", data });
       });
     })
     .catch((error) => {

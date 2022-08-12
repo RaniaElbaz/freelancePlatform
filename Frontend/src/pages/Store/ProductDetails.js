@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
+import buttons from "../../components/FindProjects/buttons.module.css" 
 
 function ProductDetails() {
   const [details, setdetails] = useState([]);
@@ -99,13 +100,13 @@ function ProductDetails() {
                 <div></div>
                 {/* <Link to="/Product"> */}
                   {!isBaught?
-                    <button onClick={()=>{handleBuyer()}} className="mb-0" style={{ borderRadius: "0.375rem" }}>
+                    <button onClick={()=>{handleBuyer()}} className={`${buttons.regularBeige} btn mb-0`} style={{ borderRadius: "0.375rem" }}>
                     Buy Now!
                   </button>
                   : 
 
                   <Link to={`http://localhost:8080/${details.product}`} target="_blank" download>
-                  <button  className="mb-0" style={{ borderRadius: "0.375rem", backgroundColor: "var(--blue)" }}>
+                  <button  className={`${buttons.regularBeige} btn mb-0`} style={{ borderRadius: "0.375rem", backgroundColor: "var(--blue)" }}>
                     Download
                   </button>
                   </Link>

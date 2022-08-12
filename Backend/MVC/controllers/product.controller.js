@@ -11,6 +11,7 @@ const productStorage = multer.diskStorage({
   // Destination to store product
   destination: (re, file, cb) => {
     cb(null, "./public/productFiles");
+
   },
   filename: (req, file, cb) => {
     cb(
@@ -21,44 +22,20 @@ const productStorage = multer.diskStorage({
 });
 
 module.exports.productUpload = multer({
+
   storage: productStorage,
   limits: {
     fileSize: 1000000000,
   },
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(zip|jpg|png)$/)) {
+
       return cb(new Error("Please upload a product"));
     }
     cb(undefined, true);
   },
 });
-/********************************************************************/
-// Destination to store image
-// const imageStorage = multer.diskStorage({
-//   destination: (re, file, cb) => {
-//     cb(null, "./public/productFiles");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(
-//       null,
-//       file.fieldname + "_" + Date.now() + path.extname(file.originalname)
-//     );
-//   },
-// });
 
-// module.exports.imageUpload = multer({
-//   storage: imageStorage,
-//   limits: {
-//     fileSize: 1000000000,
-//   },
-//   fileFilter(req, file, cb) {
-//     if (!file.originalname.match(/\.(jpg|png)$/)) {
-//       return cb(new Error("Please upload a image"));
-//     }
-//     cb(undefined, true);
-//   },
-// });
-/****************************/
 
 //get All products
 module.exports.getAllProduct = (req, res, next) => {
@@ -66,7 +43,8 @@ module.exports.getAllProduct = (req, res, next) => {
     .find({})
     .populate("ownerId")
     .populate({ path: "skills", select: "name" })
-    // .populate({ path: "ownerId", select: "name" })
+
+   
     .then((data) => {
       res.status(200).json(data);
     })
@@ -82,7 +60,9 @@ module.exports.getProductById = (req, res, next) => {
       _id: req.params.id,
     })
     .populate("ownerId")
+
     .populate({ path: "skills", select: "name" })
+
 
     .then((data) => {
       if (data == null) next(new Error("product not found"));
@@ -96,6 +76,7 @@ module.exports.getProductById = (req, res, next) => {
 };
 
 //create product
+
 
 module.exports.createProduct = (req, res, next) => {
   product.find({ productName: req.body.productName }, { _id: 0, productName: 1 })
@@ -138,15 +119,16 @@ module.exports.createProduct = (req, res, next) => {
       res.status(201).json({ data /*: "product created sucessfully"*/ });
     })
     .catch((error) => next(error));
-  //   }
-  // });
+
 }})
+
 };
 
 //get update  property product
 module.exports.updateProduct = (req, res, next) => {
   let productPath = "";
   let imagePath = "";
+
   product
     .findOne({
       _id: req.params.id,
@@ -177,6 +159,8 @@ module.exports.updateProduct = (req, res, next) => {
           res.status(201).json({ data /*: "product created sucessfully"*/ });
         })
         .catch((error) => next(error));
+
+
     });
 };
 
@@ -190,7 +174,9 @@ module.exports.updateBuyerId = (req, res, next) => {
 
     data.buyer.push(object);
     res.status(200).json({ buyers: data.buyer });
+
     data.save();
+
   });
 };
 

@@ -1,18 +1,6 @@
-body {
- 
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 
-}
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
 :root {
   --blue: #116466;
   --white: #ffffff;
@@ -22,7 +10,8 @@ code {
   --lightBlue: #d1e8e6;
 }
 
-button {
+
+/* button {
   border: 2px solid ;
   border-radius: 4px; 
   background-color: var(--beige) ;
@@ -37,5 +26,26 @@ button:hover {
 }
 
 h1,h2,h3,h4,h5,h6{
-  color:var(--blue)
+  color:var(--blue) */
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+  margin: auto 0;
+}
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+.card {
+  border: none;
+  box-shadow: 2px 2px 5px var(--lightBlue), -2px -2px 5px var(--lightBlue);
+}
+button:focus {
+  box-shadow: none;
 }

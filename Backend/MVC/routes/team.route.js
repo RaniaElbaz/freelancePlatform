@@ -20,6 +20,12 @@ router
     controller.createTeam
   );
 
+
+router
+  .route("/member")
+  .get(authorization.AdminAndFreelancerAuth, controller.getTeamByMember);
+
+
 //   .get(controller.getTestimonialByProjectId);
 
 router.route("/:id/create/portfolio").put(

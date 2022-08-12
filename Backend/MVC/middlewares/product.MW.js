@@ -9,6 +9,7 @@ module.exports.paramValidator = [
 ];
 
 module.exports.postValidator = [
+
   body("productName").isString().withMessage("productName should be string"),
   body("description")
     .isString()
@@ -16,8 +17,8 @@ module.exports.postValidator = [
     .isLength({ min: 100, max: 500 })
     .withMessage("description must be more than 100 char"),
   body("price").isNumeric().withMessage("price should be Numeric"),
-  // body("skills").isArray({min:1}).withMessage("skills should be Array"),
   body("ownerId").isNumeric().withMessage("skills should be Numeric"),
+
 ];
 
 module.exports.putValidator = [
@@ -31,7 +32,7 @@ module.exports.putValidator = [
     .isLength({ min: 100, max: 500 })
     .withMessage("description must be a String"),
   body("price").optional().isNumeric().withMessage("price should be Numeric"),
-  // body("skills").optional().isArray().withMessage("skills should be Numeric"),
+
 ];
 
 module.exports.testimonialValidator = [

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Input from "../../components/Store/Input/Input";
 import axios from "axios";
 import Multiselect from "multiselect-react-dropdown";
-
+import buttons from "../../components/FindProjects/buttons.module.css"
 import { useParams } from "react-router-dom";
 
 function UpdateProduct() {
@@ -295,7 +295,7 @@ function UpdateProduct() {
             {productErrors.skillErr}
           </div>
         </div>
-        <button type="submit" style={{ borderRadius: "0.375rem" }} className="">
+        <button type="submit" className={`${buttons.regularBeige} btn`} >
           Save
         </button>
         {isSuccessul && (

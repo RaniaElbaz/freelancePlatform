@@ -32,7 +32,7 @@ const teamSchema = new mongoose.Schema({
   },
   logo: {
     type: String,
-    default: `http://localhost:${process.env.PORT}/public/categories/default.jpg`,
+
     //`${request.protocol}://${request.host}:${process.env.PORT}public/categories/default.jpg`,//🔴request is not defined
   },
   members: {
@@ -40,8 +40,8 @@ const teamSchema = new mongoose.Schema({
     ref: "freelancers",
     validate: [
       {
-        validator: validators.itemsLimit,
-        message: "team members should be between 2,15",
+        validator: (items) => validators.itemsLimit(items, 2, 10),
+        message: "team members should be between 2,10",
       },
       {
         validator: validators.checkUniqueItems,

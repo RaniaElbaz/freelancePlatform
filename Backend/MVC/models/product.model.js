@@ -11,24 +11,28 @@ const productSchema = new Schema(
     },
     ownerId: {
       type: Number,
-      // required: true,
+
       refPath: "ownerModel", //refPath
     },
     ownerModel: {
       type: String,
-      // required: true,
+
+      required: true,
+
       emun: ["freelancers", "teams"],
     },
 
     productName: {
       type: String,
       required: true,
-      unique:true
+
+      unique: true,
     },
 
     views: {
       type: Number,
-      default:0
+
+      default: 0,
     },
 
     timesOfDownload: {
@@ -50,20 +54,17 @@ const productSchema = new Schema(
       type: String,
       required: true,
     },
-    // buyerModel: {
-    //   type: String,
-    //   enum: ["company", "clients"],
-    // },
 
     skills: {
       type: [{ type: Number }],
       ref: "skills",
-      default:[]
+
+      default: [],
     },
-    image:{
-      type:String,
+    image: {
+      type: String,
       required: true,
-    }
+    },
   },
   { _id: false, timestamps: true }
 );
