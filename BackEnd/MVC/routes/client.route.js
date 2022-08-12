@@ -45,7 +45,7 @@ const {
   blockClientVA,
   testimonialVA,
 } = require("../middlewares/client.MW");
-
+const { putValidator } = require("../middlewares/freelancers.MW");
 const {
   adminAuth,
   clientAuth,
@@ -66,7 +66,7 @@ router
   .route("/client/:id")
   .all([param("id").isNumeric().withMessage("Id isn't correct")])
   .get(authMW, allAuth, getClientById)
-  .put(authMW, AdminAndClientAuth, updateVA, validationMW, updateClient)
+  .put(authMW, AdminAndClientAuth, putValidator, validationMW, updateClient)
   .delete(authMW, adminAuth, deleteClient);
 
 router.put(
