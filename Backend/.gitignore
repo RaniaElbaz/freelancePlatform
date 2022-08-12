@@ -1,0 +1,15 @@
+# test
+/spec
+
+# Node and Mongo
+/node_modules
+package-lock.json
+/data
+/public
+
+# misc
+.u
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
