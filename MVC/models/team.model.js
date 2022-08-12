@@ -32,7 +32,7 @@ const teamSchema = new mongoose.Schema({
   },
   logo: {
     type: String,
-    default: `./public/static/default.jpg`,
+    default: `http://localhost:8080/public/static/defaultProfileImage.jpg`,
     //`${request.protocol}://${request.host}:${process.env.PORT}public/categories/default.jpg`,//🔴request is not defined
   },
   members: {

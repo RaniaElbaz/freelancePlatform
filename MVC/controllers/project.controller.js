@@ -241,7 +241,9 @@ module.exports.createProposal = (request, response, next) => {
       console.log(request.files);
       object.files = [];
       request.files.map((file) => {
-        object.files.push(`./${file.path.replaceAll("\\", "/")}`);
+        object.files.push(
+          `http://localhost:8080/${file.path.replaceAll("\\", "/")}`
+        );
       });
       object.talent = {
         id: request.id,

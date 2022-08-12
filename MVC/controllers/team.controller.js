@@ -170,7 +170,10 @@ module.exports.updateTeam = (request, response, next) => {
         else data[prop] = request.body[prop] || data[prop];
       }
       if (request.file) {
-        data.logo = `./${request.file.path.replaceAll("\\", "/")}`;
+        data.logo = `http://localhost:8080/${request.file.path.replaceAll(
+          "\\",
+          "/"
+        )}`;
       }
       Team.findOne({ members: data.members, name: { $ne: data.name } }).then(
         (team) => {
