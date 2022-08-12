@@ -116,7 +116,7 @@ module.exports.updateTeam = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("team not found"));
-      else if (request.role == "team" && !data.members.includes(request.id))
+      else if (request.role == "team" && request.id !== request.params.id)
         throw new Error("not team member");
 
       for (let prop in request.body) {

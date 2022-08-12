@@ -1,34 +1,27 @@
 let company = require("../models/company.model");
-
+const { imageExtRegex } = require("../helpers/regex");
 /**************multer****** */
 const multer = require("multer");
 const path = require("path");
 
 const imageStorage = multer.diskStorage({
-  // Destination to store image
-  destination: (re, file, cb) => {
-    cb(null, "./public/uploads/logo");
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
-    );
+  destination: `public/profileImages/company`,
+  filename: (request, response, next) => {
+    next(null, request.params.id + path.extname(response.originalname));
   },
 });
 
 module.exports.imageUpload = multer({
   storage: imageStorage,
   limits: {
-    fileSize: 1000000,
+    fileSize: 1000000, // 1 MB
   },
-  fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(png|jpg)$/)) {
-      return cb(new Error("Please upload a Image"));
-    }
-    cb(undefined, true);
+  fileFilter(request, response, next) {
+    if (!response.originalname.match(imageExtRegex)) {
+      next(new Error("Please upload a valid image (.jpg)"));
+    } else next(undefined, true);
   },
-});
+}).single("image");
 /****************************/
 //get All Companies
 module.exports.getAllComapny = (req, res, next) => {
@@ -51,6 +44,15 @@ module.exports.getCampanyByIdPuplic = (req, res, next) => {
       },
       { password: 0, wallet: 0, isBlocked: 0 }
     )
+    .populate({
+      path: "projects",
+      select: "-proposals",
+      populate: { path: "category" },
+    })
+    .populate({
+      path: "testimonials",
+      populate: { path: "project", populate: { path: "category" } },
+    })
     .then((data) => {
       if (data == null) next(new Error("company not found"));
       res.status(200).json(data);
@@ -61,7 +63,6 @@ module.exports.getCampanyByIdPuplic = (req, res, next) => {
 };
 
 //get one privte check id
-
 module.exports.getCampanyByIdPrivate = (req, res, next) => {
   company
     .findOne(
@@ -70,6 +71,15 @@ module.exports.getCampanyByIdPrivate = (req, res, next) => {
       },
       { password: 0, isBlocked: 0 }
     )
+    .populate({
+      path: "projects",
+      select: "-proposals",
+      populate: { path: "category" },
+    })
+    .populate({
+      path: "testimonials",
+      populate: { path: "project", populate: { path: "category" } },
+    })
     .then((data) => {
       if (data == null) next(new Error("company not found"));
       res.status(200).json(data);
@@ -90,28 +100,17 @@ module.exports.updateCompanyDetails = (req, res, next) => {
       console.log(req.body);
 
       for (let item in req.body) {
-        console.log(item);
-        if (item == "location") {
-          for (let nestedItem in req.body[item]) {
-            console.log(nestedItem);
-            if (
-              ["postalCode", "city", "address", "state"].includes(nestedItem)
-            ) {
-              // data["location"][nestedItem] = req.body["location"][nestedItem];
-              data["location"][nestedItem] = req.body["location"][nestedItem];
-            }
-          }
+        if (["postalCode", "city", "address", "state"].includes(item)) {
+          data["address"][item] = req.body[item];
         } else data[item] = req.body[item] || data[item];
       }
-      let logoPath = "";
       if (req.file) {
-        logoPath = req.file.path;
-      } else {
-        logoPath = "./public/uploads/default.jpg"; //image
+        data.logo = `${req.protocol}://${req.hostname}:${
+          process.env.PORT
+        }/${req.file.path.replaceAll("\\", "/")}`;
       }
-      data.logo = logoPath;
       data.save();
-      res.status(200).json({ data });
+      res.status(201).json({ data: data.logo });
       return data;
     })
 
@@ -159,7 +158,6 @@ module.exports.deleteCompany = (req, res, next) => {
 };
 
 //Testimonials
-
 module.exports.CompanyupdateTestimonials = (req, res, next) => {
   company
     .findById(req.params.id)

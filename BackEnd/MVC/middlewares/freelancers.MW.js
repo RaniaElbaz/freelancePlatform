@@ -191,49 +191,49 @@ module.exports.putInfoValidator = [
   check("isVerified")
     .optional({ checkFalsy: true, nullable: true })
     .isBoolean()
-    .withMessage("freelancer's verified state is invalid"),
+    .withMessage("user's verified state is invalid"),
 
   check("connects")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
-    .withMessage("freelancer's connects should be a number")
+    .withMessage("user's connects should be a number")
     .isLength({ min: 0, max: 500 })
-    .withMessage("freelancer's connects must be between 0~1000"),
+    .withMessage("user's connects must be between 0~1000"),
 
   check("wallet")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
-    .withMessage("freelancer's wallet is invalid"),
+    .withMessage("user's wallet is invalid"),
 
   check("projects")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
-    .withMessage("freelancer's projects is invalid"),
+    .withMessage("user's projects is invalid"),
 
   check("skills")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
-    .withMessage("freelancer's skills is invalid"),
+    .withMessage("user's skills is invalid"),
 
   //analytics
   //earnings
   check("earnings")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
-    .withMessage("freelancer's earnings should be a number"),
+    .withMessage("user's earnings should be a number"),
   //jobs
   check("jobs")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
-    .withMessage("freelancer's earnings should be a number"),
+    .withMessage("user's earnings should be a number"),
   //hours
   check("hours")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
-    .withMessage("freelancer's hours should be a number"),
+    .withMessage("user's hours should be a number"),
   //views
   check("views")
     .optional({ checkFalsy: true, nullable: true })
     .isNumeric()
-    .withMessage("freelancer's views should be a number"),
+    .withMessage("user's views should be a number"),
 ];

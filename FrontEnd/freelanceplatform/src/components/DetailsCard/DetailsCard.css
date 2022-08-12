@@ -1,8 +1,0 @@
-.description{
-    word-break: break-word;
-}
-
-.materialCard{
-    box-shadow: var(--grey) 1px 1px 10px 1px;
-    position: relative;
-}

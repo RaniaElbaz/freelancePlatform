@@ -34,30 +34,55 @@ module.exports.createTestimonialToRecruiter = (request, response, next) => {
   else if (request.body.recruiterType == "company") Recruiter = Company;
   else next(new Error("invalid Recruiter type"));
 
-  Recruiter.findOne({ projects: request.params.id })
-    .populate({ path: "projects" })
-    .then((data) => {
-      if (!data) next(new Error("project not found"));
-      let testimonial = {};
-      testimonial.project = request.params.id;
-      testimonial.issued = new Date();
-      testimonial.rating = request.body.rating;
-      testimonial.comment = request.body.comment;
-      data.testimonials.push(testimonial);
-      let project = data.projects.filter((obj) => obj._id == request.params.id);
-      console.log(project[0]);
-      data.analytics.spent += project[0].budget;
-      data.analytics.jobs += 1;
-      //🟢data.wallet +=data.project.budget;
-      return data.save().then((data) => {
-        response.status(200).json({
-          msg: "testimonial created",
-          data: data.testimonials,
-        });
-      });
+  let Talent;
+  if (request.body.talent == "freelancer") Talent = Freelancer;
+  else if (request.body.talent == "team") Talent = Team;
+  else next(new Error("invalid talennt type"));
+
+  Talent.findOne(
+    { _id: request.id, "testimonials.project": request.params.id },
+    { testimonials: 1 }
+  )
+    .populate({ path: "testimonials" })
+    .then((talent) => {
+      if (!talent) {
+        next(new Error("talent not found"));
+      } else {
+        for (let testimonial of talent.testimonials) {
+          if (testimonial.project == request.params.id) {
+            testimonial.testimonialBack = true;
+            return talent.save();
+          }
+        }
+      }
     })
-    .catch((error) => {
-      next(error);
+    .then(() => {
+      Recruiter.findOne({ projects: request.params.id })
+        .populate({ path: "projects" })
+        .then((data) => {
+          if (!data) next(new Error("project not found"));
+          let testimonial = {};
+          testimonial.project = request.params.id;
+          testimonial.issued = new Date();
+          testimonial.rating = request.body.rating;
+          testimonial.comment = request.body.comment;
+          data.testimonials.push(testimonial);
+          let project = data.projects.filter(
+            (obj) => obj._id == request.params.id
+          );
+          data.analytics.spent += project[0].budget;
+          data.analytics.jobs += 1;
+          data.wallet -= project[0].budget;
+          return data.save().then((data) => {
+            response.status(200).json({
+              msg: "testimonial created",
+              data: data.testimonials,
+            });
+          });
+        })
+        .catch((error) => {
+          next(error);
+        });
     });
 };
 

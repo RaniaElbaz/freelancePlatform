@@ -236,10 +236,8 @@ module.exports.createProposal = (request, response, next) => {
       let User;
       request.role == "freelancer"
         ? (User = Freelancer)
-        : request.role == "company"
-        ? (User = Company)
-        : request.role == "client"
-        ? (User = Client)
+        : request.role == "team"
+        ? (User = Team)
         : next(new Error("Invalid User type"));
       User.findById(request.id).then((talent) => {
         if (talent.connects > data.connects) {
@@ -359,22 +357,24 @@ module.exports.finishProject = (request, response, next) => {
 
         Talent.findOne({ projects: request.params.id }).then((talent) => {
           if (!talent) next(new Error("Project not found"));
-          
+
           let testimonial = {};
           testimonial.project = request.params.id;
           testimonial.issued = new Date();
           testimonial.rating = request.body.rating;
           testimonial.comment = request.body.comment;
           talent.testimonials.push(testimonial);
-          
+
           talent.analytics.earnings += data.budget;
           talent.analytics.hours += data.duration;
           talent.analytics.jobs += 1;
 
           talent.wallet += budget;
 
-          talent.projects = talent.projects.filter((project) => project != request.params.id);
-          
+          talent.projects = talent.projects.filter(
+            (project) => project != request.params.id
+          );
+
           return talent.save().then((talent) => {
             response.status(200).json({
               msg: "testimonial created",
