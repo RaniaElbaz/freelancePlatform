@@ -132,6 +132,7 @@ export default function FreelancerProfile() {
       {freelancerDetails.projects || profileDetails.projects ? (
         <ProfileProjects
           isPublic={isPublic}
+          userType="freelancer"
           userDetails={isUser ? freelancerDetails : profileDetails}
         />
       ) : (

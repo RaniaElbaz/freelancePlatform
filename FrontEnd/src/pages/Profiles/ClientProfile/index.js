@@ -101,6 +101,7 @@ export default function ClientProfile() {
       {clientDetails.projects || profileDetails.projects ? (
         <ProfileProjects
           isPublic={isPublic}
+          userType="client"
           userDetails={isUser ? clientDetails : profileDetails}
         />
       ) : (

@@ -1,8 +1,17 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 import DetailsCard from "../../DetailsCard";
 
-export default function ProfileProjects({ userDetails }) {
+export default function ProfileProjects({ userDetails, userType }) {
+  const history = useHistory();
+
+  const goToProject = (project) => {
+    if(userType === "client" || userType === "company") history.push(`/project/${project}/private`)
+    if (userType === "freelancer" || userType === "team")
+      history.push(`/project/${project}`);
+  }
+
   if(userDetails.projects.length) {
     return (
       <section className="w-100 mb-3">
@@ -13,6 +22,8 @@ export default function ProfileProjects({ userDetails }) {
         <section>
           {userDetails.projects.map((project, index) => (
             <DetailsCard
+              pressable={true}
+              clickAction={ ()=>goToProject(project._id)}
               title={
                 project.title +
                 " " +

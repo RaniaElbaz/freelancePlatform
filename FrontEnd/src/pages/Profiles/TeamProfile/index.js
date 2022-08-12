@@ -124,6 +124,7 @@ export default function TeamProfile() {
       {teamDetails.projects || profileDetails.projects ? (
         <ProfileProjects
           isPublic={isPublic}
+          userType="team"
           userDetails={isUser ? teamDetails : profileDetails}
         />
       ) : (

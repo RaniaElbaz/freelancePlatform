@@ -124,6 +124,7 @@ export default function CompanyProfile() {
       {companyDetails.projects || profileDetails.projects ? (
         <ProfileProjects
           isPublic={isPublic}
+          userType="company"
           userDetails={isUser ? companyDetails : profileDetails}
         />
       ) : (
