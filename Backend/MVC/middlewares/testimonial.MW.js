@@ -13,7 +13,7 @@ module.exports.createTestimonialMW = [
   check("comment")
     .notEmpty()
     .withMessage("testimonial comment is required")
-    .isString({ min: 50, max: 1000 })
+    .isString({ min: 100, max: 500 })
     .withMessage("testimonial comment should be a string between 50 and 1000"),
 ];
 

@@ -1,8 +1,8 @@
 const express = require("express");
 const { param } = require("express-validator");
 
-const skillController = require("../controllers/skill.controller");
 const freelancerController = require("../controllers/freelancer.controller");
+const skillController = require("../controllers/skill.controller");
 const authMW = require("../middleWares/auth.MW");
 const validationMW = require("../middlewares/validation.MW");
 const {
@@ -86,7 +86,8 @@ freelancerRoute
     putValidator,
     validationMW,
     freelancerController.filesUpload,
-    freelancerController.updateFreelancerDetails
+    freelancerController.updateFreelancerDetails,
+    skillController.addTalentToSkill
   );
 
 freelancerRoute

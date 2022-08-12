@@ -11,7 +11,6 @@ const { fileExtRegex } = require("../helpers/regex");
 const filesStorage = multer.diskStorage({
   destination: `public/proposalsFiles`,
   filename: (request, response, next) => {
-
     Freelancer.findById(request.id).then((data) => {
       if (!data) next(new Error("freelncer not found"));
       else
@@ -29,7 +28,6 @@ module.exports.filesUpload = multer({
     fileSize: 300000000, // 300000000 Bytes = 0.3 GB
   },
   fileFilter(request, response, next) {
-
     if (!response.originalname.match(fileExtRegex)) {
       return next(new Error("Please upload a File"));
     }
@@ -38,6 +36,7 @@ module.exports.filesUpload = multer({
 }).array("files", 5);
 
 module.exports.createProject = (request, response, next) => {
+  console.log(request.role + "s");
   if (request.body.isInternship) {
     delete request.body.budget;
   }
@@ -61,7 +60,9 @@ module.exports.createProject = (request, response, next) => {
       let Recruiter;
       if (request.role == "company") Recruiter = Company;
       else if (request.role == "client") Recruiter = Client;
-      else next(new Error("invalid recruiter type"));
+      else if (request.role == "admin") {
+        response.status(200).json({ data });
+      } else next(new Error("invalid recruiter type"));
 
       Recruiter.findById(request.id).then((recruiter) => {
         if (!recruiter) throw new Error("recruiter not found");
@@ -69,9 +70,7 @@ module.exports.createProject = (request, response, next) => {
         return recruiter.save().then((recruiter) => {
           response.status(200).json({
             msg: "project added to recruiter",
-
             recruiter: recruiter.projects,
-
           });
         });
       });
@@ -93,32 +92,14 @@ module.exports.getAllProjects = (request, response, next) => {
 };
 
 module.exports.getProjectById = (request, response, next) => {
-
-  let recruiterType = "";
-  Project.findById(request.params.id, { talent: 1, recruiter: 1 })
+  Project.findById(request.params.id, { proposals: 0 })
+    .populate({ path: "skills", select: "name" })
+    .populate({ path: "category", select: "name" })
     .then((data) => {
       if (!data) next(new Error("project not found"));
       else {
-        recruiterType = data.recruiter.type;
+        response.status(200).json(data);
       }
-
-      Project.findById(request.params.id, { proposals: 0 })
-        .populate({ path: "skills", select: "name" })
-        .populate({ path: "category", select: "name" })
-        .populate({
-          path: "recruiter.id",
-          // populate: {
-          //   path: "id",
-          model: recruiterType,
-          // },
-        })
-        .then((data) => {
-          if (!data) next(new Error("project not found"));
-          else {
-            response.status(200).json(data);
-          }
-        });
-
     })
     .catch((error) => {
       next(error);
@@ -127,44 +108,27 @@ module.exports.getProjectById = (request, response, next) => {
 
 module.exports.getProjectByIdPrivate = (request, response, next) => {
   let talentType = "";
-
-  let recruiterType = "";
-  Project.findById(request.params.id, { talent: 1, recruiter: 1 })
+  Project.findById(request.params.id, { talent: 1 })
     .then((data) => {
-      if (!data) throw Error("project not found");
+      if (!data) next(new Error("project not found"));
       else if (request.role == "admin") {
       } else if (
         !(
-          data.recruiter.id == request.id &&
-          (request.role == "company" ? request.role : request.role + "s") ==
-            data.recruiter.type
+          data.recruiter.id == request.id && data.recruiter.type == request.role
         )
       ) {
-        throw Error("not your project");
-      }
-      if (data.talent) {
-        talentType = data.talent.type;
-      }
-      recruiterType = data.recruiter.type;
-
+        next(new Error("not your project"));
+      } else talentType = data.talent.type;
 
       Project.findById(request.params.id)
         .populate({ path: "skills", select: "name" })
         .populate({ path: "category", select: "name" })
         .populate({
-
-          path: "talent.id",
-          // populate: {
-          //   path: "id",
-          model: talentType,
-          // },
-        })
-        .populate({
-          path: "recruiter.id",
-          // populate: {
-          //   path: "id",
-          model: recruiterType,
-          // },
+          path: "talent",
+          populate: {
+            path: "id",
+            model: talentType,
+          },
         })
         .then((data) => {
           response.status(200).json(data);
@@ -231,8 +195,7 @@ module.exports.updateProject = (request, response, next) => {
         } else data[prop] = request.body[prop] || data[prop];
       }
       return data.save().then((data) => {
-
-        response.status(201).json({ msg: "Project updated", data: data._id });
+        response.status(201).json({ msg: "Project updated", data });
       });
     })
     .catch((error) => {
@@ -243,17 +206,18 @@ module.exports.updateProject = (request, response, next) => {
 module.exports.createProposal = (request, response, next) => {
   Project.findOne({ _id: request.params.id })
     .then((data) => {
+      console.log(data);
       if (!data) throw new Error("project not found");
       let object = {};
       for (let prop in request.body) {
         object[prop] = request.body[prop];
       }
-
-      console.log(request.files);
       object.files = [];
       request.files.map((file) => {
         object.files.push(
-          `http://localhost:8080/${file.path.replaceAll("\\", "/")}`
+          `${request.protocol}://${request.hostname}:${
+            process.env.PORT
+          }/${file.path.replaceAll("\\", "/")}`
         );
       });
       object.talent = {
@@ -272,7 +236,6 @@ module.exports.createProposal = (request, response, next) => {
       let User;
       request.role == "freelancer"
         ? (User = Freelancer)
-
         : request.role == "team"
         ? (User = Team)
         : next(new Error("Invalid User type"));
@@ -281,13 +244,6 @@ module.exports.createProposal = (request, response, next) => {
           //user used a number of connects
           talent.connects -= data.connects;
           //add proposal
-
-          if (request.role == "freelancer") {
-            object.name = `${talent.firstName} ${talent.lastName}`;
-          } else {
-            object.name = talent.name;
-          }
-
           data.proposals.push(object);
           //save data
           return talent.save().then((talent) => {
@@ -298,8 +254,7 @@ module.exports.createProposal = (request, response, next) => {
             });
           });
         } else {
-
-          next(new Error("not enough connects for this project"));
+          throw new Error("not enough connects for this project");
         }
       });
     })
@@ -309,9 +264,8 @@ module.exports.createProposal = (request, response, next) => {
 };
 
 module.exports.getProjectProposals = (request, response, next) => {
-
-  Project.findById(request.params.id, { proposals: 1, recruiter: 1, status: 1 })
-    .populate("proposals.talent") //not working
+  Project.findById(request.params.id, { proposals: 1 })
+    .populate({ path: "proposals.talent" }) //not working
     .then((data) => {
       if (!data) next(new Error("project not found"));
       else if (request.role == "admin") {
@@ -333,8 +287,7 @@ module.exports.getProjectProposals = (request, response, next) => {
 };
 
 module.exports.selectProposal = (request, response, next) => {
-
-  Project.findById(request.params.id, { proposals: 1, recruiter: 1 })
+  Project.findById(request.params.id, { proposals: 1 })
     .populate({ path: "proposals.talent" })
     .then((data) => {
       if (!data) next(new Error("project not found"));
@@ -365,13 +318,13 @@ module.exports.selectProposal = (request, response, next) => {
           });
         }
       }
-
-
+      if (data.proposals.length != 1) next(new Error("talent not found "));
       data.talent = request.body.talent;
       data.status = "ongoing";
       data.startTime = new Date();
       return data.save().then((data) => {
         next();
+        // response.status(201).json({ msg: "Proposal selected", data });
       });
     })
     .catch((error) => {
@@ -392,36 +345,44 @@ module.exports.finishProject = (request, response, next) => {
         )
       ) {
         next(new Error("you're not the owner of this project"));
-      } else {
-        data.status = "finished";
-        return data.save().then((data) => {
-          let Talent;
-          if (data.talent.type == "freelancers") Talent = Freelancer;
-          else if (data.talent.type == "teams") Talent = Team;
-          else next(new Error("invalid talent type"));
+      }
+      data.status = "finished";
+      data.endTime = new Date();
+      const budget = data.budget;
+      return data.save().then((data) => {
+        let Talent;
+        if (data.talent.type == "freelancers") Talent = Freelancer;
+        else if (data.talent.type == "teams") Talent = Team;
+        else next(new Error("invalid talent type"));
 
-          Talent.findOne({ projects: request.params.id }).then((talent) => {
-            if (!talent) next(new Error("Project not found"));
-            let testimonial = {};
-            testimonial.project = request.params.id;
-            testimonial.issued = new Date();
-            testimonial.rating = request.body.rating;
-            testimonial.comment = request.body.comment;
-            talent.testimonials.push(testimonial);
+        Talent.findOne({ projects: request.params.id }).then((talent) => {
+          if (!talent) next(new Error("Project not found"));
 
-            talent.analytics.earnings += data.budget;
-            talent.analytics.hours += data.duration;
-            talent.analytics.jobs += 1;
-            //🟢talent.wallet +=talent.project.budget;
-            return talent.save().then((talent) => {
-              response.status(200).json({
-                msg: "testimonial created",
-                talent: talent.testimonials,
-              });
+          let testimonial = {};
+          testimonial.project = request.params.id;
+          testimonial.issued = new Date();
+          testimonial.rating = request.body.rating;
+          testimonial.comment = request.body.comment;
+          talent.testimonials.push(testimonial);
+
+          talent.analytics.earnings += data.budget;
+          talent.analytics.hours += data.duration;
+          talent.analytics.jobs += 1;
+
+          talent.wallet += budget;
+
+          talent.projects = talent.projects.filter(
+            (project) => project != request.params.id
+          );
+
+          return talent.save().then((talent) => {
+            response.status(200).json({
+              msg: "testimonial created",
+              talent: talent.testimonials,
             });
           });
         });
-      }
+      });
     })
     .catch((error) => {
       next(error);

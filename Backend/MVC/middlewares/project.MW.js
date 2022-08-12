@@ -21,9 +21,8 @@ module.exports.post = [
     .withMessage("isInternship should be boolean"),
 
   check("budget")
-
-    .optional()
-
+    .notEmpty()
+    .withMessage("project budget is required")
     .isInt({ min: 5 })
     .withMessage("project budget should be an interger begins form 5"),
 

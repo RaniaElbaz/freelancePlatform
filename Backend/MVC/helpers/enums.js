@@ -22,6 +22,10 @@ module.exports.languages = [
   "German",
   "Urdu",
   "Japanese",
+  "Afrikaans",
+  "Albanian",
+  "Amharic",
+  "Aragonese",
 ];
 //report reasons
 module.exports.reportTypes = ["inappropraite", "spam", "issue"];

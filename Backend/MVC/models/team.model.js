@@ -30,9 +30,16 @@ const teamSchema = new mongoose.Schema({
     min: 10,
     max: 100,
   },
+  hoursPerWeek: {
+    type: Number,
+    required: true,
+    min: 5,
+    max: 30,
+    default: 30,
+  },
   logo: {
     type: String,
-
+    // default: `http://localhost:${process.env.PORT}/public/categories/default.jpg`,
     //`${request.protocol}://${request.host}:${process.env.PORT}public/categories/default.jpg`,//🔴request is not defined
   },
   members: {
@@ -40,8 +47,8 @@ const teamSchema = new mongoose.Schema({
     ref: "freelancers",
     validate: [
       {
-        validator: (items) => validators.itemsLimit(items, 2, 10),
-        message: "team members should be between 2,10",
+        validator: validators.itemsLimit,
+        message: "team members should be between 2,15",
       },
       {
         validator: validators.checkUniqueItems,
@@ -87,7 +94,7 @@ const teamSchema = new mongoose.Schema({
     min: 0,
     max: 500,
   },
-  analytics: analyticSchema,
+  analytics: { type: analyticSchema, default: () => ({}) },
   wallet: {
     type: Number,
     default: 0,

@@ -28,10 +28,8 @@ module.exports.post = [
   check("members")
     .notEmpty()
     .withMessage("team members is required")
-
-    .isArray({ min: 1, max: 10 })
-    .withMessage("team members should be array 1:10"),
-
+    .isArray({ min: 2, max: 15 })
+    .withMessage("team members should be array 2:10"),
 
   check("skills")
     .notEmpty()

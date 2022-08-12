@@ -1,33 +1,26 @@
 const express = require("express");
 const path = require("node:path");
 const { body, param, query } = require("express-validator");
-
+const { imageExtRegex } = require("../helpers/regex");
 const multer = require("multer");
 // Set Storage Engine
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./public/profileImages/clients/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${req.params.id}_${path.extname(file.originalname)}`);
+  destination: `public/profileImages/clients`,
+  filename: (request, response, next) => {
+    next(null, request.params.id + path.extname(response.originalname));
   },
 });
 
-const fileFilter = (req, file, cb) => {
-  // here we can accept or reject files
-  if (["image/jpeg", "image/png", "image/jpg"].includes(file.mimetype)) {
-    cb(null, true); // accept file: store it
-    // cb(new Error("Image format not supported!"), true);
-  } else {
-    cb(null, false); // ignore file: not stored
-  }
+const fileFilter = (req, file, next) => {
+  if (!file.originalname.match(imageExtRegex)) {
+    next(new Error("Please upload a valid image (.jpg)"));
+  } else next(undefined, true);
 };
 
 const upload = multer({
   storage,
   limits: {
-    // fileSize: 1000000 Bytes = 1 MB
-    fileSize: 1024 * 1024 * 5, // 5 MB
+    fileSize: 1000000, // 1 MB
   },
   fileFilter,
 });
@@ -52,7 +45,7 @@ const {
   blockClientVA,
   testimonialVA,
 } = require("../middlewares/client.MW");
-
+const { putValidator } = require("../middlewares/freelancers.MW");
 const {
   adminAuth,
   clientAuth,
@@ -73,14 +66,14 @@ router
   .route("/client/:id")
   .all([param("id").isNumeric().withMessage("Id isn't correct")])
   .get(authMW, allAuth, getClientById)
-  .put(authMW, AdminAndClientAuth, updateVA, validationMW, updateClient)
+  .put(authMW, AdminAndClientAuth, putValidator, validationMW, updateClient)
   .delete(authMW, adminAuth, deleteClient);
 
 router.put(
   "/client/:id/uploadImage",
   authMW,
   AdminAndClientAuth,
-  upload.single("picture"),
+  upload.single("image"),
   uploadImage
 ); // client
 
@@ -90,14 +83,6 @@ router.put(
   validationMW,
   updatePassword
 ); // ^ authorization handled by using token
-
-router.put(
-  "/client/:id/uploadImage",
-  authMW,
-  AdminAndClientAuth,
-  upload.single("picture"),
-  uploadImage
-);
 
 router.put(
   "/client/:id/blockClient",

@@ -116,15 +116,18 @@ module.exports.updateSkill = (request, response, next) => {
 module.exports.addTalentToSkill = (request, response, next) => {
   Skill.find({ _id: { $in: request.body.skills } })
     .then((skills) => {
+      console.log(request.id)
       for (let skill in skills) {
-        if (!skill) next(new Error("skill not found"));
+        if (!skill.length) next(new Error("skill not found"));
         skill.talents = [...new Set([...skill.talents, request.id])];
       }
-      return skills.save().then((skills) => {
-        response.status(201).json({ msg: "talent added to skill", skills });
-      });
+      return skills.save()
     })
+    .then((skills) => {
+        response.status(201).json({ msg: "talent added to skill", skills });
+      })
     .catch((error) => {
+      console.log("skill error")
       next(error);
     });
 };

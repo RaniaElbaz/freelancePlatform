@@ -1,6 +1,5 @@
 let mongoose = require("mongoose");
-const AutoIncrement = require('mongoose-sequence')(mongoose);
-
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 let analyticsSchema = require("./analytics.model");
 let locationSchema = require("./locations.model");
@@ -9,93 +8,93 @@ let testimonialSchema = require("./testimonial.model");
 const {
   emailRegex,
   passwordRegex,
-  //  phoneRegex 
+  //  phoneRegex
 } = require("../helpers/regex");
 
-const { languages } = require('../helpers/enums');
+const { languages } = require("../helpers/enums");
 const { checkDuplicated } = require("../helpers/functions");
 
-// A ) Create Schema Object 
-
+// A ) Create Schema Object
 
 const imageSchema = new mongoose.Schema({
   name: String,
-  imgPath: String
+  imgPath: String,
 });
 
-
-const schema = new mongoose.Schema({
-  _id: { type: Number },
-  firstName: {
-    type: String,
-    required: true,
-    minLength: 3,
-    maxLength: 10,
-  },
-  lastName: { type: String, required: true },
-  password: {
-    type: String,
-    validate: {
-      validator: function (value) {
-        return passwordRegex.test(value);
+const schema = new mongoose.Schema(
+  {
+    _id: { type: Number },
+    firstName: {
+      type: String,
+      required: true,
+      minLength: 3,
+      maxLength: 10,
+    },
+    lastName: { type: String, required: true },
+    password: {
+      type: String,
+      validate: {
+        validator: function (value) {
+          return passwordRegex.test(value);
+        },
+        message: (props) => `${props.value} is too weak!`,
       },
-      message: (props) => `${props.value} is too weak!`,
+      required: true,
     },
-    required: true
-  },
-  email: {
-    type: String,
-    required: true,
-    validate: {
-      validator: function (value) {
-        return emailRegex.test(value);
+    email: {
+      type: String,
+      required: true,
+      validate: {
+        validator: function (value) {
+          return emailRegex.test(value);
+        },
+        message: (props) => `${props.value} is not a valid email!`,
       },
-      message: (props) => `${props.value} is not a valid email!`,
+      unique: true,
     },
-    unique: true
-  },
-  picture: {
-    type: imageSchema
-  },
-  location: {
-    type: locationSchema, default: {}
-  },
-  phoneNumber: {
-    type: Number,
-
-    default: 0
-  },
-  analytics: {
-    type: analyticsSchema, default: {}
-  },
-  languages: {
-    type: [String],
-    enum: languages,
-    validate: {
-      validator: checkDuplicated,
-      message: (props) => `${props.value} duplicated language value`,
+    picture: {
+      type: String,
     },
-  },
-  wallet: { type: Number, default: 0 },
-  description: {
-    type: String,
-    //  minLength: 50,
-    maxLength: 1000,
-    default: ""
-  },
-  isVerified: { type: Boolean, default: false },
-  isBlocked: { type: Boolean, default: false },
-  testimonials: [testimonialSchema], // ! handling
-  projects: { type: [Number], ref: "projects" },
-  resetLink: { type: String, default: '' },
-  loginToken: { type: String, default: '' }
-}, { timestamps: true });
+    address: {
+      type: locationSchema,
+      default: {},
+    },
+    phoneNumber: {
+      type: Number,
 
-schema.plugin(AutoIncrement, { inc_field: '_id' });
+      default: 0,
+    },
+    analytics: {
+      type: analyticsSchema,
+      default: {},
+    },
+    languages: {
+      type: [String],
+      enum: languages,
+      validate: {
+        validator: checkDuplicated,
+        message: (props) => `${props.value} duplicated language value`,
+      },
+    },
+    wallet: { type: Number, default: 0 },
+    description: {
+      type: String,
+      //  minLength: 50,
+      maxLength: 1000,
+      default: "",
+    },
+    isVerified: { type: Boolean, default: false },
+    isBlocked: { type: Boolean, default: false },
+    testimonials: [testimonialSchema], // ! handling
+    projects: { type: [Number], ref: "projects" },
+    resetLink: { type: String, default: "" },
+    loginToken: { type: String, default: "" },
+  },
+  { timestamps: true }
+);
 
+schema.plugin(AutoIncrement, { inc_field: "_id" });
 
 // B) Mapping: connecting between the related schema and Collection
 // Setter Schema
 module.exports = mongoose.model("clients", schema);
-
-

@@ -1,8 +1,7 @@
-import { createStore, applyMiddleware } from "redux";
+import { createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
-import reducers from "./reducers/combined";
-// import thunk from "redux-thunk";
+import reducers from './reducers/combineReducer';
 
-const store = createStore(reducers, composeWithDevTools(applyMiddleware()));
+const store = createStore(reducers , composeWithDevTools())
 
 export default store;

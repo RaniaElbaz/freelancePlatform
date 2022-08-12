@@ -3,17 +3,17 @@ const mongoose = require('mongoose');
 const educationSchema = new mongoose.Schema({
     organization: {
         required: true,
-        minLength: 3,
+        minLength: 2,
         type: String,
     },
     degree:{
         required: true,
-        minLength: 3,
+        minLength: 2,
         type: String,
     },
     areaOfStudy:{
         type: String,
-        minLength: 5,
+        minLength: 2,
     },
     startDate:{
         type: Date,

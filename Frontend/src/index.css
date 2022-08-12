@@ -1,51 +1,50 @@
-
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
-
 :root {
   --blue: #116466;
+  --transparentBlue: #116566c6;
   --white: #ffffff;
-  --gray: #2c3531;
+  --grey: #2c3531;
   --beige: #d9b08c;
   --lightBeige: #ffcb9a;
-  --lightBlue: #d1e8e6;
+  --lightBlue: #d1e8e2;
+  --goldenYellow: #ffcd3c;
 }
 
-
-/* button {
-  border: 2px solid ;
-  border-radius: 4px; 
-  background-color: var(--beige) ;
-  border-color: var(--beige);
-  color: var(--white);
-  
-}
-button:hover {
-  background-color: var(--white);
-  border-color: var(--beige);
-  color: var(--beige);
+.fc-blue {
+  color: var(--blue) !important;
 }
 
-h1,h2,h3,h4,h5,h6{
-  color:var(--blue) */
+.bg-blue {
+  background-color: var(--blue);
+}
+
+.bg-lightBlue {
+  background-color: var(--lightBlue);
+}
+
+.bg-beige {
+  background-color: var(--beige);
+}
+
+.bg-lightBeige {
+  background-color: var(--lightBeige);
+}
 
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
-a {
-  color: inherit;
-  text-decoration: none;
-  margin: auto 0;
-}
+
 body {
-  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.card {
-  border: none;
-  box-shadow: 2px 2px 5px var(--lightBlue), -2px -2px 5px var(--lightBlue);
-}
-button:focus {
-  box-shadow: none;
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }

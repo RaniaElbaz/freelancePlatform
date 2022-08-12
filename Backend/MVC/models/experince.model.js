@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const locationSchema = require('./locations.model');
+const locationSchema = require("./locations.model");
 
 const experinceSchema = new mongoose.Schema(
   {
@@ -19,7 +19,7 @@ const experinceSchema = new mongoose.Schema(
       type: String,
       minLength: 100,
       maxLength: 500,
-    }
+    },
   },
   { _id: false }
 );

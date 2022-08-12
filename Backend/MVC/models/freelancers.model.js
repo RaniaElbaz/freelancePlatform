@@ -90,8 +90,8 @@ const freelancerSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      minLength: 5,
-      maxLength: 15,
+      minLength: 2,
+      maxLength: 30,
     },
     description: {
       type: String,
