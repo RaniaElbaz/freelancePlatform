@@ -52,3 +52,9 @@
   color: var(--white);
   text-decoration: none !important;
 }
+
+.btnActive {
+  color: var(--lightBlue);
+  background-color: transparent;
+  border-color: var(--lightBlue);
+}

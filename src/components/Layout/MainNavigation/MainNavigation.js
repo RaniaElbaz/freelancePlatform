@@ -1,8 +1,41 @@
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import axios from "axios";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import classes from "./MainNavigation.module.css";
+import { useEffect, useState } from "react";
+
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
 
 export default function MainNavigator() {
+  const history = useHistory();
+  const [team, setTeam] = useState(false);
+
+  const logoutHandler = (e) => {
+    history.push("/");
+    localStorage.removeItem("token");
+  };
+
+  useEffect(() => {
+    if (token) {
+      const teamApi = axios({
+        url: `http://localhost:8080/team/member`,
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      teamApi
+        .then((res) => {
+          console.log(res);
+          setTeam(true);
+        })
+        .catch((error) => {
+          console.log(error.code, error.message, error.response.data);
+        });
+    }
+  }, []);
+
   return (
     <nav
       className={`navbar navbar-expand-lg navbar-light bg-light ${classes.nav}`}
@@ -53,7 +86,8 @@ export default function MainNavigator() {
           </div>
         </div>
         <div className="d-flex">
-          {localStorage.getItem("token") ? (
+          {console.log("token", token)}
+          {token ? (
             <>
               <Link to="/profile">
                 <div className="d-flex ">
@@ -76,27 +110,77 @@ export default function MainNavigator() {
                 data-bs-toggle="dropdown"
               >
                 <RiArrowDropDownLine />
-                <ul className="dropdown-menu  text-small shadow">
+                <ul className="dropdown-menu  text-small shadow dropdown-menu-end">
                   <li>
-                    <a className="dropdown-item" href="s">
+                    <button
+                      className="dropdown-item"
+                      onClick={() => history.push("/profile")}
+                    >
                       profile
-                    </a>
+                    </button>
                   </li>
+                  <li>
+                    <button
+                      className="dropdown-item"
+                      onClick={() => history.push("/changePassword")}
+                    >
+                      change password
+                    </button>
+                  </li>
+                  {team && role === "freelancer" && (
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => history.push("/team/private")}
+                      >
+                        switch to team account
+                      </button>
+                    </li>
+                  )}
+                  {role === "team" && (
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => history.push("/team/private")}
+                      >
+                        switch to personal account
+                      </button>
+                    </li>
+                  )}
                   <li>
                     <hr className="dropdown-divider" />
                   </li>
                   <li>
-                    <a className="dropdown-item" href="s">
+                    <button className="dropdown-item" onClick={logoutHandler}>
                       logout
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>
             </>
           ) : (
-            <Link to="/login">
-              <button className={`btn ${classes.signIn}`}>log in</button>
-            </Link>
+            <>
+              <Link to="/login">
+                <button
+                  className={`btn ${classes.signIn} me-2 `}
+                  onClick={() => {
+                    history.push("/login");
+                  }}
+                >
+                  log in
+                </button>
+              </Link>
+              <Link to="/signup">
+                <button
+                  className={`btn ${classes.signIn} `}
+                  onClick={() => {
+                    history.push("/signup");
+                  }}
+                >
+                  sign up
+                </button>
+              </Link>
+            </>
           )}
         </div>
       </div>
