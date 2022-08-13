@@ -20,6 +20,7 @@ const { hashPassword } = require("../middlewares/hashPassword.MW");
 //   putValidator,
 // } = require("../middlewares/admin.MW");
 
+
 const adminRoute = express.Router();
 
 /** admins base route
@@ -31,6 +32,7 @@ adminRoute.route("/admin").get(authMW, adminAuth, getAllAdmins);
 adminRoute
   .route("/admin/login")
   .post(loginVA, validationMW, adminLogin);
+
 
 
 /**Register route
@@ -64,5 +66,6 @@ adminRoute
   )
   .get(getAdminById)
   .delete(deleteAdmin);
+
 
 module.exports = adminRoute;

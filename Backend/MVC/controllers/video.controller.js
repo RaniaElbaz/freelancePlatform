@@ -28,7 +28,7 @@ module.exports.addVideo = (request, response, next) => {
     });
     videoObject.save()
         .then(data => {
-            response.status(201).json({ msg: "added" });
+            response.status(201).json({ data: "added" });
         })
         .catch(error => next(error))
 }
@@ -41,7 +41,7 @@ module.exports.updateVideo = (request, response, next) => {
             if (data) return data.save()
         })
         .then(data => {
-            response.status(201).json({ msg: "updated" });
+            response.status(201).json({ data: "updated" });
         })
         .catch(error => next(error))
 }
@@ -51,7 +51,7 @@ module.exports.updateVideo = (request, response, next) => {
 module.exports.deleteVideo = (request, response, next) => {
     Video.deleteOne({ _id: request.params.id })
         .then(data => {
-            response.status(200).json({ msg: "delete " + request.params.id })
+            response.status(200).json({ data: "delete " + request.params.id })
         })
         .catch(error => next(error));
 }

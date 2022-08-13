@@ -2,9 +2,9 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const Client = require("../models/client.model");
-const Freelancer = require("../models/freelancers.model");
-const Admin = require("../models/admins.model");
-const Company = require("../models/company.model");
+const Freelancer = require("./../models/freelancers.model");
+const Admin = require("./../models/admins.model");
+const Company = require("./../models/company.model");
 
 const mailgun = require("mailgun-js");
 const DOMAIN = process.env.MailgunDOMAIN;
@@ -16,6 +16,8 @@ const mg = mailgun({ apiKey: api_key, domain: DOMAIN });
 let signUp = (req, res, next) => {
   let User, payload;
 
+
+
   req.params.userType == "freelancer"
     ? (User = Freelancer)
     : req.params.userType == "company" ? User = Company :
@@ -24,6 +26,7 @@ let signUp = (req, res, next) => {
         : req.params.userType == "admin"
           ? (User = Admin)
           : null;
+
 
   if (["freelancer", "client", "admin"].includes(req.params.userType)) {
     var { firstName, lastName, email, password } = req.body;
@@ -36,10 +39,14 @@ let signUp = (req, res, next) => {
     next(new Error("Invalid UserType!"));
   }
 
+
   User.findOne({ email })
     .then((user) => {
-      // if (user) next(new Error("User is already registered!"));
+
+      // if (user) throw new Error("User is already registered!");
       if (user) throw new Error("User is already registered!");
+
+
 
       // Email Verification
       let token = jwt.sign(payload, process.env.SECRET_KEY, {
@@ -52,8 +59,8 @@ let signUp = (req, res, next) => {
         subject: "Email Verification Link",
         // text: 'Verify Email'
         html: `
-          <h2>Account Verification</h2>
-          <pre>
+        <h2>Account Verification</h2>
+        <pre>
           Hello,
           
           Thank you for choosing Our Freelancing platform 😍
@@ -64,15 +71,17 @@ let signUp = (req, res, next) => {
           If you did not sign up, you can simply disregard this mail.
 
           Happy Emailing!
-            Devolenco Team.
+            Freelancico Team.
           </pre>
         `,
       };
 
+
       mg.messages().send(data, function (error, body) {
         if (error) next(error);
 
-        // console.log(body);
+        console.log(body);
+        console.log(error);
         return res.status(201).json({
           msg: "Email verification link has been sent, kindly activate your account",
         });
@@ -235,7 +244,7 @@ let forgotPassword = (req, res, next) => {
           If you did not forget password, Change your password now 👀.
 
           Happy Emailing!
-            Devolenco Team.
+            Freelancico Team.
           </pre>
         `,
       };

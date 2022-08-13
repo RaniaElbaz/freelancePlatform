@@ -162,7 +162,7 @@ function AdminRegister() {
   };
 
   return (
-    <div class="container-fluid loginContainer">
+    <div className="container-fluid loginContainer">
       <div className="row justify-content-center align-items-center vh-100">
         <div className={`bgGray col-11 col-md-8 col-lg-6 p-5 rounded`}>
           <form onSubmit={handleSubmit}>

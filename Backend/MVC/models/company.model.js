@@ -14,12 +14,10 @@ const companyschema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
     description: {
       type: String,
       minlength: 100,
     },
-
     isVerified: {
       type: Boolean,
       default: false,
@@ -48,11 +46,13 @@ const companyschema = new mongoose.Schema(
     picture: {
       type: String,
     },
-    location: {
+    address: {
       type: locationSchema,
+      default: {},
     },
     analytics: {
       type: analyticsSchema,
+      default: {},
     },
     wallet: {
       type: Number,
@@ -69,5 +69,6 @@ const companyschema = new mongoose.Schema(
   },
   { _id: false }
 );
-companyschema.plugin(AutoIncrement,{id:"company_id"});
-module.exports= mongoose.model("company", companyschema);
+
+companyschema.plugin(AutoIncrement, { id: "company_id" });
+module.exports = mongoose.model("company", companyschema);

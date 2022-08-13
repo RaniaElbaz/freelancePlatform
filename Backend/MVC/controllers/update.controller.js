@@ -29,7 +29,7 @@ module.exports.addUpdate = (request, response, next) => {
     });
     updateObject.save()
         .then(data => {
-            response.status(201).json({ msg: "added" });
+            response.status(201).json({ data: "added" });
         })
         .catch(error => next(error))
 }
@@ -42,7 +42,7 @@ module.exports.updateUpdate = (request, response, next) => {
             if (data) return data.save()
         })
         .then(data => {
-            response.status(201).json({ msg: "updated" });
+            response.status(201).json({ data: "updated" });
         })
         .catch(error => next(error))
 }
@@ -52,7 +52,7 @@ module.exports.updateUpdate = (request, response, next) => {
 module.exports.deleteUpdate = (request, response, next) => {
     Update.deleteOne({ _id: request.params.id })
         .then(data => {
-            response.status(200).json({ msg: "delete " + request.params.id })
+            response.status(200).json({ data: "delete " + request.params.id })
         })
         .catch(error => next(error));
 }

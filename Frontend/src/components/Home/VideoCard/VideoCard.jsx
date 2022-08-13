@@ -12,7 +12,7 @@ function VideoCard({ data: { title, imgPath } }) {
             expedita aliquid odio aperiam delectus tempora illo inventore, sed
             sapiente aut.
           </p>
-          <a href="#a" class="btn btn-dark">
+          <a href="#a" className="btn btn-dark">
             Go somewhere
           </a>
         </div>

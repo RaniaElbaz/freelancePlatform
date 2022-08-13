@@ -1,13 +1,13 @@
 const { check } = require("express-validator");
 
 module.exports.post = [
-  check("name")
-    .notEmpty()
-    .withMessage("category name is required")
-    .isString()
-    .withMessage("category name should be string")
-    .isLength({ min: 3, max: 20 })
-    .withMessage("category name length should be between 3,15"),
+  // check("name")
+  //   .notEmpty()
+  //   .withMessage("category name is required")
+  //   .isString()
+  //   .withMessage("category name should be string")
+  //   .isLength({ min: 3, max: 20 })
+  //   .withMessage("category name length should be between 3,15"),
 
   check("image")
     .isString()

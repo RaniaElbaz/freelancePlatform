@@ -1,42 +1,66 @@
 const express = require("express");
-const { body, param, query } = require("express-validator");
+
 const router = express.Router();
 const Controller = require("../controllers/product.controller");
 let validationMW = require("../middlewares/validation.MW");
-// const productValidtionArray = require("../Models/productvalidtion");
+const product = require("../middlewares/product.MW");
 
-
+const {
+  AdminAndFreelancerAuth,
+  adminAuth,
+  allAuth,
+  AdminAndClientAndCompanyAuth
+} = require("../middlewares/authAccess.MW");
+const authMW = require("../middlewares/auth.MW");
 
 router
   .route("/product")
   //get
-  .get(Controller.getAllProduct,validationMW, Controller.createProduct);
+
+  .get(validationMW, Controller.getAllProduct);
 
 //create
 router
   .route("/product/upload")
-  .post(/*productValidtionArray.body*/ validationMW, Controller.createProduct);
+
+  .post(
+    authMW,
+    AdminAndFreelancerAuth,
+    Controller.productUpload.array("product", 2),
+    product.postValidator,
+    validationMW,
+    Controller.createProduct
+  );
 
 //get by id
 router
   .route("/product/:id")
-  .get([param("id").isNumeric().withMessage("product id should be object")],
-    validationMW,Controller.getProductById)
+  .get(product.paramValidator, validationMW, Controller.getProductById)
 
   //put by id
-  .put(/*productValidtionArray.param,*/ validationMW, Controller.updateProduct)
-
-  //delete
-  .delete(
-    [body("id").isNumeric().withMessage("product id should be object")],
-    Controller.deleteProduct
-  )
-
-  router.route("product/:id/update/testimonials")
   .put(
-   /* productValidtionArray.param,*/
+    authMW,
+    AdminAndFreelancerAuth,
+    Controller.productUpload.array("product", 2),
+    product.paramValidator,
+    product.putValidator,
     validationMW,
-    Controller.productUpdateTestimonials
+    Controller.updateProduct
+  )
+  .delete(authMW, adminAuth, product.paramValidator, Controller.deleteProduct);
+
+router
+  .route("/product/:id/buyer")
+  .put(
+    authMW,
+    allAuth,
+    AdminAndClientAndCompanyAuth,
+    product.paramValidator,
+    product.putValidator,
+    validationMW,
+    Controller.updateBuyerId
   );
+
+//delete
 
 module.exports = router;

@@ -12,68 +12,65 @@ router.use(auth);
 
 router
   .route("/")
-  .get(authorization.allAuth, controller.getAllTeams) //all users
+
+  .get(authorization.allAuth, controller.getAllTeams)
+
   .post(
     authorization.AdminAndFreelancerAuth,
     mw.post,
     validationMW,
     controller.createTeam
-  ); //freelancer
+  );
 
 router
-  .route("/testimonial/:pId")
-  .put(
-    authorization.adminAuth,
-    tmw.getDelete,
-    validationMW,
-    controller.deleteTestimonialByProjectId
-  ); //admin
+  .route("/member")
+  .get(authorization.AdminAndFreelancerAuth, controller.getTeamByMember);
+
 //   .get(controller.getTestimonialByProjectId);
 
-//🟡will be moved to project routes
-router.route("/:id/testimonial").put(
-  authorization.AdminAndClientAndCompanyAuth,
-  tmw.post,
+router.route("/:id/create/portfolio").put(
+  authorization.AdminAndTeamAuth,
+  // mw.createPortfolio,
+  // validationMW,
+  controller.filesUpload,
+  controller.createPortfolio
+);
+
+router.route("/:id/update/portfolio").put(
+  // authorization.AdminAndTeamAuth,
+  // mw.updatePortfolio,
+  // validationMW,
+  controller.filesUpload,
+  controller.updatePortfolio
+);
+
+router.route("/:id/delete/portfolio").put(
+  // authorization.AdminAndTeamAuth,
+  mw.deletePortfolio,
   validationMW,
-  controller.createTestimonial //🟡test with client or company account
-); // client or company & worked with the team
+  controller.deletePortfolio
+);
 
 router
-  .route("/:id/create/portfolio")
-  .put(
-    authorization.AdminAndFreelancerAuth,
-    mw.createPortfolio,
-    validationMW,
-    controller.createPortfolio
-  ); //freelancer & (member of the team)
-
-router
-  .route("/:id/update/portfolio")
-  .put(
-    authorization.AdminAndFreelancerAuth,
-    mw.updatePortfolio,
-    validationMW,
-    controller.updatePortfolio
-  ); //feelancer & (member of the team)
-
-router
-  .route("/:id/delete/portfolio")
-  .put(
-    authorization.AdminAndFreelancerAuth,
-    mw.deletePortfolio,
-    validationMW,
-    controller.deletePortfolio
-  ); //feelancer & (member of the team)
+  .route("/:id/private")
+  .get(authorization.AdminAndFreelancerAuth, controller.getTeamByIdPrivate);
 
 router
   .route("/:id")
   .put(
-    authorization.AdminAndFreelancerAuth,
+    // authorization.AdminAndFreelancerAndTeamAuth,
     mw.put,
     validationMW,
+    controller.imageUpload,
     controller.updateTeam
-  ) //admin or freelancer & (member of the team)
+  )
   .all(mw.getDelete, validationMW)
-  .get(authorization.allAuth, controller.getTeamById) //any user
-  .delete(authorization.AdminAndFreelancerAuth, controller.deleteTeam); //freelancer & (member of the team)
+  .get(
+    // authorization.allAuth,
+    controller.getTeamByIdPublic
+  )
+  .delete(
+    // authorization.AdminAndTeamAuth,
+    controller.deleteTeam
+  );
 module.exports = router;

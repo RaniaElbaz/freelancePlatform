@@ -1,18 +1,16 @@
-const mongoose = require("mongoose");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const { imageExtRegex, fileExtRegex } = require("../helpers/regex");
 
-require("../models/team.model");
-let Team = mongoose.model("teams");
-
-require("../models/project.model");
-let Project = mongoose.model("projects");
+let Team = require("../models/team.model");
 
 module.exports.createTeam = (request, response, next) => {
   let object = new Team({
     name: request.body.name,
     description: request.body.description,
     hourlyRate: request.body.hourlyRate,
-    logo: request.body.logo,
-    members: request.body.members,
+    members: [...request.body.members, request.id],
     skills: request.body.skills,
   });
   Team.findOne({
@@ -33,13 +31,11 @@ module.exports.createTeam = (request, response, next) => {
 };
 
 module.exports.getAllTeams = (request, response, next) => {
-  Team.find(
-    {},
-    { members: 0, projects: 0, portfolios: 0, testimonials: 0, wallet: 0 }
-  )
-    .populate({ path: "members", select: "fullName" })
+  Team.find({}, { testimonials: 0, wallet: 0 })
+    .populate({ path: "members", select: "firstName lastName -_id" })
     .populate({ path: "skills", select: "name" })
     .populate({ path: "projects", select: "name" })
+    .populate({ path: "portfolios" })
     .then((data) => {
       response.status(200).json(data);
     })
@@ -48,16 +44,17 @@ module.exports.getAllTeams = (request, response, next) => {
     });
 };
 
-module.exports.getTeamById = (request, response, next) => {
+module.exports.getTeamByIdPublic = (request, response, next) => {
   Team.findOne({ _id: request.params.id }, { wallet: 0 })
-    .populate({ path: "members", select: "fullName" })
+    .populate({ path: "members" })
     .populate({ path: "skills", select: "name" })
     .populate({ path: "projects", select: "name" })
+    .populate({ path: "portfolios", populate: { path: "skills" } })
     .then((data) => {
-      if (!data.members.includes(request.id))
-        next(new Error("not team member"));
       if (data == null) next(new Error("team not found"));
       else {
+        request.id = data.id;
+        request.role = "team";
         response.status(200).json(data);
       }
     })
@@ -66,11 +63,76 @@ module.exports.getTeamById = (request, response, next) => {
     });
 };
 
+module.exports.getTeamByIdPrivate = (request, response, next) => {
+  Team.findOne({ _id: request.params.id })
+    .populate({ path: "members" })
+    .populate({ path: "skills", select: "name" })
+    .populate({ path: "projects", select: "name" })
+    .then((data) => {
+      if (!data) next(new Error("team not found"));
+      else if (
+        request.role == "freelancer" &&
+        !data.members.filter((member) => member._id == request.id)[0]
+      )
+        next(new Error("not team member"));
+      else {
+        request.id = data.id;
+        request.role = "team";
+        console.log(request.id, request.role);
+        response.status(200).json(data);
+      }
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+module.exports.getTeamByMember = (request, response, next) => {
+  Team.findOne({ members: request.id }, { name: 1, logo: 1 })
+    .then((data) => {
+      if (!data) next(new Error("freelancer is not a member in any team"));
+      else {
+        request.id = data.id;
+        console.log(request.id);
+        request.role = "team";
+        response.status(200).json(data);
+      }
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+const imageStorage = multer.diskStorage({
+  destination: "public/profileImages/teams",
+  filename: (request, response, next) => {
+    Team.findById(request.params.id).then((data) => {
+      if (!data) next(new Error("Team not found"));
+      else next(null, request.params.id + path.extname(response.originalname));
+    });
+  },
+});
+
+module.exports.imageUpload = multer({
+  storage: imageStorage,
+  limits: {
+    fileSize: 1000000, // 1000000 Bytes = 1 MB
+  },
+  fileFilter(request, response, next) {
+    console.log(!response);
+    if (!response.originalname.match(imageExtRegex)) {
+      return next(new Error("Please upload an Image"));
+    }
+    next(undefined, true);
+  },
+}).single("image");
+
 module.exports.updateTeam = (request, response, next) => {
+  console.log(request.file);
   Team.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("team not found"));
-      else if (!data.members.includes(request.id))
+      else if (request.role == "team" && request.id !== request.params.id)
         throw new Error("not team member");
 
       for (let prop in request.body) {
@@ -97,13 +159,19 @@ module.exports.updateTeam = (request, response, next) => {
           }
         } else if (
           prop == "testimonials" ||
+          prop == "logo" ||
           prop == "analytics" ||
           prop == "wallet" ||
           prop == "isVerified" ||
-          prop == "projects"
+          prop == "projects" ||
+          prop == "connects"
         )
           continue;
         else data[prop] = request.body[prop] || data[prop];
+      }
+      if (request.file) {
+        data.logo = `${request.protocol}://${request.hostname}:${process.env.PORT
+          }/${request.file.path.replaceAll("\\", "/")}`;
       }
       Team.findOne({ members: data.members, name: { $ne: data.name } }).then(
         (team) => {
@@ -127,9 +195,15 @@ module.exports.deleteTeam = (request, response, next) => {
     .then((data) => {
       if (!data) {
         next(new Error("Team not found"));
-      } else if (!data.members.includes(request.id)) {
+      } else if (request.role == "team" && !data.members.includes(request.id)) {
         next(new Error("not team member"));
       } else {
+        fs.unlinkSync(
+          data.logo.replace(
+            `${request.protocol}://${request.hostname}:${process.env.PORT}/`,
+            ""
+          )
+        );
         data.delete();
         response.status(200).json({ msg: "team deleted" });
       }
@@ -137,17 +211,52 @@ module.exports.deleteTeam = (request, response, next) => {
     .catch((error) => next(error));
 };
 
+const filesStorage = multer.diskStorage({
+  destination: `public/portfolioFiles/teams`,
+  filename: (request, response, next) => {
+    Team.findById(request.params.id).then((data) => {
+      if (!data) next(new Error("Team not found"));
+      else
+        next(
+          null,
+          request.id + "_" + new Date().getTime() + "_" + response.originalname
+        );
+    });
+  },
+});
+
+module.exports.filesUpload = multer({
+  storage: filesStorage,
+  limits: {
+    fileSize: 300000000, // 300000000 Bytes = 0.3 GB
+  },
+  fileFilter(request, response, next) {
+    console.log(response);
+    if (!response.originalname.match(fileExtRegex)) {
+      return next(new Error("Please upload a File"));
+    }
+    next(undefined, true);
+  },
+}).array("files", 2);
+
 module.exports.createPortfolio = (request, response, next) => {
+  console.log(request.body.projectTitle);
   Team.findById(request.params.id)
     .then((data) => {
       if (!data) throw new Error("team not found");
-      else if (!data.members.includes(request.id))
+      else if (request.role == "team" && !data.members.includes(request.id))
         next(new Error("not team member"));
 
       let object = {};
       for (let prop in request.body) {
         object[prop] = request.body[prop];
       }
+      request.files.map((file) => {
+        object.files.push(
+          `${request.protocol}://${request.hostname}:${process.env.PORT
+          }/${file.path.replaceAll("\\", "/")}`
+        );
+      });
       data.portfolios.push(object);
       return data.save().then((data) => {
         response
@@ -166,7 +275,19 @@ module.exports.updatePortfolio = (request, response, next) => {
       if (!data) throw new Error("team not found");
       else if (!data.members.includes(request.id))
         next(new Error("not team member"));
-      data.portfolios[request.body.index] = request.body.portfolio;
+      for (let prop in request.body) {
+        if (prop == "files") {
+          data.portfolios[request.body.index].files = [
+            `${request.protocol}://${request.hostname}:${process.env.PORT
+            }/${request.files[0].path.replaceAll("\\", "/")}`,
+            `${request.protocol}://${request.hostname}:${process.env.PORT
+            }/${request.files[1].path.replaceAll("\\", "/")}`,
+          ];
+        } else if (prop != "index") {
+          data.portfolios[request.body.index][prop] = request.body[prop];
+        }
+      }
+
       return data.save().then((data) => {
         response
           .status(200)
@@ -182,12 +303,21 @@ module.exports.deletePortfolio = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
       if (!data) throw new Error("team not found");
-      else if (!data.members.includes(request.id))
+      else if (request.role == "team" && !data.members.includes(request.id))
         next(new Error("not team member"));
       console.log(request.body.index);
       console.log(data.portfolios.length);
       if (request.body.index < data.portfolios.length) {
+        data.portfolios[request.body.index].files.map((file) => {
+          fs.unlinkSync(
+            file.replace(
+              `${request.protocol}://${request.hostname}:${process.env.PORT}/`,
+              ""
+            )
+          );
+        });
         data.portfolios.splice(request.body.index, 1);
+
         return data.save().then(() => {
           response.status(200).json({ msg: "portfolio deleted" });
         });
@@ -198,67 +328,6 @@ module.exports.deletePortfolio = (request, response, next) => {
     .catch((error) => {
       next(error);
     });
-};
-
-module.exports.createTestimonial = (request, response, next) => {
-  Team.findById(request.params.id)
-    .then((data) => {
-      if (!data) next(new Error("team not found"));
-      Project.findById(request.body.project).then((project) => {
-        if (!project) {
-          next(new Error("project not found"));
-        } else if (
-          project.recruiter == { id: request.id, type: request.role + "s" }
-        ) {
-          let object = {};
-          for (let prop in request.body) {
-            object[prop] = request.body[prop];
-          }
-          Team.findOne({ "testimonials.project": request.body.project }).then(
-            (team) => {
-              if (!team) {
-                data.testimonials.push(object);
-                data.projects.push(request.body.project);
-                return data.save().then((data) => {
-                  response.status(200).json({
-                    msg: "testimonial created",
-                    data: data.testimonials,
-                  });
-                });
-              } else
-                next(new Error("testimonial already exists for this project"));
-            }
-          );
-        } else {
-          next(
-            new Error(
-              "you can't create testimonial for this project since you're not the owner"
-            )
-          );
-        }
-      });
-    })
-    .catch((error) => {
-      next(error);
-    });
-};
-
-module.exports.deleteTestimonialByProjectId = (request, response, next) => {
-  Team.findOne({ "testimonials.project": request.params.pId })
-    .then((data) => {
-      if (!data) {
-        next(new Error("testimonial not found"));
-      } else {
-        for (let item of data.testimonials) {
-          if (item.project == request.params.pId) {
-            data.testimonials.splice(data.testimonials.indexOf(item), 1);
-            data.save();
-            response.status(200).json({ msg: "testimonial deleted" });
-          }
-        }
-      }
-    })
-    .catch((error) => next(error));
 };
 
 // module.exports.getTestimonialByProjectId = (request, response, next) => {

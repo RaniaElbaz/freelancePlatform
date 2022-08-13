@@ -26,10 +26,15 @@ router
     mw.paramId,
     mw.put,
     validationMW,
+    controller.imageUpload,
     controller.updateCategory
   )
   .all(mw.paramId, validationMW)
   .get(authorization.allAuth, controller.getCategoryById)
   .delete(authorization.adminAuth, controller.deleteCategory);
+
+router
+  .route("/:id/uploadImage")
+  .post(controller.imageUpload, controller.updateImage);
 
 module.exports = router;

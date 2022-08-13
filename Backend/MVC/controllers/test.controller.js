@@ -21,7 +21,7 @@ module.exports.getAllTests = (request, response, next) => {
  */
 module.exports.getTestById = (request, response, next) => {
     Test.findOne({ _id: request.params.id })
-        // .populate({ path: "skills", select: "name -_id" })
+        .populate({ path: "skills", select: "name -_id" })
         .then((data) => {
             if (!data) next(new Error("test not found"));
             else response.status(200).json(data);
@@ -43,7 +43,7 @@ module.exports.createTest = (request, response, next) => {
     });
     TestObject.save()
         .then(data => {
-            response.status(201).json({ msg: "added" });
+            response.status(201).json({ data: "added" });
         })
         .catch(error => next(error))
 }
@@ -56,14 +56,13 @@ module.exports.updateTest = (request, response, next) => {
             if (!data) next(new Error("test not found"));
             else {
                 for (let key in request.body) {
-                    console.log(key);
                     data[key] = request.body[key];
                 }
                 return data.save();
             }
         })
         .then(data => {
-            response.status(201).json({ msg: "updated" });
+            response.status(201).json({ data: "updated" });
         })
         .catch(error => next(error))
 }
@@ -73,7 +72,7 @@ module.exports.updateTest = (request, response, next) => {
 module.exports.deleteTest = (request, response, next) => {
     Test.deleteOne({ _id: request.params.id })
         .then(data => {
-            response.status(200).json({ msg: "delete " + request.params.id })
+            response.status(200).json({ data: "delete " + request.params.id })
         })
         .catch(error => next(error));
 }

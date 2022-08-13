@@ -20,20 +20,10 @@ module.exports.post = [
     .optional()
     .withMessage("isInternship should be boolean"),
 
-  check("budget.type")
-    .notEmpty()
-    .withMessage("project budget is required")
-    .isString()
-    .withMessage("project budget should be an string")
-    .isIn(["fixed", "hourlyRate"]).withMessage(`doctor department should be in (
-    "fixed",
-    "hourlyRate")`),
-
-  check("budget.value")
-    .notEmpty()
-    .withMessage("project budget is required")
-    .isInt({ min: 10, max: 100 })
-    .withMessage("project budget should be an interger between 10 and 100"),
+  check("budget")
+    .optional()
+    .isInt({ min: 5 })
+    .withMessage("project budget should be an interger begins form 5"),
 
   check("skills")
     .notEmpty()
@@ -44,14 +34,14 @@ module.exports.post = [
   check("duration")
     .notEmpty()
     .withMessage("project duration is required")
-    .isString()
-    .withMessage("project duration should be string"),
+    .isNumeric()
+    .withMessage("project duration should be number"),
 
   check("connects")
     .notEmpty()
     .withMessage("project members is required")
-    .isInt({ min: 3, max: 20 })
-    .withMessage("project members should be array 3:20"),
+    .isInt({ min: 1, max: 20 })
+    .withMessage("project members should be array 1:20"),
 ];
 
 module.exports.put = [
@@ -74,18 +64,10 @@ module.exports.put = [
     .optional()
     .withMessage("isInternship should be boolean"),
 
-  check("budget.type")
-    .isString()
+  check("budget")
+    .isInt({ min: 5 })
     .optional()
-    .withMessage("project budget should be an string")
-    .isIn(["fixed", "hourlyRate"]).withMessage(`doctor department should be in (
-    "fixed",
-    "hourlyRate")`),
-
-  check("budget.value")
-    .isInt({ min: 10, max: 100 })
-    .optional()
-    .withMessage("project budget should be an interger between 10 and 100"),
+    .withMessage("project budget should be an interger begins form 5"),
 
   check("skills")
     .isArray()
@@ -93,14 +75,14 @@ module.exports.put = [
     .withMessage("project skills should be array 3:20"),
 
   check("duration")
-    .isString()
+    .isNumeric()
     .optional()
-    .withMessage("project duration should be string"),
+    .withMessage("project duration should be number"),
 
   check("connects")
     .isInt()
     .optional()
-    .withMessage("project members should be array 3:20"),
+    .withMessage("project members should be array 1:20"),
 ];
 
 module.exports.getDelete = [
@@ -117,6 +99,6 @@ module.exports.createProposal = [
     .withMessage("proposal text should be string"),
   check("files")
     .optional()
-    .isString()
-    .withMessage("proposal text should be string"),
+    .isArray()
+    .withMessage("proposal files should be array"),
 ];

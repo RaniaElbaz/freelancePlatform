@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
-const talentSchema = require("./talent.model");
-
 const validators = require("../helpers/functions");
 
 const minCategories = 0;
@@ -35,7 +33,7 @@ const skillSchema = new mongoose.Schema({
       },
     ],
   },
-  talents: [talentSchema],
+  talents: { type: [Number], ref: "freelancers" },
 });
 
 skillSchema.plugin(AutoIncrement, { id: "skillId" });

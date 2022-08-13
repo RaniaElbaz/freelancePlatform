@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 require("../models/admins.model");
 let Admin = mongoose.model("admins");
@@ -83,14 +84,18 @@ const addAdmin = (request, response, next) => {
       }
     })
     .then((data) => {
+
       response.status(201).json({ msg: "signup success" });
+
     })
     .catch((error) => next(error));
 };
 
 /** update an admin data (update profile)
  */
+
 const updateAdminDetails = (request, response, next) => {
+
   Admin.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("admin not found"));
@@ -98,7 +103,9 @@ const updateAdminDetails = (request, response, next) => {
         console.log(key);
         if (key == "email" || key == "password")
           next(new Error("Invalid request"));
+
         else if (key == "location") {/*****************location */
+
           for (let locationKey in data[key]) {
             if (request.body.hasOwnProperty(locationKey)) {
               data.location[locationKey] = request.body[locationKey];
@@ -110,10 +117,13 @@ const updateAdminDetails = (request, response, next) => {
       return data.save();
     })
     .then((data) => {
+
       response.status(201).json({ msg: "updated" });
+
     })
     .catch((error) => next(error));
 };
+
 
 /** get admin  by id 
  */
@@ -121,6 +131,7 @@ const getAdminById = (request, response, next) => {
   Admin.findOne(
     { _id: request.params.id },
     { password: 0 }//
+
   )
     .then((data) => {
       if (data == null) next(new Error("admin not found"));
@@ -133,7 +144,9 @@ const getAdminById = (request, response, next) => {
 
 /** get all admins
  */
+
 const getAllAdmins = (request, response, next) => {
+
   Admin.find(
     {},
     {
@@ -151,6 +164,7 @@ const getAllAdmins = (request, response, next) => {
 /**delete an admin
  * admin only
  */
+
 const deleteAdmin = (request, response, next) => {
   Admin.deleteOne({ _id: request.params.id })
     .then((data) => {
@@ -167,3 +181,4 @@ module.exports = {
   getAllAdmins,
   deleteAdmin
 }
+

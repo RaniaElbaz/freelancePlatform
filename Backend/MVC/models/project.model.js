@@ -4,7 +4,6 @@ const AutoIncrement = require("mongoose-sequence")(mongoose);
 const recruiterSchema = require("./recruiter.model");
 const talentSchema = require("./talent.model");
 const proposalSchema = require("./proposal.model");
-const budgetSchema = require("./budget.model");
 
 const validators = require("../helpers/functions");
 
@@ -31,7 +30,8 @@ const projectSchema = new mongoose.Schema(
       default: false,
     },
     budget: {
-      type: budgetSchema,
+      type: Number,
+      min: 5,
     },
     recruiter: { type: recruiterSchema, required: true },
     category: {
@@ -49,18 +49,21 @@ const projectSchema = new mongoose.Schema(
       },
     },
     duration: {
-      type: String,
+      type: Number,
       required: true,
     },
     connects: {
       type: Number,
       required: true,
-      min: 3,
+      min: 1,
       max: 20,
     },
 
     /*properties below will be added in backend not by user*/
     startTime: {
+      type: Date,
+    },
+    endTime: {
       type: Date,
     },
     status: {
@@ -82,4 +85,4 @@ const projectSchema = new mongoose.Schema(
 );
 
 projectSchema.plugin(AutoIncrement, { id: "projectId" });
-mongoose.model("projects", projectSchema);
+module.exports = mongoose.model("projects", projectSchema);

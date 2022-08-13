@@ -21,8 +21,8 @@ module.exports.getAllReports = (request, response, next) => {
  */
 module.exports.getReportById = (request, response, next) => {
   Report.findOne({ _id: request.params.id })
-    .populate({ path: "reporter", select: "email -_id" })
-    //   .populate({ path: "reported", select: "description" })
+    .populate({ path: "reporter", select: "email -_id " })
+    .populate({ path: "reported", select: "description" })
     .then((data) => {
       if (!data) next(new Error("report not found"));
       else response.status(200).json(data);
@@ -47,7 +47,7 @@ module.exports.createReport = (request, response, next) => {
   });
   ReportObject.save()
     .then((data) => {
-      response.status(201).json({ msg: "added" });
+      response.status(201).json({ data: "added" });
     })
     .catch((error) => next(error));
 };
@@ -62,7 +62,7 @@ module.exports.updateReport = (request, response, next) => {
       return data.save();
     })
     .then((data) => {
-      response.status(201).json({ msg: "updated" });
+      response.status(201).json({ data: "updated" });
     })
     .catch((error) => next(error));
 };
@@ -72,7 +72,7 @@ module.exports.updateReport = (request, response, next) => {
 module.exports.deleteReport = (request, response, next) => {
   Report.deleteOne({ _id: request.params.id })
     .then((data) => {
-      response.status(200).json({ msg: "delete " + request.params.id });
+      response.status(200).json({ data: "delete " + request.params.id });
     })
     .catch((error) => next(error));
 };

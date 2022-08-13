@@ -5,21 +5,20 @@ const controller = require("../controllers/company.controller");
 
 let validationMW = require("../middlewares/validation.MW");
 const authMW = require("../middlewares/auth.MW");
-const { hashPassword } = require("../middlewares/hashPassword.MW");
-const {AdminAndCompanyAuth,adminAuth,companyAuth} = require("../middlewares/authAccess.MW");
-const companyValidtion =require("../middlewares/company.MW")
+
+const {
+  AdminAndCompanyAuth,
+  companyAuth,
+} = require("../middlewares/authAccess.MW");
+
+const { putInfoValidator } = require("../middlewares/freelancers.MW");
+
+const companyValidtion = require("../middlewares/company.MW");
 
 companyRoute
   .route("/company")
   //get
-  .get(
-    authMW,    
-    validationMW,
-    controller.getAllComapny
-  );
-
-
-
+  .get(authMW, validationMW, controller.getAllComapny);
 
 //signUp step2 (put details by id)
 companyRoute
@@ -30,25 +29,28 @@ companyRoute
     validationMW,
     companyValidtion.paramValidator,
     companyValidtion.detailsValidator,
+    controller.imageUpload,
     controller.updateCompanyDetails
   );
 
 //signUp step 3 ( put info by id)
 companyRoute
   .route("/company/:id/info")
-  .put( authMW,
+  .put(
+    authMW,
     companyAuth,
     companyValidtion.paramValidator,
-    companyValidtion.infoValidator,
-     validationMW, controller.updateCompanyInfo);
-
+    putInfoValidator,
+    validationMW,
+    controller.updateCompanyInfo
+  );
 
 //get by id (puplic view)
 companyRoute
-  .route("/company/:id/puplic")
+  .route("/company/:id/public")
   .get(
     authMW,
-    companyValidtion.paramValidator,   
+    companyValidtion.paramValidator,
     validationMW,
     controller.getCampanyByIdPuplic
   );
@@ -57,8 +59,9 @@ companyRoute
 companyRoute
   .route("/company/:id/private")
   .get(
-    authMW,companyAuth,
-    companyValidtion.paramValidator,  
+    authMW,
+    companyAuth,
+    companyValidtion.paramValidator,
     validationMW,
     controller.getCampanyByIdPrivate
   );
@@ -69,7 +72,7 @@ companyRoute
   .delete(
     authMW,
     AdminAndCompanyAuth,
-    companyValidtion.paramValidator,  
+    companyValidtion.paramValidator,
     validationMW,
     controller.deleteCompany
   );
@@ -78,8 +81,9 @@ companyRoute
 companyRoute
   .route("company/:id/update/testimonials")
   .put(
-    authMW,AdminAndCompanyAuth,
-    companyValidtion.paramValidator,  
+    authMW,
+    AdminAndCompanyAuth,
+    companyValidtion.paramValidator,
     companyValidtion.testimonialValidator,
     validationMW,
     controller.CompanyupdateTestimonials

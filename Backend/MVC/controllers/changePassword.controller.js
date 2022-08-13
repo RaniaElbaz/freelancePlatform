@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 require("../models/freelancers.model")
@@ -6,6 +7,7 @@ const Freelancer = mongoose.model("freelancers");
 const Admin = mongoose.model("admins");
 const Company = require("../models/company.model")
 const Client = require("../models/client.model")
+
 
 module.exports.changePassword = (request, response, next) => {
   let User = null;
@@ -37,6 +39,7 @@ module.exports.changePassword = (request, response, next) => {
         data.password = bcrypt.hashSync(request.body.password, 10);
         data.save();
         response.status(201).json({ msg: "Password Changed" });
+
       }
     })
     .catch((error) => next(error));

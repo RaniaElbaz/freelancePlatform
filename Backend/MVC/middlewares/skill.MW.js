@@ -17,6 +17,7 @@ module.exports.post = [
 
 module.exports.put = [
   check("name")
+    .optional()
     .isString()
     .withMessage("skill name should be string")
     .isLength({ min: 3, max: 20 })

@@ -20,11 +20,9 @@ const router = express.Router();
 //   }
 // });
 
-router.route("/search/job")
-  .get(controller.getJob)
+router.route("/search/job").get(controller.getJob);
 
-router.route("/search/profile/:userType?")
-  .get(controller.getProfile)
-
+router.route("/search/profile/:userType?").get(controller.getProfile);
 
 module.exports = router;
+
