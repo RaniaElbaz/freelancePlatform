@@ -77,22 +77,26 @@ const ProductsCard = (res) => {
                 price {res.product.price} $
               </div>
 
+              {res.product.ownerId
+                ? res.product.ownerId._id == id &&
+                  (role === "freelancer" || role === "team") && (
+                    <Link to={`/product/update/${res.product._id}`}>
+                      <button
+                        className={`${buttons.regularBeige} btn`}
+                        // style={{ borderRadius: "0.375rem",  }}
+                        onClick={(sendId) => {
+                          <Uploadproject id={sendId} />;
+                        }}
+                      >
+                        Edit
+                      </button>
+                    </Link>
+                  )
+                : ""}
 
-              {res.product.ownerId._id == id && (role === "freelancer" || role === "team") && (
-                <Link to={`/product/update/${res.product._id}`}>
-                  <button
-                    className={`${buttons.regularBeige} btn`}
-                    // style={{ borderRadius: "0.375rem",  }}
-                    onClick={(sendId) => {
-                      <Uploadproject id={sendId} />;
-                    }}
-                  >
-                    Edit
-                  </button>
-                </Link>
-              )}
-
-              {(role === "admin" || id == res.product.ownerId._id) && (
+              {(role === "admin" || id == res.product.ownerId
+                ? res.product.ownerId._id
+                : "") && (
                 <Link to="/product">
                   <button
                     className={`${buttons.regularBeige} btn`}

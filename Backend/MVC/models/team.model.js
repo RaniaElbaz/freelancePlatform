@@ -20,19 +20,16 @@ const teamSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
     minLength: 100,
     maxLength: 1000,
   },
   hourlyRate: {
     type: Number,
-    required: true,
     min: 10,
     max: 100,
   },
   hoursPerWeek: {
     type: Number,
-    required: true,
     min: 5,
     max: 30,
     default: 30,
@@ -58,10 +55,10 @@ const teamSchema = new mongoose.Schema({
     type: [Number],
     ref: "skills",
     validate: [
-      {
-        validator: validators.itemsLimit,
-        message: "team skills should be between 2,15",
-      },
+      // {
+      //   validator: validators.itemsLimit,
+      //   message: "team skills should be between 2,15",
+      // },
       {
         validator: validators.checkUniqueItems,
         message: "team skills items should be unique",

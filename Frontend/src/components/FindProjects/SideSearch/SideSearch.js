@@ -90,9 +90,12 @@ export default function SideSearch(props) {
   useEffect(() => {
     categoriesApi
       .then((res) => {
+        console.log(res.data);
+
         setCategories(res.data);
         // setFilteredCategories(res.data);
         skillsApi.then((res) => {
+          console.log(res.data);
           setSkills(res.data);
           // setFilteredSkills(res.data);
         });
@@ -124,7 +127,7 @@ export default function SideSearch(props) {
     // setSkillFilterKey([checkedSkills]);
   }, [checkedCategories, checkedSkills, checkedBudgets]);
   return (
-    <aside className={`card col-lg-3 mb-2 ${classes.card}`}>
+    <aside className={`card col-lg-3 m-3 ${classes.card}`}>
       <div className={`card-body`}>
         <div className="d-flex justify-content-between">
           <h5 className={`card-title ${classes.cardTitle}`}>Filter</h5>

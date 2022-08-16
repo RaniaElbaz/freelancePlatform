@@ -5,7 +5,7 @@ import buttons from "../../FindProjects/buttons.module.css";
 let token = localStorage.getItem("token");
 
 export default function ProjectForm(props) {
-  const wallet = 0;
+  const wallet = 100;
   const { updateId } = props;
   const [categories, setCategories] = useState([]);
   const [skills, setSkills] = useState([]);
@@ -83,36 +83,36 @@ export default function ProjectForm(props) {
     let values = Object.values(project).every((v) => v === "");
     let errors = Object.values(projectErr).every((e) => e !== "");
     console.log(errors, values);
-    if (!errors && values) {
-      let api;
-      if (updateId) {
-        api = axios({
-          url: `http://localhost:8080/project/${updateId}`,
-          method: "PUT",
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-          data: project,
-        });
-      } else {
-        api = axios({
-          url: `http://localhost:8080/project`,
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-          data: project,
-        });
-      }
-      api
-        .then((res) => {
-          console.log(res);
-          history.push(`/project/${res.data.data}/private`);
-        })
-        .catch((error) => {
-          console.log(error.code, error.message, error.response.data);
-        });
+    // if (!errors && values) {
+    let api;
+    if (updateId) {
+      api = axios({
+        url: `http://localhost:8080/project/${updateId}`,
+        method: "PUT",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        data: project,
+      });
+    } else {
+      api = axios({
+        url: `http://localhost:8080/project`,
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        data: project,
+      });
     }
+    api
+      .then((res) => {
+        console.log(res);
+        history.push(`/project/${res.data.data._id}/private`);
+      })
+      .catch((error) => {
+        console.log(error.code, error.message, error.response.data);
+      });
+    // }
   };
 
   const validationHandler = (field, value) => {

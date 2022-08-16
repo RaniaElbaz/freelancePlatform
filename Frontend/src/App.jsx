@@ -18,7 +18,6 @@ import ProductDetails from "./pages/Store/ProductDetails";
 import CreateProduct from "./pages/Store/CreateProduct";
 import UpdateProduct from "./pages/Store/UpdateProduct";
 
-// Hamdy
 import Home from "./pages/Home/Home";
 import Login from "./components/Auth/login/Login";
 import Register from "./components/Auth/Register/Register";

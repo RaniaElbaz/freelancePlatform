@@ -19,6 +19,8 @@ import PrimaryButton from "../../Buttons/PrimaryButton";
 import { updateUserDetails } from "../../../store/actions/userDetails";
 
 export default function UpdateDetails({ show, onHide, editKey, userType }) {
+  const [members, setMembers] = useState({});
+  const [detailsArray, setDetailsArray] = useState([]);
   const [data, setData] = useState({});
   const [langArray, setLangArray] = useState([]);
   const [errorMessage, setErrorMessage] = useState({});
@@ -30,8 +32,47 @@ export default function UpdateDetails({ show, onHide, editKey, userType }) {
 
   const dataToBeSent = {};
   const address = { ...userDetails.address };
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNvbXBhbnkiLCJpYXQiOjE2NjAzMjY5MjUsImV4cCI6MTY2MDMzMDUyNX0.smXKUhcCAVpRPB110B4oF6B2l6ebyS-6vuMdYap5qoo";
+  const token = localStorage.getItem("token");
+
+  const createTeam = () => {
+    axios({
+      method: "post",
+      url: `http://localhost:8080/team`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      data: dataToBeSent,
+    })
+      .then((response) => {
+        setErrorMessage("");
+        console.log(response.data);
+        onHide();
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const removeMember = (selectedMember) => {
+    setDetailsArray(
+      detailsArray.filter((member) => member._id !== selectedMember._id)
+    );
+  };
+
+  const handleMember = (event) => {
+    setErrorMessage({ ...errorMessage, members: "" });
+    const exists = detailsArray.filter(
+      (member) => member._id === members[event.target.value]._id
+    );
+    if (!exists.length && detailsArray.length < 1) {
+      setDetailsArray([...detailsArray, members[event.target.value]]);
+      console.log(event.target.value);
+    } else if (detailsArray.length > 1) {
+      setErrorMessage({
+        ...errorMessage,
+        members: "can not add less than 1 members",
+      });
+    }
+  };
 
   const handleOneWordInput = (event) => {
     const value = event.target.value.trim();
@@ -256,8 +297,39 @@ export default function UpdateDetails({ show, onHide, editKey, userType }) {
         dataToBeSent.languages = langArray;
         updateFreelancerDetails();
       }
+    } else if (editKey === "team") {
+      if (detailsArray.length >= 1) {
+        dataToBeSent.name = data.name;
+        dataToBeSent.members = [];
+        for (let member of detailsArray) {
+          dataToBeSent.members.push(member._id);
+        }
+        createTeam();
+        window.location.reload();
+      } else {
+        setErrorMessage({
+          ...errorMessage,
+          members: "please add more members first",
+        });
+        dataToBeSent.members = [];
+      }
     }
   };
+
+  useEffect(() => {
+    /********** get skills */
+    axios({
+      method: "GET",
+      url: `http://localhost:8080/freelancers`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        setMembers(response.data);
+      })
+      .catch((error) => console.log(error));
+  }, []); //didMount
 
   useEffect(() => {
     if (editKey === "languages") setLangArray(userDetails.languages);
@@ -266,7 +338,12 @@ export default function UpdateDetails({ show, onHide, editKey, userType }) {
     }
   }, [userDetails, editKey]); //didMount
 
-  if (editKey === "details" || editKey === "languages" || editKey === "about") {
+  if (
+    editKey === "details" ||
+    editKey === "languages" ||
+    editKey === "about" ||
+    editKey === "team"
+  ) {
     return (
       <Modal
         show={show}
@@ -283,6 +360,8 @@ export default function UpdateDetails({ show, onHide, editKey, userType }) {
               ? "Edit Languages"
               : editKey === "about"
               ? "Edit Description"
+              : editKey === "team"
+              ? "Create Team"
               : ""}
           </Modal.Title>
         </Modal.Header>
@@ -462,6 +541,44 @@ export default function UpdateDetails({ show, onHide, editKey, userType }) {
                 <p className="text-danger col-10">{errorMessage.description}</p>
               )}
             </section>
+          ) : editKey == "team" ? (
+            <>
+              <section className="col-10">
+                <InputGroup
+                  type="text"
+                  placeholder="Name"
+                  action={handleOneWordInput}
+                  name="name"
+                  errorMessage={errorMessage.name}
+                />
+              </section>
+              <section className="col-10">
+                <DropDownList
+                  id="members"
+                  options={members}
+                  action={handleMember}
+                  title="select a member"
+                />
+                <p className="text-danger w-100">{errorMessage.members}</p>
+                <section className="d-flex m-0">
+                  {detailsArray
+                    ? detailsArray.map((member, index) => {
+                        console.log(detailsArray);
+                        return (
+                          <p key={index}>
+                            <span className="mx-1 d-inline-block p-2 tags">
+                              {member.firstName}
+                              <DeleteButton
+                                action={() => removeMember(member)}
+                              />
+                            </span>
+                          </p>
+                        );
+                      })
+                    : ""}
+                </section>
+              </section>
+            </>
           ) : (
             ""
           )}

@@ -89,6 +89,7 @@ function Login() {
         // withCredentials: true,
         data: data,
       };
+
       const response = await axiosInstance(config);
 
       if (!response) {
@@ -116,6 +117,7 @@ function Login() {
         localStorage.setItem("role", decodedToken.role);
 
         history.push("/project");
+        window.location.reload();
       }
     } catch (error) {
       console.log(error);

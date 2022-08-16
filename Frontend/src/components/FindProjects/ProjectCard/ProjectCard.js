@@ -164,10 +164,12 @@ export default function ProjectCard(props) {
               <FaMoneyBillWaveAlt />
               <b> ${project.recruiter.id.analytics.spent}</b>
             </span>
-            <span>
-              <IoLocationSharp />
-              {project.recruiter.id.location.city}
-            </span>
+            {project.recruiter.id.location && (
+              <span>
+                <IoLocationSharp />
+                {project.recruiter.id.location.city}
+              </span>
+            )}
             <span className="ms-2">
               <AiOutlineFundProjectionScreen />
               {project.recruiter.id.projects.length} projects

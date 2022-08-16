@@ -64,7 +64,7 @@ export default function TestimonialForm() {
       api
         .then((res) => {
           console.log(res);
-          history.push(`/project/${res.data.data}/private`);
+          history.push(`/project/${res.data.data._id}/private`);
         })
         .catch((error) => {
           console.log(error.code, error.message, error.response.data);

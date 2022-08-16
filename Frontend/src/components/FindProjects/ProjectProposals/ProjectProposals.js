@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import classes from "./ProjectProposals.module.css";
 import buttons from "../../FindProjects/buttons.module.css";
 import { Link } from "react-router-dom";
@@ -8,6 +9,7 @@ import { FaDownload } from "react-icons/fa";
 let token = localStorage.getItem("token");
 
 export default function ProjectProposals() {
+  const history = useHistory();
   const [project, setProject] = useState([]);
   const params = useParams();
 
@@ -81,7 +83,16 @@ export default function ProjectProposals() {
               >
                 <div className="accordion-body">
                   <>
-                    <h5 className={`${classes.talent}`}>
+                    <h5
+                      className={`${classes.talent}`}
+                      onClick={() => {
+                        history.push(
+                          `/${proposal.talent.type.replace("s", "")}/${
+                            proposal.talent.id
+                          }`
+                        );
+                      }}
+                    >
                       {proposal.name}
                       <span>({proposal.talent.type.replace("s", "")})</span>
                     </h5>
@@ -90,22 +101,23 @@ export default function ProjectProposals() {
                   <p className="w-100" style={{ wordBreak: "normal" }}>
                     {proposal.text}
                   </p>
-                  {proposal.files.map((file, index) => (
-                    <>
-                      <Link
-                        to={file.replace("./public", "")}
-                        target="_blank"
-                        download
-                        key={index}
-                      >
-                        <p className="my-0">
-                          <FaDownload className="me-1" />
-                          {file.replace("./public/proposalsFiles/", "")}
-                        </p>
-                      </Link>
-                      {/* <br /> */}
-                    </>
-                  ))}
+                  {proposal.files.length !== 0 &&
+                    proposal.files.map((file, index) => (
+                      <>
+                        <Link
+                          to={file.replace("./public", "")}
+                          target="_blank"
+                          download
+                          key={index}
+                        >
+                          <p className="my-0">
+                            <FaDownload className="me-1" />
+                            {file.replace("./public/proposalsFiles/", "")}
+                          </p>
+                        </Link>
+                        {/* <br /> */}
+                      </>
+                    ))}
                 </div>
                 {project.status === "posted" && (
                   <div className="text-center">

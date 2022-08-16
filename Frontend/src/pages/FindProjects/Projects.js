@@ -131,7 +131,7 @@ export default function Projects() {
         setSkillFilterKey={setSkillFilterKey}
         setBudgetFilterKey={setBudgetFilterKey}
       />
-      <main className="col-lg-6 px-3">
+      <main className="col px-3">
         <div className="d-flex justify-content-evenly my-3">
           <button
             className={`btn ${classes.projectsBtn} ${classes.projectsBtnActive}`}

@@ -20,10 +20,10 @@ module.exports.post = [
     .optional()
     .withMessage("isInternship should be boolean"),
 
-  check("budget")
-    .optional()
-    .isInt({ min: 5 })
-    .withMessage("project budget should be an interger begins form 5"),
+  // check("budget")
+  //   .optional()
+  //   .isInt({ min: 5 })
+  //   .withMessage("project budget should be an interger begins form 5"),
 
   check("skills")
     .notEmpty()
@@ -64,10 +64,10 @@ module.exports.put = [
     .optional()
     .withMessage("isInternship should be boolean"),
 
-  check("budget")
-    .isInt({ min: 5 })
-    .optional()
-    .withMessage("project budget should be an interger begins form 5"),
+  // check("budget")
+  //   .isInt({ min: 5 })
+  //   .optional()
+  //   .withMessage("project budget should be an interger begins form 5"),
 
   check("skills")
     .isArray()

@@ -186,24 +186,20 @@ export default function DropDownList({ id, options, action, title }) {
         </select>
       );
     }
-  }
-  else {
-     if (options.length) {
-       return (
-         <select
-           className="input mb-3"
-           onChange={action}
-         >
-           <option disabled>{ title }</option>
-           {options.map((option, index) => {
-             return (
-               <option value={index} key={index}>
-                 {option}
-               </option>
-             );
-           })}
-         </select>
-       );
-     }
+  } else {
+    if (options.length) {
+      return (
+        <select className="input mb-3" onChange={action} defaultValue={title}>
+          <option disabled>{title}</option>
+          {options.map((option, index) => {
+            return (
+              <option value={index} key={index}>
+                {option.firstName}
+              </option>
+            );
+          })}
+        </select>
+      );
+    }
   }
 }

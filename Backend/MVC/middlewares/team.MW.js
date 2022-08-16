@@ -10,16 +10,14 @@ module.exports.post = [
     .withMessage("team name length should be between 3,15"),
 
   check("description")
-    .notEmpty()
-    .withMessage("team description is required")
+    .optional()
     .isString()
     .withMessage("team description should be string")
     .isLength({ min: 100, max: 1000 })
     .withMessage("team description length should be between 100,1000"),
 
   check("hourlyRate")
-    .notEmpty()
-    .withMessage("team hourlyRate is required")
+    .optional()
     .isInt({ min: 10, max: 100 })
     .withMessage("team hourlyRate should be an interger between 10 and 100"),
 
@@ -31,11 +29,11 @@ module.exports.post = [
     .isArray({ min: 1, max: 10 })
     .withMessage("team members should be array 1:10"),
 
-  check("skills")
-    .notEmpty()
-    .withMessage("team skills is required")
-    .isArray({ min: 2, max: 15 })
-    .withMessage("team skills should be array 2:15"),
+  // check("skills")
+  //   .notEmpty()
+  //   .withMessage("team skills is required")
+  //   .isArray({ min: 2, max: 15 })
+  //   .withMessage("team skills should be array 2:15"),
 ];
 
 module.exports.put = [

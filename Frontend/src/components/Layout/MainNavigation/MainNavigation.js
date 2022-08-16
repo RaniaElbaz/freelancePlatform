@@ -1,27 +1,27 @@
 import { Link, useHistory } from "react-router-dom";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import classes from "./MainNavigation.module.css";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import UpdateDetails from "../../UpdateModals/UpdateDetails";
 
-
-
+const staticRole = localStorage.getItem("role");
+const staticId = localStorage.getItem("id");
 
 export default function MainNavigator() {
-
-  // const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
-  const [token, setState] = useState(localStorage.getItem("token"))
+  const id = localStorage.getItem("id");
+
+  const [modalShow, setModalShow] = useState(false);
 
   const history = useHistory();
   const [team, setTeam] = useState(false);
-  const userDetails = useSelector((state) => state.userDetails);
-  const user = useSelector((state) => state.user);
+  const [user, setUser] = useState({});
 
   const logoutHandler = (e) => {
-    setState(localStorage.getItem("token"));
     history.push("/login");
+    window.location.reload();
     localStorage.removeItem("token");
   };
 
@@ -40,10 +40,86 @@ export default function MainNavigator() {
           setTeam(res.data._id);
         })
         .catch((error) => {
+          setTeam(undefined);
           console.log(error.code, error.message, error.response.data);
         });
+
+      switch (role) {
+        case "freelancer":
+          axios({
+            url: `http://localhost:8080/freelancers/public/${id}`,
+            method: "GET",
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          })
+            .then((res) => {
+              console.log(res.data);
+              setUser({
+                name: `${res.data.firstName} ${res.data.lastName}`,
+                image: res.data.image,
+              });
+            })
+            .catch((error) => {
+              console.log(error.code, error.message, error.response.data);
+            });
+          break;
+        case "team":
+          axios({
+            url: `http://localhost:8080/team/${id}`,
+            method: "GET",
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          })
+            .then((res) => {
+              console.log(res.data);
+              setUser({ name: `${res.data.name}`, image: res.data.logo });
+            })
+            .catch((error) => {
+              console.log(error.code, error.message, error.response.data);
+            });
+          break;
+        case "client":
+          axios({
+            url: `http://localhost:8080/client/${id}`,
+            method: "GET",
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          })
+            .then((res) => {
+              console.log(res.data);
+              setUser({
+                name: `${res.data.data.firstName} ${res.data.data.lastName}`,
+                image: res.data.image,
+              });
+            })
+            .catch((error) => {
+              console.log(error.code, error.message, error.response.data);
+            });
+          break;
+        case "company":
+          axios({
+            url: `http://localhost:8080/company/${id}/public`,
+            method: "GET",
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          })
+            .then((res) => {
+              console.log(res.data);
+              setUser({ name: `${res.data.name}`, image: res.data.logo });
+            })
+            .catch((error) => {
+              console.log(error.code, error.message, error.response.data);
+            });
+          break;
+        default:
+      }
+      console.log(user);
     }
-  }, [token]);
+  }, []);
 
   return (
     <nav
@@ -60,10 +136,6 @@ export default function MainNavigator() {
           /> */}
           Devolanco
         </Link>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
 
         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div className="navbar-nav">
@@ -102,32 +174,15 @@ export default function MainNavigator() {
           {console.log("token", token)}
           {token ? (
             <>
-              <Link to={`/${user.role}/${user.id}`}>
+              <Link to={`/${role}/${id}`}>
                 <div className="d-flex ">
                   <img
-                    src={
-                      user.role == "freelancer"
-                        ? userDetails.profileImage
-                          ? userDetails.profileImage
-                          : "/static/default.jpg"
-                        : user.role == "client"
-                          ? userDetails.picture
-                            ? userDetails.picture
-                            : "/static/default.jpg"
-                          : user.role == "company" || user.role == "team"
-                            ? userDetails.logo
-                              ? userDetails.logo
-                              : "/static/default.jpg"
-                            : ""
-                    }
+                    src={user.image ? user.image : "/static/default.jpg"}
                     className={classes.profileImage}
                     alt=""
                   />
                   <h6 className={`my-auto ps-2 ${classes.username}`}>
-                    {(user.role == "freelancer" || user.role == "client") &&
-                      `${userDetails.firstName} ${userDetails.lastName}`}
-                    {(user.role == "company" || user.role == "team") &&
-                      `${userDetails.name}`}
+                    {user.name}
                   </h6>
                 </div>
               </Link>
@@ -140,7 +195,12 @@ export default function MainNavigator() {
                   <li>
                     <button
                       className="dropdown-item"
-                      onClick={() => history.push(`/${user.role}/${user.id}`)}
+                      onClick={() => {
+                        localStorage.setItem("role", staticRole);
+                        localStorage.setItem("id", staticId);
+                        history.push(`/${staticRole}/${staticId}`);
+                        window.location.reload();
+                      }}
                     >
                       profile
                     </button>
@@ -153,13 +213,27 @@ export default function MainNavigator() {
                       change password
                     </button>
                   </li>
-                  {team && role === "freelancer" && (
+                  {team ? (
                     <li>
                       <button
                         className="dropdown-item"
-                        onClick={() => history.push(`/team/${team}`)}
+                        onClick={() => {
+                          localStorage.setItem("role", "team");
+                          localStorage.setItem("id", team);
+                          history.push(`/team/${team}`);
+                          window.location.reload();
+                        }}
                       >
                         switch to team account
+                      </button>
+                    </li>
+                  ) : (
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => setModalShow(true)}
+                      >
+                        create team
                       </button>
                     </li>
                   )}
@@ -179,9 +253,9 @@ export default function MainNavigator() {
               <Link to="/login">
                 <button
                   className={`btn ${classes.signIn} me-2 `}
-                // onClick={() => {
-                //   history.push("/login");
-                // }}
+                  // onClick={() => {
+                  //   history.push("/login");
+                  // }}
                 >
                   log in
                 </button>
@@ -189,9 +263,9 @@ export default function MainNavigator() {
               <Link to="/register">
                 <button
                   className={`btn ${classes.signIn} `}
-                // onClick={() => {
-                //   history.push("/register");
-                // }}
+                  // onClick={() => {
+                  //   history.push("/register");
+                  // }}
                 >
                   sign up
                 </button>
@@ -200,6 +274,12 @@ export default function MainNavigator() {
           )}
         </div>
       </div>
+      <UpdateDetails
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        editKey="team"
+        userType={role}
+      />
     </nav>
   );
 }

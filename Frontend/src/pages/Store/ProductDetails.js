@@ -3,9 +3,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import buttons from "../../components/FindProjects/buttons.module.css" 
+import buttons from "../../components/FindProjects/buttons.module.css";
 
 function ProductDetails() {
+  const id = localStorage.getItem("id");
+  const role = localStorage.getItem("role");
   const [details, setdetails] = useState([]);
   const params = useParams();
   const token = localStorage.getItem("token");
@@ -15,7 +17,6 @@ function ProductDetails() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const [isBaught, setIsBaught] = useState(false);
-
 
   useEffect(() => {
     axios
@@ -27,17 +28,23 @@ function ProductDetails() {
   }, []);
 
   const handleBuyer = () => {
-    axios.put(`http://localhost:8080/product/${params.id}/buyer`,{}, {
-      headers: { Authorization: `bearer ${token}` },
-    }).then((res) => {
-      setisSuccessul(true)
-      setIsBaught(true)
-    })
-    .catch((error) => {
-      setErrorMsg(error.response.data.message)
-      setisError(true)
-      console.log(error);
-    });
+    axios
+      .put(
+        `http://localhost:8080/product/${params.id}/buyer`,
+        {},
+        {
+          headers: { Authorization: `bearer ${token}` },
+        }
+      )
+      .then((res) => {
+        setisSuccessul(true);
+        setIsBaught(true);
+      })
+      .catch((error) => {
+        setErrorMsg(error.response.data.message);
+        setisError(true);
+        console.log(error);
+      });
   };
 
   return (
@@ -49,19 +56,22 @@ function ProductDetails() {
               <h1 className="display-5 py-3 fw-bolder  mb-2">
                 {details.productName}
               </h1>
-              <p style={{opacity:.5,marginTop:0}}>by {details.ownerId?.email.split("@")[0]}</p>
+              <p style={{ opacity: 0.5, marginTop: 0 }}>
+                by {details.ownerId?.email.split("@")[0]}
+              </p>
               <p className="lead fw-normal text-break mb-4">
                 {details.description}
               </p>
             </div>
           </div>
           <div className="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
-          {details.image && <img
-              className="img-fluid rounded-3 my-5"
-             
-              src={`http://localhost:8080/${details.image}`}
-              alt="..."
-            />} 
+            {details.image && (
+              <img
+                className="img-fluid rounded-3 my-5"
+                src={`http://localhost:8080/${details.image}`}
+                alt="..."
+              />
+            )}
           </div>
         </div>
       </div>
@@ -99,32 +109,58 @@ function ProductDetails() {
                 </div>
                 <div></div>
                 {/* <Link to="/Product"> */}
-                  {!isBaught?
-                    <button onClick={()=>{handleBuyer()}} className={`${buttons.regularBeige} btn mb-0`} style={{ borderRadius: "0.375rem" }}>
+                {!(
+                  details.ownerId?._id == id &&
+                  (role === "freelancer" || role === "team")
+                ) && !isBaught ? (
+                  <button
+                    onClick={() => {
+                      handleBuyer();
+                    }}
+                    className={`${buttons.regularBeige} btn mb-0`}
+                    style={{ borderRadius: "0.375rem" }}
+                  >
                     Buy Now!
                   </button>
-                  : 
-
-                  <Link to={`http://localhost:8080/${details.product}`} target="_blank" download>
-                  <button  className={`${buttons.regularBeige} btn mb-0`} style={{ borderRadius: "0.375rem", backgroundColor: "var(--blue)" }}>
-                    Download
-                  </button>
+                ) : (
+                  <Link
+                    to={`http://localhost:8080/${details.product}`}
+                    target="_blank"
+                    download
+                  >
+                    <button
+                      className={`${buttons.regularBeige} btn mb-0`}
+                      style={{
+                        borderRadius: "0.375rem",
+                        backgroundColor: "var(--blue)",
+                      }}
+                    >
+                      Download
+                    </button>
                   </Link>
-                  }
+                )}
                 {/* </Link> */}
               </div>
             </div>
           </div>
           {isSuccessul && (
-        <div style={{marginTop: "5px"}} className="alert alert-success" role="alert">
-          Success , Now You can download this Product
-        </div>
-      )}
-      {isError && (
-        <div style={{marginTop: "5px"}} className="alert alert-danger" role="alert">
-          {errorMsg}
-        </div>
-      )}
+            <div
+              style={{ marginTop: "5px" }}
+              className="alert alert-success"
+              role="alert"
+            >
+              Success , Now You can download this Product
+            </div>
+          )}
+          {isError && (
+            <div
+              style={{ marginTop: "5px" }}
+              className="alert alert-danger"
+              role="alert"
+            >
+              {errorMsg}
+            </div>
+          )}
         </div>
       </section>
 

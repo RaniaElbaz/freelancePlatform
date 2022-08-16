@@ -22,8 +22,7 @@ export default function UpdateTestimonial({
   const [data, setData] = useState({ rating: 0, comment: "" });
   const [errorMessage, setErrorMessage] = useState({});
 
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNvbXBhbnkiLCJpYXQiOjE2NjAzMjY5MjUsImV4cCI6MTY2MDMzMDUyNX0.smXKUhcCAVpRPB110B4oF6B2l6ebyS-6vuMdYap5qoo";
+  const token = localStorage.getItem("token");
 
   const handleMultiWordInput = (event) => {
     console.log(recruiter);

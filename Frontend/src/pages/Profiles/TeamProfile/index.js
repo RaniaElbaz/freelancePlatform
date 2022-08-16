@@ -20,8 +20,7 @@ export default function TeamProfile() {
   const [isUser, setIsUser] = useState(false);
   const [profileDetails, setProfileDetails] = useState({});
 
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImNvbXBhbnkiLCJpYXQiOjE2NjAzMjY5MjUsImV4cCI6MTY2MDMzMDUyNX0.smXKUhcCAVpRPB110B4oF6B2l6ebyS-6vuMdYap5qoo";
+  const token = localStorage.getItem("token");
 
   const params = useParams();
   const dispatch = useDispatch();
@@ -114,6 +113,7 @@ export default function TeamProfile() {
       <ProfileAbout
         isPublic={isPublic}
         userDetails={isUser ? teamDetails : profileDetails}
+        isUser={isUser}
       />
       <ProfileSkills
         isPublic={isPublic}

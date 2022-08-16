@@ -1,4 +1,7 @@
-const INITIAL_STATE = { id: 1, role: "company" };
+const INITIAL_STATE = {
+  id: localStorage.getItem("id"),
+  role: localStorage.getItem("role"),
+};
 
 export default function authReducer(state = INITIAL_STATE, action) {
   switch (action.type) {

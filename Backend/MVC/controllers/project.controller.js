@@ -69,7 +69,7 @@ module.exports.createProject = (request, response, next) => {
         return recruiter.save().then((recruiter) => {
           response.status(200).json({
             msg: "project added to recruiter",
-            recruiter: recruiter.projects,
+            data: data,
           });
         });
       });
@@ -115,7 +115,6 @@ module.exports.getProjectById = (request, response, next) => {
             response.status(200).json(data);
           }
         });
-
     })
     .catch((error) => {
       next(error);
@@ -133,7 +132,7 @@ module.exports.getProjectByIdPrivate = (request, response, next) => {
         !(
           data.recruiter.id == request.id &&
           (request.role == "company" ? request.role : request.role + "s") ==
-          data.recruiter.type
+            data.recruiter.type
         )
       ) {
         throw Error("not your project");
@@ -176,7 +175,7 @@ module.exports.deleteProject = (request, response, next) => {
       } else if (request.role == "admin") {
       } else if (
         !(data.recruiter.id == request.id &&
-          (data.recruiter.type == request.role) == "company"
+        (data.recruiter.type == request.role) == "company"
           ? "company"
           : request.role + "s")
       ) {
@@ -203,7 +202,7 @@ module.exports.updateProject = (request, response, next) => {
       } else if (
         !(
           data.recruiter.type ==
-          (request.role == "company" ? request.role : request.role + "s") &&
+            (request.role == "company" ? request.role : request.role + "s") &&
           data.recruiter.id == request.id
         )
       ) {
@@ -264,8 +263,8 @@ module.exports.createProposal = (request, response, next) => {
       request.role == "freelancer"
         ? (User = Freelancer)
         : request.role == "team"
-          ? (User = Team)
-          : next(new Error("Invalid User type"));
+        ? (User = Team)
+        : next(new Error("Invalid User type"));
       User.findById(request.id).then((talent) => {
         if (talent.connects > data.connects) {
           //user used a number of connects
@@ -304,7 +303,7 @@ module.exports.getProjectProposals = (request, response, next) => {
       } else if (
         !(
           data.recruiter.type ==
-          (request.role == "company" ? request.role : request.role + "s") &&
+            (request.role == "company" ? request.role : request.role + "s") &&
           data.recruiter.id == request.id
         )
       ) {
@@ -327,7 +326,7 @@ module.exports.selectProposal = (request, response, next) => {
       } else if (
         !(
           data.recruiter.type ==
-          (request.role == "company" ? request.role : request.role + "s") &&
+            (request.role == "company" ? request.role : request.role + "s") &&
           data.recruiter.id == request.id
         )
       ) {
@@ -370,7 +369,7 @@ module.exports.finishProject = (request, response, next) => {
       } else if (
         !(
           data.recruiter.type ==
-          (request.role == "company" ? request.role : request.role + "s") &&
+            (request.role == "company" ? request.role : request.role + "s") &&
           data.recruiter.id == request.id
         )
       ) {

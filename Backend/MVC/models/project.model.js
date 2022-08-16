@@ -31,7 +31,8 @@ const projectSchema = new mongoose.Schema(
     },
     budget: {
       type: Number,
-      min: 5,
+      // min: 5,
+      default: 0,
     },
     recruiter: { type: recruiterSchema, required: true },
     category: {

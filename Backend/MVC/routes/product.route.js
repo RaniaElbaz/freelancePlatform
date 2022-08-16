@@ -9,7 +9,8 @@ const {
   AdminAndFreelancerAuth,
   adminAuth,
   allAuth,
-  AdminAndClientAndCompanyAuth
+  AdminAndFreelancerAndTeamAuth,
+  AdminAndClientAndCompanyAuth,
 } = require("../middlewares/authAccess.MW");
 const authMW = require("../middlewares/auth.MW");
 
@@ -40,21 +41,25 @@ router
   //put by id
   .put(
     authMW,
-    AdminAndFreelancerAuth,
+    AdminAndFreelancerAndTeamAuth,
     Controller.productUpload.array("product", 2),
     product.paramValidator,
     product.putValidator,
     validationMW,
     Controller.updateProduct
   )
-  .delete(authMW, adminAuth, product.paramValidator, Controller.deleteProduct);
+  .delete(
+    authMW,
+    AdminAndFreelancerAndTeamAuth,
+    product.paramValidator,
+    Controller.deleteProduct
+  );
 
 router
   .route("/product/:id/buyer")
   .put(
     authMW,
     allAuth,
-    AdminAndClientAndCompanyAuth,
     product.paramValidator,
     product.putValidator,
     validationMW,
