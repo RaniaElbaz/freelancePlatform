@@ -50,7 +50,7 @@
 ## About The Project
 
 
-**Devolenco** is a Freelancing Platform aims to produce an integrated Programming Services for both **Clients** and **Freelancers**, make it easier, and ensure to communicate and meet the requirements of the labor
+**freelancico** is a Freelancing Platform aims to produce an integrated Programming Services for both **Clients** and **Freelancers**, make it easier, and ensure to communicate and meet the requirements of the labor
 market.
 
 We target clients who need ***specialists in programming*** to develop and design
