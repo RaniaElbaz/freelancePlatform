@@ -31,7 +31,6 @@ const projectSchema = new mongoose.Schema(
     },
     budget: {
       type: Number,
-      // required: true,
       min: 5,
     },
     recruiter: { type: recruiterSchema, required: true },
@@ -62,6 +61,9 @@ const projectSchema = new mongoose.Schema(
 
     /*properties below will be added in backend not by user*/
     startTime: {
+      type: Date,
+    },
+    endTime: {
       type: Date,
     },
     status: {

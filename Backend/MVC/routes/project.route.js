@@ -26,6 +26,7 @@ router.use(auth);
 
 router
   .route("/")
+
   .get(allAuth, controller.getAllProjects)
   .post(
     AdminAndClientAndCompanyAuth,
@@ -35,6 +36,7 @@ router
   );
 
 router
+
   .route("/:id/private")
   .get(AdminAndClientAndCompanyAuth, controller.getProjectByIdPrivate);
 
@@ -90,6 +92,7 @@ router
     controller.updateProject
   )
   .all(mw.getDelete, validationMW)
+
   .get(allAuth, controller.getProjectById)
   .delete(controller.deleteProject);
 

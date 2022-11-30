@@ -28,7 +28,6 @@ module.exports.filesUpload = multer({
     fileSize: 300000000, // 300000000 Bytes = 0.3 GB
   },
   fileFilter(request, response, next) {
-    console.log("response", response);
     if (!response.originalname.match(fileExtRegex)) {
       return next(new Error("Please upload a File"));
     }
@@ -60,7 +59,9 @@ module.exports.createProject = (request, response, next) => {
       let Recruiter;
       if (request.role == "company") Recruiter = Company;
       else if (request.role == "client") Recruiter = Client;
-      else next(new Error("invalid recruiter type"));
+      else if (request.role == "admin") {
+        response.status(200).json({ data });
+      } else next(new Error("invalid recruiter type"));
 
       Recruiter.findById(request.id).then((recruiter) => {
         if (!recruiter) throw new Error("recruiter not found");
@@ -68,7 +69,7 @@ module.exports.createProject = (request, response, next) => {
         return recruiter.save().then((recruiter) => {
           response.status(200).json({
             msg: "project added to recruiter",
-            data: data._id,
+            recruiter: recruiter.projects,
           });
         });
       });
@@ -78,6 +79,7 @@ module.exports.createProject = (request, response, next) => {
 
 module.exports.getAllProjects = (request, response, next) => {
   Project.find({ status: "posted" })
+
     .populate({ path: "skills", select: "name" })
     .populate({ path: "category", select: "name" })
     .then((data) => {
@@ -113,6 +115,7 @@ module.exports.getProjectById = (request, response, next) => {
             response.status(200).json(data);
           }
         });
+
     })
     .catch((error) => {
       next(error);
@@ -130,7 +133,7 @@ module.exports.getProjectByIdPrivate = (request, response, next) => {
         !(
           data.recruiter.id == request.id &&
           (request.role == "company" ? request.role : request.role + "s") ==
-            data.recruiter.type
+          data.recruiter.type
         )
       ) {
         throw Error("not your project");
@@ -139,7 +142,6 @@ module.exports.getProjectByIdPrivate = (request, response, next) => {
         talentType = data.talent.type;
       }
       recruiterType = data.recruiter.type;
-
       Project.findById(request.params.id)
         .populate({ path: "skills", select: "name" })
         .populate({ path: "category", select: "name" })
@@ -174,7 +176,7 @@ module.exports.deleteProject = (request, response, next) => {
       } else if (request.role == "admin") {
       } else if (
         !(data.recruiter.id == request.id &&
-        (data.recruiter.type == request.role) == "company"
+          (data.recruiter.type == request.role) == "company"
           ? "company"
           : request.role + "s")
       ) {
@@ -201,7 +203,7 @@ module.exports.updateProject = (request, response, next) => {
       } else if (
         !(
           data.recruiter.type ==
-            (request.role == "company" ? request.role : request.role + "s") &&
+          (request.role == "company" ? request.role : request.role + "s") &&
           data.recruiter.id == request.id
         )
       ) {
@@ -262,8 +264,8 @@ module.exports.createProposal = (request, response, next) => {
       request.role == "freelancer"
         ? (User = Freelancer)
         : request.role == "team"
-        ? (User = Team)
-        : next(new Error("Invalid User type"));
+          ? (User = Team)
+          : next(new Error("Invalid User type"));
       User.findById(request.id).then((talent) => {
         if (talent.connects > data.connects) {
           //user used a number of connects
@@ -274,7 +276,6 @@ module.exports.createProposal = (request, response, next) => {
           } else {
             object.name = talent.name;
           }
-
           data.proposals.push(object);
           //save data
           return talent.save().then((talent) => {
@@ -303,7 +304,7 @@ module.exports.getProjectProposals = (request, response, next) => {
       } else if (
         !(
           data.recruiter.type ==
-            (request.role == "company" ? request.role : request.role + "s") &&
+          (request.role == "company" ? request.role : request.role + "s") &&
           data.recruiter.id == request.id
         )
       ) {
@@ -326,7 +327,7 @@ module.exports.selectProposal = (request, response, next) => {
       } else if (
         !(
           data.recruiter.type ==
-            (request.role == "company" ? request.role : request.role + "s") &&
+          (request.role == "company" ? request.role : request.role + "s") &&
           data.recruiter.id == request.id
         )
       ) {
@@ -349,13 +350,11 @@ module.exports.selectProposal = (request, response, next) => {
           });
         }
       }
-      // if (data.proposals.length != 1) next(new Error("talent not found "));
       data.talent = request.body.talent;
       data.status = "ongoing";
       data.startTime = new Date();
       return data.save().then((data) => {
         next();
-        // response.status(201).json({ msg: "Proposal selected", data });
       });
     })
     .catch((error) => {
@@ -371,13 +370,15 @@ module.exports.finishProject = (request, response, next) => {
       } else if (
         !(
           data.recruiter.type ==
-            (request.role == "company" ? request.role : request.role + "s") &&
+          (request.role == "company" ? request.role : request.role + "s") &&
           data.recruiter.id == request.id
         )
       ) {
         next(new Error("you're not the owner of this project"));
       } else {
         data.status = "finished";
+        data.endTime = new Date();
+        const budget = data.budget;
         return data.save().then((data) => {
           let Talent;
           if (data.talent.type == "freelancers") Talent = Freelancer;
@@ -396,7 +397,7 @@ module.exports.finishProject = (request, response, next) => {
             talent.analytics.earnings += data.budget;
             talent.analytics.hours += data.duration;
             talent.analytics.jobs += 1;
-            //🟢talent.wallet +=talent.project.budget;
+            talent.wallet += budget;
             return talent.save().then((talent) => {
               response.status(200).json({
                 msg: "testimonial created",

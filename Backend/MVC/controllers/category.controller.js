@@ -104,9 +104,8 @@ module.exports.updateImage = (request, response, next) => {
       if (!data) next(new Error("category not found"));
 
       // console.log(request.file.path);
-      data.image = `${request.protocol}://${request.hostname}:${
-        process.env.PORT
-      }/${request.file.path.replaceAll("\\", "/")}`;
+      data.image = `${request.protocol}://${request.hostname}:${process.env.PORT
+        }/${request.file.path.replaceAll("\\", "/")}`;
       return data.save().then((data) => {
         response.status(201).json({ msg: "Category updated", data });
       });
@@ -137,9 +136,8 @@ module.exports.updateCategory = (request, response, next) => {
         }
       }
       if (request.file) {
-        data.image = `${request.protocol}://${request.host}:${
-          process.env.PORT
-        }/${request.file.path.replaceAll("\\", "/")}`;
+        data.image = `${request.protocol}://${request.host}:${process.env.PORT
+          }/${request.file.path.replaceAll("\\", "/")}`;
       }
 
       return data.save().then((data) => {

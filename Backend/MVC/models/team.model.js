@@ -30,10 +30,15 @@ const teamSchema = new mongoose.Schema({
     min: 10,
     max: 100,
   },
+  hoursPerWeek: {
+    type: Number,
+    required: true,
+    min: 5,
+    max: 30,
+    default: 30,
+  },
   logo: {
     type: String,
-    default: `http://localhost:8080/public/static/defaultProfileImage.jpg`,
-    //`${request.protocol}://${request.host}:${process.env.PORT}public/categories/default.jpg`,//🔴request is not defined
   },
   members: {
     type: [Number],
@@ -87,7 +92,7 @@ const teamSchema = new mongoose.Schema({
     min: 0,
     max: 500,
   },
-  analytics: analyticSchema,
+  analytics: { type: analyticSchema, default: () => ({}) },
   wallet: {
     type: Number,
     default: 0,

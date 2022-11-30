@@ -6,27 +6,24 @@ const {
   forgotPassword,
   resetPassword,
 } = require("../controllers/auth.controller");
-const { adminLogin } = require("../controllers/adminLogin.controller");
-const { loginValidator } = require("../middlewares/login.MW");
+const { loginVA } = require("../middlewares/login.MW");
 const validationMW = require("../middlewares/validation.MW");
-const { signupValidator } = require("../middlewares/login.MW");
+const { signUpVA } = require("../middlewares/client.MW");
 
 const router = express.Router();
 
-router.post("/signup/:userType", signupValidator, validationMW, signUp);
+router.post("/signup/:userType", signUpVA, validationMW, signUp);
+
 router.post("/activate-account/:userType", activateAccount);
 
 router.post("/forgot-password/:userType", forgotPassword);
 router.post("/reset-password/:userType", resetPassword);
 
-router //user
+
+
+router // user generic login (admin & client & Freelancer & company )
   .route("/login/:userType")
-  .post(loginValidator, validationMW, userLogin);
+  .post(loginVA, validationMW, userLogin);
 
-router //admin
-  .route("/admin/login")
-  .post(loginValidator, validationMW, adminLogin);
-
-// router.put("/reset/:userType", userReset);
 
 module.exports = router;

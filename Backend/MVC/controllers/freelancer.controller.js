@@ -48,9 +48,8 @@ module.exports.imageUpload = multer({
   },
   fileFilter(request, response, next) {
     if (!response.originalname.match(imageExtRegex)) {
-      return next(new Error("Please upload an Image"));
-    }
-    next(undefined, true);
+      next(new Error("Please upload a valid image (.jpg)"));
+    } else next(undefined, true);
   },
 }).single("image");
 
@@ -117,7 +116,10 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
             data.languages = [...new Set([...request.body.languages])];
           } else data[key] = request.body[key] || data[key];
         }
-        return data.save();
+
+        data.save().then((data) => {
+          response.status(201).json({ data: "updated" });
+        });
       }
       //array of objects
       else if (
@@ -134,27 +136,26 @@ module.exports.updateFreelancerDetails = (request, response, next) => {
           detailObject.files = [];
           request.files.map((file) => {
             detailObject.files.push(
-              `${request.protocol}://${request.hostname}:${
-                process.env.PORT
+              `${request.protocol}://${request.hostname}:${process.env.PORT
               }/${file.path.replaceAll("\\", "/")}`
             );
           });
         }
         data[request.params.detail].push(detailObject);
-        return data.save();
+        data.save().then((data) => {
+          response.status(201).json({ data: "updated" });
+        });
       }
       //array of numbers
       else if (request.params.detail === "skills") {
         data.skills = [...new Set([...request.body.skills])];
-        return data.save().then((data) => {
+        data.save().then((data) => {
+          // response.status(201).json({ data: "updated" });
           next();
         });
       } else {
         next(new Error("Invalid request"));
       }
-    })
-    .then((data) => {
-      response.status(201).json({ data: "updated", data });
     })
     .catch((error) => next(error));
 };
@@ -167,11 +168,12 @@ module.exports.updateFreelancerImage = (request, response, next) => {
   Freelancer.findById(request.id)
     .then((data) => {
       if (!data) next(new Error("freelancer not found"));
-      data.profileImage = `${request.protocol}://${request.hostname}:${
-        process.env.PORT
-      }/${request.file.path.replaceAll("\\", "/")}`;
+      data.profileImage = `${request.protocol}://${request.hostname}:${process.env.PORT
+        }/${request.file.path.replaceAll("\\", "/")}`;
       return data.save().then((data) => {
-        response.status(201).json({ msg: "freelancer updated", data });
+        response
+          .status(201)
+          .json({ msg: "freelancer updated", data: data.profileImage });
       });
     })
     .catch((error) => {
@@ -267,9 +269,10 @@ module.exports.removeData = (request, response, next) => {
     throw new Error("not Authorized");
   Freelancer.findById(
     { _id: request.id },
-    { education: 1, certificates: 1, eperience: 1, portfolio: 1 }
+    { education: 1, certificates: 1, experience: 1, portfolio: 1 }
   )
     .then((data) => {
+      console.log(request.body.index);
       if (!data) next(new Error("freelancer not found"));
       if (request.body.index < data[request.params.detail].length) {
         if (request.params.detail == "portfolio") {
@@ -283,8 +286,8 @@ module.exports.removeData = (request, response, next) => {
           });
         }
         data[request.params.detail].splice(request.body.index, 1);
-      } else next(new Error(`freelancer's ${request.params.detail} not found`));
-      return data.save();
+        return data.save();
+      } else throw new Error(`freelancer's ${request.params.detail} not found`);
     })
     .then(() => {
       response.status(201).json({ data: "updated" });
@@ -305,8 +308,17 @@ module.exports.getFreelancerPublic = (request, response, next) => {
       connects: 0,
     }
   )
-    .populate({ path: "projects", select: "-proposals" })
+    .populate({ path: "skills", select: "name" })
+    .populate({
+      path: "projects",
+      select: "-proposals",
+      populate: { path: "category" },
+    })
     .populate({ path: "portfolio", populate: { path: "skills relatedJob" } })
+    .populate({
+      path: "testimonials",
+      populate: { path: "project", populate: { path: "category" } },
+    })
     .then((data) => {
       if (!data) next(new Error("Freelancer not found"));
       else response.status(200).json(data);
@@ -326,8 +338,17 @@ module.exports.getFreelancerPrivate = (request, response, next) => {
       { _id: request.params.id },
       { isBlocked: 0, password: 0 }
     )
-      .populate({ path: "projects", select: "-proposals" })
+      .populate({ path: "skills", select: "name" })
+      .populate({
+        path: "projects",
+        select: "-proposals",
+        populate: { path: "category" },
+      })
       .populate({ path: "portfolio", populate: { path: "skills relatedJob" } })
+      .populate({
+        path: "testimonials",
+        populate: { path: "project", populate: { path: "category" } },
+      })
       .then((data) => {
         if (!data) next(new Error("Freelancer not found"));
         response.status(200).json(data);
@@ -384,8 +405,8 @@ module.exports.updateConnects = (request, response, next) => {
   request.params.userType == "freelancer"
     ? (User = Freelancer)
     : request.params.userType == "team"
-    ? (User = Team)
-    : next(new Error("Invalid User type"));
+      ? (User = Team)
+      : next(new Error("Invalid User type"));
 
   User.findById(request.id)
     .then((user) => {

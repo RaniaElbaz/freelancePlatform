@@ -9,10 +9,12 @@ const paypal = require("paypal-rest-sdk");
 const authRoute = require("./MVC/routes/auth.route");
 const companyRouter = require("./MVC/routes/company.route");
 const productRouter = require("./MVC/routes/product.route");
+
 const teamRoutes = require("./MVC/routes/team.route");
 const skillRoutes = require("./MVC/routes/skill.route");
 const categoryRoutes = require("./MVC/routes/category.route");
 const projectRoutes = require("./MVC/routes/project.route");
+
 const adminRoute = require("./MVC/routes/admin.route");
 const freelancerRoute = require("./MVC/routes/freelancer.route");
 const reportRoute = require("./MVC/routes/report.route");
@@ -20,6 +22,10 @@ const testRoute = require("./MVC/routes/test.route");
 const clintRoute = require("./MVC/routes/client.route");
 const searchRoute = require("./MVC/routes/search.route");
 const changePasswordRoute = require("./MVC/routes/changePassword.route");
+
+
+
+
 
 // paypal.configure({
 //   mode: "sandbox", //sandbox or live
@@ -41,6 +47,7 @@ const db = async () => {
       });
     })
     .catch((error) => console.log("Db Connection Error " + error));
+
   return db;
 };
 db();
@@ -57,6 +64,27 @@ app.use(cors());
 app.use("/public", express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); //body parsing
+
+// app.use(loginRoute);
+app.use(authRoute);
+app.use(changePasswordRoute);
+
+// app.use(paymentRoute);
+app.use(freelancerRoute);
+app.use(adminRoute);
+app.use(reportRoute);
+app.use(testRoute);
+
+app.use("/team", teamRoutes);
+app.use("/skill", skillRoutes);
+app.use("/category", categoryRoutes);
+app.use("/project", projectRoutes);
+
+app.use(clintRoute);
+app.use(searchRoute);
+app.use(companyRouter);
+app.use(productRouter);
+
 
 // routes
 // app.post("/payment", async (req, res) => {
@@ -82,37 +110,19 @@ app.use(express.json()); //body parsing
 //   res.json({ session });
 // });
 
-app.use(authRoute);
-app.use(changePasswordRoute);
-
-// app.use(paymentRoute);
-
-app.use(freelancerRoute);
-app.use(adminRoute);
-app.use(reportRoute);
-app.use(testRoute);
-
-app.use("/team", teamRoutes);
-app.use("/skill", skillRoutes);
-app.use("/category", categoryRoutes);
-app.use("/project", projectRoutes);
-
-app.use(clintRoute);
-app.use(searchRoute);
-app.use(companyRouter);
-app.use(productRouter);
 
 //3- Not Found MW
 app.use((request, response) => {
   console.log("Not Found MW");
-  response.status(404).json({ message: "Not Found" });
+  response.status(404).json({ msg: "Not Found" });
 });
 
 //4- Error MW
 app.use((error, request, response, next) => {
   console.log("Error MW");
   let errorStatus = error.status || 500;
-  response.status(errorStatus).json({ message: "Internal Error:\n" + error });
+
+  response.status(errorStatus).json({ msg: `${error}` });
 });
 
 // Jasmine Unit Test

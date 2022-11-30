@@ -9,8 +9,7 @@ const testimonialSchema = new mongoose.Schema(
       max: 5,
     },
     issued: {
-      type: Date,
-      // required: true
+      type: Date
     },
     comment: {
       required: true,
@@ -21,6 +20,10 @@ const testimonialSchema = new mongoose.Schema(
       ref: "projects",
       required: true,
     },
+    testimonialBack: {
+      type: Boolean,
+      default: false
+    }
   },
   { _id: false }
 );

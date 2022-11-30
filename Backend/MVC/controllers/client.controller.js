@@ -12,9 +12,16 @@ const getAllClients = (request, response, next) => {
 };
 
 const getClientById = (request, response, next) => {
-  console.log(request);
-
   Client.findOne({ _id: request.params.id }, { password: 0, isBlocked: 0 })
+    .populate({
+      path: "testimonials",
+      populate: { path: "project", populate: { path: "category" } },
+    })
+    .populate({
+      path: "projects",
+      select: "-proposals",
+      populate: { path: "category" },
+    })
     .then((data) => {
       if (!data) next(new Error("Client Not Found!"));
       response.status(201).json({ data });
@@ -34,17 +41,8 @@ const updateClient = (request, response, next) => {
         if (["password", "isBlocked"].includes(item)) {
           // throw new Error("Change data not Authorize")
           continue;
-        } else if (item == "location") {
-          for (let nestedItem in request.body[item]) {
-            // console.log(nestedItem); // ! Handling
-            if (
-              ["postalCode", "city", "address", "state"].includes(nestedItem)
-            ) {
-              // data["location"][nestedItem] = request.body["location"][nestedItem];
-              data["location"][nestedItem] =
-                request.body["location"][nestedItem];
-            }
-          }
+        } else if (["postalCode", "city", "address", "state"].includes(item)) {
+          data["address"][item] = request.body[item];
         } else if (item == "analytics") {
           for (let nestedItem in request.body[item]) {
             // console.log(nestedItem, "from Analytics");// !handling
@@ -69,10 +67,8 @@ const uploadImage = (request, response, next) => {
   // if (!request.file) throw new Error("There is no image uploaded");
 
   const file = request.file;
-  const host = request.host;
-  const imgPath = `${request.protocol}://${host}:${
-    process.env.PORT
-  }${file.destination.slice(1)}${file.filename}`;
+  const imgPath = `${request.protocol}://${request.hostname}:${process.env.PORT
+    }/${request.file.path.replaceAll("\\", "/")}`;
 
   console.log(file, "<==File");
 
@@ -81,12 +77,10 @@ const uploadImage = (request, response, next) => {
       if (!client) throw new Error("Client not Found!");
 
       client
-        .updateOne({ picture: { imgPath, name: file.originalname } })
+        .updateOne({ picture: imgPath })
         .then((data) => {
           response.status(201).json({
             msg: "imageUploaded",
-            file: file,
-            data: request.body,
             imgPath,
           });
         })

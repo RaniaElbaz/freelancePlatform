@@ -1,14 +1,15 @@
 /**
  * valid email example: .com, @example
  */
-const emailRegex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
+module.exports.emailRegex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
 /**
  * at least one digit
  * at least one uppercase letter
  * at least one lowercase letter
  * at least one special character
  */
-const passwordRegex = new RegExp(
+
+module.exports.passwordRegex = new RegExp(
   "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
 );
 /**
@@ -18,14 +19,9 @@ const passwordRegex = new RegExp(
 /**
  * valid image format
  */
-module.exports.imageExtRegex = new RegExp(".(png|jpg)$");
+module.exports.imageExtRegex = new RegExp(".(png|jpg)");
 /**
  * valid file format
  */
 module.exports.fileExtRegex = new RegExp(".(pdf|png|jpg|jpeg)$");
 
-module.exports = {
-  emailRegex,
-  passwordRegex,
-  // phoneRegex
-};

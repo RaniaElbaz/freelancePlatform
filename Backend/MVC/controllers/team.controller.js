@@ -132,7 +132,7 @@ module.exports.updateTeam = (request, response, next) => {
   Team.findById(request.params.id)
     .then((data) => {
       if (!data) next(new Error("team not found"));
-      else if (request.role == "team" && !data.members.includes(request.id))
+      else if (request.role == "team" && request.id !== request.params.id)
         throw new Error("not team member");
 
       for (let prop in request.body) {
@@ -170,10 +170,8 @@ module.exports.updateTeam = (request, response, next) => {
         else data[prop] = request.body[prop] || data[prop];
       }
       if (request.file) {
-        data.logo = `http://localhost:8080/${request.file.path.replaceAll(
-          "\\",
-          "/"
-        )}`;
+        data.logo = `${request.protocol}://${request.hostname}:${process.env.PORT
+          }/${request.file.path.replaceAll("\\", "/")}`;
       }
       Team.findOne({ members: data.members, name: { $ne: data.name } }).then(
         (team) => {
@@ -255,8 +253,7 @@ module.exports.createPortfolio = (request, response, next) => {
       }
       request.files.map((file) => {
         object.files.push(
-          `${request.protocol}://${request.hostname}:${
-            process.env.PORT
+          `${request.protocol}://${request.hostname}:${process.env.PORT
           }/${file.path.replaceAll("\\", "/")}`
         );
       });
@@ -281,11 +278,9 @@ module.exports.updatePortfolio = (request, response, next) => {
       for (let prop in request.body) {
         if (prop == "files") {
           data.portfolios[request.body.index].files = [
-            `${request.protocol}://${request.hostname}:${
-              process.env.PORT
+            `${request.protocol}://${request.hostname}:${process.env.PORT
             }/${request.files[0].path.replaceAll("\\", "/")}`,
-            `${request.protocol}://${request.hostname}:${
-              process.env.PORT
+            `${request.protocol}://${request.hostname}:${process.env.PORT
             }/${request.files[1].path.replaceAll("\\", "/")}`,
           ];
         } else if (prop != "index") {

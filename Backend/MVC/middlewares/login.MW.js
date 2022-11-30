@@ -1,7 +1,47 @@
 const { check } = require("express-validator");
-const { passwordRegex } = require("../helpers/regex");
+const { passwordRegex } = require("./../helpers/regex");
 
-module.exports.signupValidator = [
+
+module.exports.loginVA = [
+  /**********login**********/
+
+  //email
+  check("email")
+    .notEmpty()
+    .withMessage("user's email reqiured")
+    .isEmail()
+    .withMessage("user's email invalid"),
+  //password
+  check("password")
+    .notEmpty()
+    .withMessage("user's password reqiured")
+    .matches(passwordRegex)
+    .withMessage(
+      "user's password should contain at least one digit, one uppercase letter, one lowercase letter, one special character"
+    )
+    .isLength({ min: 8, max: 15 })
+    .withMessage("user's password should be 8~15"),
+];
+
+module.exports.oldPasswordVA = [
+  check("oldPassword")
+    .notEmpty()
+    .withMessage("users's password required")
+];
+
+module.exports.ChangePasswordVA = [
+  check("oldPassword")
+    .notEmpty()
+    .withMessage("Old Password required"),
+
+  check("password")
+    .notEmpty()
+    .withMessage("New password required")
+    .isLength({ min: 8, max: 15 })
+    .withMessage("user's password should be 8~15"),
+];
+
+module.exports.signupVA = [
   // numeric auto incremented id
   check("id")
     .optional({ checkFalsy: true, nullable: true })
@@ -41,21 +81,4 @@ module.exports.signupValidator = [
     )
     .isLength({ min: 8, max: 15 })
     .withMessage("user's password should be 8~15"),
-];
-
-module.exports.loginValidator = [
-  /**********login**********/
-  //email
-  check("email")
-    .notEmpty()
-    .withMessage("user's email reqiured")
-    .isEmail()
-    .withMessage("user's email invalid"),
-  //password
-  check("password").notEmpty().withMessage("user's password reqiured"),
-];
-
-module.exports.oldPasswordValidator = [
-  /**********change password**********/
-  check("oldPassword").notEmpty().withMessage("users's password reqiured"),
 ];

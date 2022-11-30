@@ -101,3 +101,4 @@ module.exports.testimonialValidator = [
     .isNumeric()
     .withMessage("freelancer testimonial project should be number"),
 ];
+

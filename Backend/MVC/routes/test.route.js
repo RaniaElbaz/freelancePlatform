@@ -11,6 +11,7 @@ const testRoute = express.Router();
 
 testRoute
   .route("/tests")
+
   .get(authMW, allAuth, testController.getAllTests)
   .post(
     authMW,
@@ -24,6 +25,7 @@ testRoute
 testRoute
   .route("/tests/:id")
   .all(
+
     authMW,
     adminAuth,
     [param("id").isNumeric().withMessage("test id wrong")],

@@ -1,34 +1,28 @@
 let company = require("../models/company.model");
 
+const { imageExtRegex } = require("../helpers/regex");
 /**************multer****** */
 const multer = require("multer");
 const path = require("path");
 
 const imageStorage = multer.diskStorage({
-  // Destination to store image
-  destination: (re, file, cb) => {
-    cb(null, "./public/uploads/logo");
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
-    );
+  destination: `public/profileImages/company`,
+  filename: (request, response, next) => {
+    next(null, request.params.id + path.extname(response.originalname));
   },
 });
 
 module.exports.imageUpload = multer({
   storage: imageStorage,
   limits: {
-    fileSize: 1000000,
+    fileSize: 1000000, // 1 MB
   },
-  fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(png|jpg)$/)) {
-      return cb(new Error("Please upload a Image"));
-    }
-    cb(undefined, true);
+  fileFilter(request, response, next) {
+    if (!response.originalname.match(imageExtRegex)) {
+      next(new Error("Please upload a valid image (.jpg)"));
+    } else next(undefined, true);
   },
-});
+}).single("image");
 /****************************/
 //get All Companies
 module.exports.getAllComapny = (req, res, next) => {
@@ -87,20 +81,9 @@ module.exports.updateCompanyDetails = (req, res, next) => {
       _id: req.params.id,
     })
     .then((data) => {
-      console.log(req.body);
-
       for (let item in req.body) {
-        console.log(item);
-        if (item == "location") {
-          for (let nestedItem in req.body[item]) {
-            console.log(nestedItem);
-            if (
-              ["postalCode", "city", "address", "state"].includes(nestedItem)
-            ) {
-              // data["location"][nestedItem] = req.body["location"][nestedItem];
-              data["location"][nestedItem] = req.body["location"][nestedItem];
-            }
-          }
+        if (["postalCode", "city", "address", "state"].includes(item)) {
+          data["address"][item] = req.body[item];
         } else data[item] = req.body[item] || data[item];
       }
       let logoPath = "";
@@ -114,7 +97,6 @@ module.exports.updateCompanyDetails = (req, res, next) => {
       res.status(200).json({ data });
       return data;
     })
-
     .catch((error) => {
       next(error);
     });

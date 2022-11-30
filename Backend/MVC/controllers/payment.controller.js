@@ -45,27 +45,27 @@ module.exports.paymentCompleted = (request, response, next) => {
   const payerId = request.query.PayerID;
   const paymentId = request.query.paymentId;
 
-      const execute_payment_json = {
-        payer_id: payerId,
-        transactions: [
-          {
-            amount: {
-              currency: "USD",
-              total: "5.00",
-            },
-          },
-        ],
-      // purchase_units: [
-      //   {
-      //     amount: {
-      //       currency_code: "USD",
-      //       value: request.body.cost,
-      //     },
-      //     payment_instruction: {
-      //       disbursement_mode: "INSTANT",
-      //     },
-      //   },
-      // ]
+  const execute_payment_json = {
+    payer_id: payerId,
+    transactions: [
+      {
+        amount: {
+          currency: "USD",
+          total: "5.00",
+        },
+      },
+    ],
+    // purchase_units: [
+    //   {
+    //     amount: {
+    //       currency_code: "USD",
+    //       value: request.body.cost,
+    //     },
+    //     payment_instruction: {
+    //       disbursement_mode: "INSTANT",
+    //     },
+    //   },
+    // ]
   };
   paypal.payment.execute(
     paymentId,

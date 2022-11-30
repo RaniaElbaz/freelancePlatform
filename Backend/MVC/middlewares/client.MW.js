@@ -4,18 +4,18 @@ const updateVA = [
   body("id").optional().isNumeric().withMessage("Child Id must be a Number"),
 
   body("firstName")
+    .optional()
     .isAlpha()
     .withMessage("Clint's firstName should be a Characters")
     .isLength({ min: 3, max: 10 })
     .withMessage("Clint's firstName length should be > 3 and < 10"),
 
   body("lastName")
+    .optional()
     .isAlpha()
     .withMessage("Clint's lastName should be a Characters")
     .isLength({ min: 3, max: 10 })
     .withMessage("Clint's lastName length should be > 3 and < 10"),
-
-  body("email").isEmail().withMessage("You Should Enter a valid Email"),
 
   body("picture")
     .optional()
@@ -24,23 +24,24 @@ const updateVA = [
 
   /** Location
    */
-  body("location.postalCode")
+  body("address.postalCode")
     .optional()
     .isNumeric()
     .isLength({ min: 5, max: 5 })
     .withMessage("You entered invalid postalCode"),
 
-  body("location.city")
+
+  body("address.city")
     .optional()
     .isString()
     .withMessage("City name must be String"),
 
-  body("location.address")
+  body("address.address")
     .optional()
     .isString()
     .withMessage("Address must be String"),
 
-  body("location.state")
+  body("address.state")
     .optional()
     .isString()
     .withMessage("Address must be String"),

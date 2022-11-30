@@ -11,19 +11,22 @@ const DOMAIN = process.env.MailgunDOMAIN;
 const api_key = process.env.MAILGUN_API_KEY;
 const mg = mailgun({ apiKey: api_key, domain: DOMAIN });
 
-/**************
- *    & SignUp
- * **************** */
+/** SignUp
+ */
 let signUp = (req, res, next) => {
   let User, payload;
 
+
+
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : req.params.userType == "company"
-    ? (User = Company)
-    : req.params.userType == "client"
-    ? (User = Client)
-    : next(new Error("Invalid User type"));
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
+
 
   if (["freelancer", "client", "admin"].includes(req.params.userType)) {
     var { firstName, lastName, email, password } = req.body;
@@ -36,28 +39,34 @@ let signUp = (req, res, next) => {
     next(new Error("Invalid UserType!"));
   }
 
+
   User.findOne({ email })
     .then((user) => {
+
+      // if (user) throw new Error("User is already registered!");
       if (user) throw new Error("User is already registered!");
+
+
 
       // Email Verification
       let token = jwt.sign(payload, process.env.SECRET_KEY, {
         expiresIn: "10m",
       });
+
       const data = {
         from: "geoAhmedHamdy1@gmail.com",
         to: email,
         subject: "Email Verification Link",
         // text: 'Verify Email'
         html: `
-          <h2>Account Verification</h2>
-          <pre>
+        <h2>Account Verification</h2>
+        <pre>
           Hello,
           
           Thank you for choosing Our Freelancing platform 😍
           Please confirm your email address by clicking the link below..
 
-        <a href="http://localhost:${process.env.PORT}/activate-account/${req.params.userType}/${token}">Verification</a>
+        <a href="http://localhost:${process.env.FR_PORT}/activate-account/${req.params.userType}/${token}">Verification</a>
 
           If you did not sign up, you can simply disregard this mail.
 
@@ -66,34 +75,37 @@ let signUp = (req, res, next) => {
           </pre>
         `,
       };
+
+
       mg.messages().send(data, function (error, body) {
         if (error) next(error);
 
-        // console.log(body);
-        res.status(201).json({
-          data: "Email verification link has been sent, kindly activate your account",
+        console.log(body);
+        console.log(error);
+        return res.status(201).json({
+          msg: "Email verification link has been sent, kindly activate your account",
         });
       });
     })
     .catch((error) => next(error));
 };
 
-/**************
- *    & Activate Email (Email Verification)
- * **************** */
+/** Activate Email (Email Verification)
+*/
 let activateAccount = (req, res, next) => {
   const { token } = req.body;
   let User;
 
+  console.log("====>", token); //! d
+
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : req.params.userType == "company"
-    ? (User = Company)
-    : req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   try {
     if (!token) new Error("Something went Wrong!!");
@@ -112,26 +124,17 @@ let activateAccount = (req, res, next) => {
         if (user) throw new Error("User is already registered!");
 
         bcrypt.hash(password, 10, (error, hash) => {
-          let newUser;
-          if (req.params.userType != "company") {
-            newUser = new User({
-              firstName,
-              lastName,
-              email,
-              password: hash,
-            });
-          } else {
-            newUser = new User({
-              name,
-              email,
-              password: hash,
-            });
-          }
+          let newUser = new User({
+            firstName,
+            lastName,
+            email,
+            password: hash,
+          });
 
           newUser
             .save()
             .then((data) => {
-              res.status(200).json({ message: "User SignedUP", data });
+              res.status(200).json({ msg: "User SignedUP", data });
             })
             .catch((error) => next(`SignUp Activation Error: ${error}`));
         });
@@ -142,34 +145,35 @@ let activateAccount = (req, res, next) => {
   }
 };
 
-/**************
- *    & Login
- * **************** */
+/** User Generic Login (admin & client & Freelancer & company )
+ */
 const userLogin = (req, res, next) => {
   let User;
 
-  // ! Ensure from the Collection Names
+  console.log(req.body, "<=====") //!
+
   req.params.userType == "freelancer"
     ? (User = Freelancer)
     : req.params.userType == "company"
-    ? (User = Company)
-    : req.params.userType == "client"
-    ? (User = Client)
-    : next(new Error("Invalid User type"));
+      ? User = Company
+      : req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : next(new Error("Invalid User type"));
 
   User.findOne(
     {
       email: req.body.email,
     },
-    { email: 1, password: 1, isBlocked: 1, connects: 1 }
+    { email: 1, password: 1, isBlocked: 1 }
   )
     .then((user) => {
       if (!user) {
         // user not found
-
         let error = new Error("Incorrect Username or Password!");
         error.status = 401;
-        next(error);
+        throw error;
       }
       if (user.isBlocked) next(new Error("Login failed!"));
 
@@ -186,28 +190,35 @@ const userLogin = (req, res, next) => {
           process.env.SECRET_KEY,
           { expiresIn: "1h" }
         );
-        res.status(200).json({ token, message: `${req.params.userType}Login` });
+
+        user
+          .updateOne({ loginToken: token })
+          .then((data) => {
+            // res.status(200).json({ msg: "loginToken Saved successfully" });
+          })
+          .catch((error) => next(error));
+
+        res.status(200).json({ token, msg: `${req.params.userType}Login` });
       }
     })
     .catch((error) => next(error));
 };
 
-/**************
- *    & Forgot Password
- * **************** */
+/** Forgot Password
+ */
+
 let forgotPassword = (req, res, next) => {
   const { email } = req.body;
   let User;
 
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : req.params.userType == "company"
-    ? (User = Company)
-    : req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   User.findOne({ email }, { firstName: 1, email: 1, _id: 1 })
     .then((user) => {
@@ -228,7 +239,7 @@ let forgotPassword = (req, res, next) => {
           
           Please click on the given link to reset password..
 
-        <a href="http://localhost:${process.env.PORT}/authentication/reset-password/${token}">Reset Password</a>
+        <a href="http://localhost:${process.env.FR_PORT}/forgot-password/${req.params.userType}/${token}">Reset Password</a>
 
           If you did not forget password, Change your password now 👀.
 
@@ -247,7 +258,7 @@ let forgotPassword = (req, res, next) => {
             if (error) next(error);
 
             res.status(200).json({
-              data: "Reset Password link has been sent to your Email, kindly check your mail and follow the instructions",
+              msg: "Reset Password link has been sent to your Email, kindly check your mail and follow the instructions",
             });
             // console.log(body);
           });
@@ -257,26 +268,26 @@ let forgotPassword = (req, res, next) => {
     .catch((error) => next(error));
 };
 
-/**************
- *    & Reset Password
- * **************** */
+/** Reset Password
+*/
 let resetPassword = (req, res, next) => {
   const { resetLink, newPassword } = req.body;
   if (!resetLink) next(new Error("Authentication Error!!"));
-  let token = resetLink;
+
 
   let User;
   req.params.userType == "freelancer"
     ? (User = Freelancer)
-    : req.params.userType == "company"
-    ? (User = Company)
-    : req.params.userType == "client"
-    ? (User = Client)
-    : req.params.userType == "admin"
-    ? (User = Admin)
-    : null;
+    : req.params.userType == "company" ? User = Company :
+      req.params.userType == "client"
+        ? (User = Client)
+        : req.params.userType == "admin"
+          ? (User = Admin)
+          : null;
 
   try {
+
+
     User.findOne({ resetLink }, { password: 1 })
       .then((user) => {
         if (!user) next(new Error("User with this token doesn't exist!"));
@@ -294,7 +305,7 @@ let resetPassword = (req, res, next) => {
               .then((data) => {
                 res
                   .status(200)
-                  .json({ data: "Password Resiting done successfully" });
+                  .json({ msg: "Password Resiting done successfully" });
               })
               .catch((error) => next(error));
           });

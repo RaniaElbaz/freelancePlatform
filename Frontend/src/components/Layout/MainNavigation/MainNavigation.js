@@ -3,16 +3,25 @@ import axios from "axios";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import classes from "./MainNavigation.module.css";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
-const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
+
+
 
 export default function MainNavigator() {
+
+  // const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  const [token, setState] = useState(localStorage.getItem("token"))
+
   const history = useHistory();
   const [team, setTeam] = useState(false);
+  const userDetails = useSelector((state) => state.userDetails);
+  const user = useSelector((state) => state.user);
 
   const logoutHandler = (e) => {
-    history.push("/");
+    setState(localStorage.getItem("token"));
+    history.push("/login");
     localStorage.removeItem("token");
   };
 
@@ -34,14 +43,14 @@ export default function MainNavigator() {
           console.log(error.code, error.message, error.response.data);
         });
     }
-  }, []);
+  }, [token]);
 
   return (
     <nav
       className={`navbar navbar-expand-lg navbar-light bg-light ${classes.nav}`}
     >
       <div className="container-fluid">
-        <Link className={`navbar-item ${classes.logo}`} to="/">
+        <Link className={`navbar-item ${classes.logo}`} to="/" id="top">
           {/* <img
             src="./static/logo.png"
             alt=""
@@ -51,6 +60,10 @@ export default function MainNavigator() {
           /> */}
           Devolanco
         </Link>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div className="navbar-nav">
@@ -66,7 +79,7 @@ export default function MainNavigator() {
               </li>
               <li className={`nav-item me-3`}>
                 <Link
-                  to="/store"
+                  to="/product"
                   className={`nav-link ${classes.navLink}`}
                   aria-current="page"
                 >
@@ -89,19 +102,32 @@ export default function MainNavigator() {
           {console.log("token", token)}
           {token ? (
             <>
-              <Link to="/profile">
+              <Link to={`/${user.role}/${user.id}`}>
                 <div className="d-flex ">
                   <img
                     src={
-                      localStorage.getItem("image")
-                        ? localStorage.getItem("image")
-                        : "/static/default.jpg"
+                      user.role == "freelancer"
+                        ? userDetails.profileImage
+                          ? userDetails.profileImage
+                          : "/static/default.jpg"
+                        : user.role == "client"
+                          ? userDetails.picture
+                            ? userDetails.picture
+                            : "/static/default.jpg"
+                          : user.role == "company" || user.role == "team"
+                            ? userDetails.logo
+                              ? userDetails.logo
+                              : "/static/default.jpg"
+                            : ""
                     }
                     className={classes.profileImage}
                     alt=""
                   />
                   <h6 className={`my-auto ps-2 ${classes.username}`}>
-                    {localStorage.getItem("username")}
+                    {(user.role == "freelancer" || user.role == "client") &&
+                      `${userDetails.firstName} ${userDetails.lastName}`}
+                    {(user.role == "company" || user.role == "team") &&
+                      `${userDetails.name}`}
                   </h6>
                 </div>
               </Link>
@@ -114,7 +140,7 @@ export default function MainNavigator() {
                   <li>
                     <button
                       className="dropdown-item"
-                      onClick={() => history.push("/profile")}
+                      onClick={() => history.push(`/${user.role}/${user.id}`)}
                     >
                       profile
                     </button>
@@ -122,7 +148,7 @@ export default function MainNavigator() {
                   <li>
                     <button
                       className="dropdown-item"
-                      onClick={() => history.push("/changePassword")}
+                      onClick={() => history.push("/change-password")}
                     >
                       change password
                     </button>
@@ -153,19 +179,19 @@ export default function MainNavigator() {
               <Link to="/login">
                 <button
                   className={`btn ${classes.signIn} me-2 `}
-                  onClick={() => {
-                    history.push("/login");
-                  }}
+                // onClick={() => {
+                //   history.push("/login");
+                // }}
                 >
                   log in
                 </button>
               </Link>
-              <Link to="/signup">
+              <Link to="/register">
                 <button
                   className={`btn ${classes.signIn} `}
-                  onClick={() => {
-                    history.push("/signup");
-                  }}
+                // onClick={() => {
+                //   history.push("/register");
+                // }}
                 >
                   sign up
                 </button>

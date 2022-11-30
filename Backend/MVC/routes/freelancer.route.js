@@ -1,8 +1,8 @@
 const express = require("express");
 const { param } = require("express-validator");
 
-const skillController = require("../controllers/skill.controller");
 const freelancerController = require("../controllers/freelancer.controller");
+const skillController = require("../controllers/skill.controller");
 const authMW = require("../middleWares/auth.MW");
 const validationMW = require("../middlewares/validation.MW");
 const {
@@ -18,7 +18,7 @@ const {
   testimonialValidator,
   putInfoValidator,
 } = require("../middlewares/freelancers.MW");
-const { signupValidator } = require("../middlewares/login.MW");
+const { signupVA } = require("../middlewares/login.MW");
 
 const freelancerRoute = express.Router();
 
@@ -86,7 +86,8 @@ freelancerRoute
     putValidator,
     validationMW,
     freelancerController.filesUpload,
-    freelancerController.updateFreelancerDetails
+    freelancerController.updateFreelancerDetails,
+    skillController.addTalentToSkill
   );
 
 freelancerRoute
@@ -132,6 +133,6 @@ freelancerRoute
 /** for testing */
 freelancerRoute
   .route("/freelancer/signup")
-  .post(signupValidator, validationMW, freelancerController.freelancerSignup);
+  .post(signupVA, validationMW, freelancerController.freelancerSignup);
 
 module.exports = freelancerRoute;

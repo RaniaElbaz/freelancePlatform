@@ -88,10 +88,10 @@ module.exports.getProfile = (req, res, next) => {
   req.params.userType == "freelancer"
     ? (Schema = Freelancer)
     : req.params.userType == "team"
-    ? (Schema = Team)
-    : req.params.userType == "client"
-    ? (Schema = Client)
-    : null;
+      ? (Schema = Team)
+      : req.params.userType == "client"
+        ? (Schema = Client)
+        : null;
 
   let regex = new RegExp(req.query.searchKey, "i"),
     query = { $or: [{ firstName: regex }, { lastName: regex }] };

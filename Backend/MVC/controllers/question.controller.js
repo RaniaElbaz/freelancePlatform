@@ -6,19 +6,19 @@ let Question = mongoose.model("questions");
 /**
  get all Question data
  */
-module.exports.getAllQuestions = (request,response,next) => {
+module.exports.getAllQuestions = (request, response, next) => {
     Question.find({})
-        .then(data=>{
+        .then(data => {
             response.status(200).json(data);
         })
-        .catch(error=>{
+        .catch(error => {
             next(error);
         })
 }
 /**
  add new Question
  */
-module.exports.addQuestion = (request,response,next) => {
+module.exports.addQuestion = (request, response, next) => {
     let QuestionObject = new Question({
         _id: request.body.id,
         date: request.body.date,
@@ -27,31 +27,31 @@ module.exports.addQuestion = (request,response,next) => {
         tag: request.body.tag,
     });
     QuestionObject.save()
-        .then(data=>{
-            response.status(201).json({data:"added"});
+        .then(data => {
+            response.status(201).json({ data: "added" });
         })
-        .catch(error=>next(error))      
+        .catch(error => next(error))
 }
 /**
  update a Question data
  */
-module.exports.updateQuestion = (request,response,next) => {
+module.exports.updateQuestion = (request, response, next) => {
     Question.findById(request.body.id)
         .then(data => {
-            if(data) return data.save()
+            if (data) return data.save()
         })
-        .then(data=>{
-            response.status(201).json({data:"updated"});
+        .then(data => {
+            response.status(201).json({ data: "updated" });
         })
-        .catch(error=>next(error))    
+        .catch(error => next(error))
 }
 /**
  delete a Question
  */
-module.exports.deleteQuestion = (request,response,next) => {
-    Question.deleteOne({_id:request.params.id})
-    .then(data=>{
-        response.status(200).json({data:"delete " + request.params.id})
-    })
-    .catch(error=>next(error)); 
+module.exports.deleteQuestion = (request, response, next) => {
+    Question.deleteOne({ _id: request.params.id })
+        .then(data => {
+            response.status(200).json({ data: "delete " + request.params.id })
+        })
+        .catch(error => next(error));
 }

@@ -14,12 +14,10 @@ const companyschema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
     description: {
       type: String,
       minlength: 100,
     },
-
     isVerified: {
       type: Boolean,
       default: false,
@@ -48,7 +46,7 @@ const companyschema = new mongoose.Schema(
     picture: {
       type: String,
     },
-    location: {
+    address: {
       type: locationSchema,
       default: {},
     },

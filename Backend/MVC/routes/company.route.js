@@ -1,17 +1,18 @@
 const express = require("express");
-
 const { body, param, query } = require("express-validator");
 const companyRoute = express.Router();
 const controller = require("../controllers/company.controller");
 
 let validationMW = require("../middlewares/validation.MW");
 const authMW = require("../middlewares/auth.MW");
-const { hashPassword } = require("../middlewares/hashPassword.MW");
+
 const {
   AdminAndCompanyAuth,
-  adminAuth,
   companyAuth,
 } = require("../middlewares/authAccess.MW");
+
+const { putInfoValidator } = require("../middlewares/freelancers.MW");
+
 const companyValidtion = require("../middlewares/company.MW");
 
 companyRoute
@@ -28,7 +29,7 @@ companyRoute
     validationMW,
     companyValidtion.paramValidator,
     companyValidtion.detailsValidator,
-    controller.imageUpload.single("logo"),
+    controller.imageUpload,
     controller.updateCompanyDetails
   );
 
@@ -39,14 +40,14 @@ companyRoute
     authMW,
     companyAuth,
     companyValidtion.paramValidator,
-    companyValidtion.infoValidator,
+    putInfoValidator,
     validationMW,
     controller.updateCompanyInfo
   );
 
 //get by id (puplic view)
 companyRoute
-  .route("/company/:id/puplic")
+  .route("/company/:id/public")
   .get(
     authMW,
     companyValidtion.paramValidator,

@@ -1,18 +1,23 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const certificateSchema = new mongoose.Schema(
   {
     organization: {
+      type: String,
+    },
+    title: {
+      type: String,
+    },
+    startDate: {
+      type: Date,
+    },
+    endDate: {
       required: true,
       type: String,
     },
     title: {
       required: true,
       type: String,
-    },
-    issued: {
-      required: true,
-      type: Date,
     },
     description: {
       type: String,
@@ -23,9 +28,6 @@ const certificateSchema = new mongoose.Schema(
     certificateId: {
       type: String,
     },
-    expirationDate: {
-      type: Date,
-    }
   },
   { _id: false }
 );
